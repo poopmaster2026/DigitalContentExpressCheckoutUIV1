@@ -1,50 +1,28 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_JP } from "next/font/google";
-import { Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { QueryProvider } from "@/shared/providers/query-provider";
-import { TooltipProvider } from "@/shared/components/ui/tooltip";
-import { Toaster } from "@/shared/components/ui/sonner";
-
-const notoSansJP = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  preload: false,
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import type { ReactNode } from "react";
+import { headers } from "next/headers";
+import { ClientProvider } from "./provider";
 
 export const metadata: Metadata = {
-  title: "Store Management",
-  description: "Digital content store management dashboard",
+  title: "Digital Content Express Checkout",
+  description: "React Spectrum (S2) UI",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
+  // Resolve the locale on the server so the S2 <Provider> renders the same
+  // <html lang> on the server and client and loads the right Spectrum fonts.
+  const acceptLanguage = (await headers()).get("accept-language");
+  const lang = acceptLanguage?.split(/[,;]/)[0] || "en-US";
+
+  // The S2 <Provider> (elementType="html") renders the <html> element itself,
+  // applies the Spectrum background layer, and loads fonts for the locale.
   return (
-    <html
-      lang="ja"
-      className={`${notoSansJP.variable} ${inter.variable} ${geistMono.variable}`}
-    >
-      <body className="font-sans antialiased">
-        <QueryProvider>
-          <TooltipProvider>{children}</TooltipProvider>
-        </QueryProvider>
-        <Toaster />
-      </body>
-    </html>
+    <ClientProvider lang={lang}>
+      <body>{children}</body>
+    </ClientProvider>
   );
 }
