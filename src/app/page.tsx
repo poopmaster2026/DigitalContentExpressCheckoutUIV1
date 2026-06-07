@@ -8,7 +8,6 @@ import {
   Content,
   Text,
 } from "@react-spectrum/s2/CardView";
-import { Heading } from "@react-spectrum/s2";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 
 // Minimal CardView demo to verify the @react-spectrum/s2 install renders.
@@ -16,7 +15,7 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 export default function Home() {
   return (
     <main className={style({ padding: 24 })}>
-      <Heading styles={style({ marginBottom: 16 })}>CardView</Heading>
+      <h1 className={style({ font: "heading", marginBottom: 16 })}>CardView</h1>
       <CardView
         aria-label="Photo gallery"
         styles={style({ width: "full", height: 500 })}
