@@ -23,7 +23,7 @@ type Props = {
 export function CreateActionBar({ title, status, isSaving = false }: Props) {
   return (
     <div className="flex flex-col gap-3">
-      <BackLink href="/store/products/new">商品に戻る</BackLink>
+      <BackLink href="/store/products">商品に戻る</BackLink>
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <h1 className="truncate text-2xl font-bold">{title}</h1>

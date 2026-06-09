@@ -10,7 +10,6 @@ import {
 } from '@/shared/components/ui/dropdown-menu'
 
 import { ProductStatusBadge } from '../../components/StatusBadge'
-import { TypeBadge } from '../../components/TypeBadge'
 import { ProductThumb } from '../../store-dashboard-page/components/ProductThumb'
 import { formatYen } from '../../store-dashboard-page/utils'
 import type { StoreProductRow } from '../../types/store'
@@ -22,8 +21,7 @@ type Props = {
   onDeleteProduct?: (id: string) => void
 }
 
-/** 7 カラムグリッド（商品 / タイプ / 価格 / 販売数 / 売上 / 状態 / 操作）。 */
-const GRID = 'grid grid-cols-[minmax(0,1fr)_132px_100px_88px_120px_104px_40px] items-center gap-4'
+const GRID = 'grid grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_1fr_40px] items-center gap-4'
 
 /**
  * 商品一覧（全件）のテーブル。列見出し + 商品行（合計行なし・ダッシュボードより高い行）。
@@ -39,11 +37,10 @@ export function ProductsTable({
     <div className="flex flex-col">
       <div className={`${GRID} border-b pb-4 text-xs font-medium text-muted-foreground`}>
         <span>商品</span>
-        <span>タイプ</span>
-        <span className="text-right">価格</span>
-        <span className="text-right">販売数</span>
-        <span className="text-right">売上</span>
-        <span>状態</span>
+        <span className="text-center">価格</span>
+        <span className="text-center">販売数</span>
+        <span className="text-center">売上</span>
+        <span className="text-center">状態</span>
         <span className="sr-only">操作</span>
       </div>
 
@@ -52,7 +49,7 @@ export function ProductsTable({
           <li
             key={product.id}
             onClick={() => onSelectProduct?.(product.id)}
-            className={`${GRID} cursor-pointer border-b py-7 transition-colors last:border-b-0 hover:bg-accent/40`}
+            className={`${GRID} cursor-pointer border-b py-3 transition-colors last:border-b-0 hover:bg-accent/40`}
           >
             <div className="flex min-w-0 items-center gap-3">
               <ProductThumb
@@ -62,17 +59,16 @@ export function ProductsTable({
               />
               <span className="truncate font-medium">{product.title}</span>
             </div>
-            <div>
-              <TypeBadge type={product.type} />
-            </div>
-            <span className="text-right text-sm font-medium tabular-nums">
+            <span className="text-center text-sm font-medium tabular-nums">
               {formatYen(product.price)}
             </span>
-            <span className="text-right text-sm font-medium tabular-nums">{product.soldCount}</span>
-            <span className="text-right text-sm font-medium tabular-nums">
+            <span className="text-center text-sm font-medium tabular-nums">{product.soldCount}</span>
+            <span className="text-center text-sm font-medium tabular-nums">
               {product.revenue > 0 ? formatYen(product.revenue) : '—'}
             </span>
-            <ProductStatusBadge status={product.status} />
+            <div className="flex justify-center">
+              <ProductStatusBadge status={product.status} />
+            </div>
             <div className="flex justify-center">
               <DropdownMenu>
                 <DropdownMenuTrigger

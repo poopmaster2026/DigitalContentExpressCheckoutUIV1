@@ -3,10 +3,9 @@ import { Badge } from '@/shared/components/ui/badge'
 
 import type { OrderStatus, ProductStatus } from '../types/store'
 
-/** 商品状態の表示定義（● ＋ テキスト形式）。 */
-const PRODUCT_STATUS: Record<ProductStatus, { label: string; dot: string; text: string }> = {
-  published: { label: '公開中', dot: 'bg-success', text: 'text-success' },
-  draft: { label: '下書き', dot: 'bg-muted-foreground', text: 'text-muted-foreground' },
+const PRODUCT_STATUS: Record<ProductStatus, { label: string; bg: string; text: string; dot: string }> = {
+  published: { label: '公開中', bg: 'bg-success/10', text: 'text-success', dot: 'bg-success' },
+  draft: { label: '下書き', bg: 'bg-muted', text: 'text-muted-foreground', dot: 'bg-muted-foreground' },
 }
 
 type ProductStatusProps = {
@@ -14,13 +13,10 @@ type ProductStatusProps = {
   className?: string
 }
 
-/**
- * 商品の公開状態（● ＋ テキスト）。公開中=success / 下書き=muted。
- */
 export function ProductStatusBadge({ status, className }: ProductStatusProps) {
-  const { label, dot, text } = PRODUCT_STATUS[status]
+  const { label, bg, text, dot } = PRODUCT_STATUS[status]
   return (
-    <span className={cn('inline-flex items-center gap-2 text-sm', text, className)}>
+    <span className={cn('inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium', bg, text, className)}>
       <span className={cn('size-1.5 shrink-0 rounded-full', dot)} aria-hidden="true" />
       {label}
     </span>

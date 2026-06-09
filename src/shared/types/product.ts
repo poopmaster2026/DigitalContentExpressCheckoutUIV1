@@ -1,4 +1,4 @@
-export type ProductType = 'digital' | 'course' | 'subscription' | 'booking' | 'physical'
+export type ProductType = 'digital'
 
 export interface ProductReview {
   id: string

@@ -39,7 +39,7 @@ export default function RootLayout({
       lang="ja"
       className={`${notoSansJP.variable} ${inter.variable} ${geistMono.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className={`${notoSansJP.className} antialiased`}>
         <QueryProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </QueryProvider>

@@ -19,10 +19,9 @@ export function ProductsPage() {
   return (
     <ProductsPageUI
       products={products}
-      totalCount={42}
       onCreateProduct={() => router.push('/store/products/new')}
       onSelectProduct={(id) => router.push(`/store/products/${id}`)}
-      onEditProduct={(id) => router.push(`/store/products/${id}/edit`)}
+      onEditProduct={(id) => router.push(`/store/products/${id}`)}
       onDeleteProduct={(id) => router.push(`/store/products/${id}`)}
     />
   )

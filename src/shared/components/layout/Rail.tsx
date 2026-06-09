@@ -23,7 +23,7 @@ type RailItem = {
  * ワークスペースの高レベルナビ。Editor と メール（Email）を実装済み、他は将来の画面用プレースホルダ。
  */
 const NAV_ITEMS: RailItem[] = [
-  { key: 'store', label: 'ストア', Icon: ShoppingBag, href: '/store' },
+  { key: 'store', label: 'ストア', Icon: ShoppingBag, href: '/store/products' },
 ]
 
 const BOTTOM_ITEMS: RailItem[] = [

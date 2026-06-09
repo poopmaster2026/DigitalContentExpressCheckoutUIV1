@@ -3,13 +3,8 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import type { ProductType } from '@/shared/types/product'
 
-/** サムネ未設定時のプレースホルダ色（タイプの icon-* トークン）。 */
 const TYPE_TINT: Record<ProductType, string> = {
-  digital: 'bg-icon-green/15',
-  course: 'bg-icon-blue/15',
-  subscription: 'bg-icon-purple/15',
-  booking: 'bg-icon-amber/15',
-  physical: 'bg-icon-teal/15',
+  digital: 'bg-brand-blue/15',
 }
 
 type Props = {

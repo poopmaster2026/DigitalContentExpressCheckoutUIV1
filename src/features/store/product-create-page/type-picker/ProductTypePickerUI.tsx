@@ -29,7 +29,7 @@ export function ProductTypePickerUI({ selectedType, onSelectType, onCreate }: Pr
     <div className="min-h-full bg-surface px-6 py-12">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <BackLink href="/store">商品に戻る</BackLink>
+          <BackLink href="/store/products">商品に戻る</BackLink>
           <h1 className="text-2xl font-bold">新規商品</h1>
         </div>
 

@@ -5,19 +5,11 @@ import type { StoreProductRow } from '../types/store'
 /** 商品タイプの日本語ラベル。TypeBadge とテーブルで共有。 */
 export const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
   digital: 'デジタルDL',
-  course: 'コース',
-  subscription: 'サブスク',
-  booking: '予約',
-  physical: '物販',
 }
 
-/** 商品タブの定義（「すべて」+ 各タイプ）。value はフィルタ判定に使う。 */
+/** 商品タブの定義（「すべて」のみ — タイプが 1 つなのでフィルタ不要）。 */
 export const PRODUCT_TAB_ITEMS: { value: 'all' | ProductType; label: string }[] = [
   { value: 'all', label: 'すべて' },
-  { value: 'digital', label: PRODUCT_TYPE_LABELS.digital },
-  { value: 'course', label: PRODUCT_TYPE_LABELS.course },
-  { value: 'subscription', label: PRODUCT_TYPE_LABELS.subscription },
-  { value: 'booking', label: PRODUCT_TYPE_LABELS.booking },
 ]
 
 /** 金額を「¥1,200」形式に整形する。 */

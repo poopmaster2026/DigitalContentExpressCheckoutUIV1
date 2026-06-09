@@ -12,12 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu'
 import { Input } from '@/shared/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/shared/components/ui/tabs'
-import type { ProductType } from '@/shared/types/product'
-
-import { BackLink } from '../components/BackLink'
 import { Pagination } from '../components/Pagination'
-import { filterProductsByTab, PRODUCT_TAB_ITEMS } from '../store-dashboard-page/utils'
 import type { StoreProductRow } from '../types/store'
 import { ProductsTable } from './components/ProductsTable'
 import { PRODUCT_SORT_ITEMS, type ProductSort, searchProducts, sortProducts } from './utils'
@@ -47,16 +42,16 @@ export function ProductsPageUI({
   onEditProduct,
   onDeleteProduct,
 }: Props) {
-  const [tab, setTab] = useState<'all' | ProductType>('all')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<ProductSort>('newest')
   const [page, setPage] = useState(1)
 
   const filtered = useMemo(() => {
-    const byTab = filterProductsByTab(products, tab)
-    const bySearch = searchProducts(byTab, query)
+    const byStatus = statusFilter === 'all' ? products : products.filter((p) => p.status === statusFilter)
+    const bySearch = searchProducts(byStatus, query)
     return sortProducts(bySearch, sort)
-  }, [products, tab, query, sort])
+  }, [products, statusFilter, query, sort])
 
   const total = totalCount ?? filtered.length
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -76,7 +71,6 @@ export function ProductsPageUI({
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div className="flex items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
-            <BackLink href="/store">ストアに戻る</BackLink>
             <h1 className="text-4xl font-bold">商品</h1>
           </div>
           <Button onClick={onCreateProduct}>
@@ -120,18 +114,30 @@ export function ProductsPageUI({
             </div>
           </div>
 
-          <Tabs
-            value={tab}
-            onValueChange={(value) => resetToFirstPage(setTab)(value as 'all' | ProductType)}
-          >
-            <TabsList>
-              {PRODUCT_TAB_ITEMS.map((item) => (
-                <TabsTrigger key={item.value} value={item.value}>
-                  {item.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <div className="flex">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium text-foreground hover:bg-accent"
+                >
+                  {statusFilter === 'all' ? 'すべて' : statusFilter === 'published' ? '公開' : '下書き'}
+                  <ChevronDown className="size-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => resetToFirstPage(setStatusFilter)('all')}>
+                  すべて
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => resetToFirstPage(setStatusFilter)('published')}>
+                  公開
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => resetToFirstPage(setStatusFilter)('draft')}>
+                  下書き
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {pageItems.length === 0 ? (
             <p className="py-16 text-center text-sm text-muted-foreground">

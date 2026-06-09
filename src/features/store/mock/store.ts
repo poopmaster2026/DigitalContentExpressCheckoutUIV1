@@ -33,7 +33,7 @@ export const mockStoreProducts: StoreProductRow[] = [
   {
     id: 'p2',
     title: '30日で旬を学ぶ 動画コース',
-    type: 'course',
+    type: 'digital',
     thumbnailUrl: unsplash('1556910103-1c02745aae4d'),
     price: 9_800,
     soldCount: 12,
@@ -43,7 +43,7 @@ export const mockStoreProducts: StoreProductRow[] = [
   {
     id: 'p3',
     title: '1対1 献立相談（30分）',
-    type: 'booking',
+    type: 'digital',
     thumbnailUrl: unsplash('1466637574441-749b8f19452f'),
     price: 3_000,
     soldCount: 3,
@@ -83,7 +83,7 @@ export const mockStoreProducts: StoreProductRow[] = [
   {
     id: 'p7',
     title: '季節の常備菜 オンライン講座',
-    type: 'course',
+    type: 'digital',
     thumbnailUrl: unsplash('1512621776951-a57141f2eefd'),
     price: 6_000,
     soldCount: 9,
