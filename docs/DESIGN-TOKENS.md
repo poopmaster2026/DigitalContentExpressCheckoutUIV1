@@ -267,7 +267,8 @@ dark の実値が必要なときは `@adobe/spectrum-tokens` を引く。主要 
 `src/styles/brand-tokens.ts` / `globals.css` で保持（実測値・Mobbin 実画面と整合確認済み）:
 
 - chrome `#1d1d1d`（S2 最近似は gray-50 dark `#1B1B1B` — 別物として保持が正解）
-- accent indigo `#5157E4`（S2 の indigo-900 `#7155FA` とは別物。Express 実測値を維持）
+- accent `#007AFF`（**Apple system blue・2026-06-11 決定**。旧アプリの brand-blue を継承し、
+  Express 実測 indigo `#5157E4` から置換。hover `#0062CC`。S2 標準 accent `#3B63FB` とも別物）
 - premium violet `#9674FF`
 - hero グラデ `linear-gradient(90deg, #FF9416, #FEC082 30%, #9FB6FA 62%, #D795AC)`
 

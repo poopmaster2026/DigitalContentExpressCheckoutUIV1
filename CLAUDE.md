@@ -1,7 +1,20 @@
 # Project conventions
 
-UI library: **Adobe React Spectrum — Spectrum 2 (`@react-spectrum/s2`)**. Not v3
-(`@adobe/react-spectrum`), not shadcn/Radix/Tailwind (all removed).
+UI layer (2026-06-11 更新):
+- **React Aria Components (`react-aria-components`)** — 主役。カスタムデザイン部分
+  （chrome / サイドバーレール / ボタン / テーブル CRUD 等）はこれを
+  `src/app/globals.css` のデザイントークン（CSS 変数）でスタイルする。
+  コンポーネントは `src/shared/components/ui/`（`button.tsx` + `button.css` が基準実装）。
+- **`@react-spectrum/s2`** — app の `<Provider>`（Adobe Clean フォント・locale）として維持。
+  S2 既定の見た目で足りる部品にはそのまま使ってよいが、**accent 色は変更不可**
+  （S2 標準 blue `#3B63FB`）なので、`--accent: #007AFF` を使う UI は React Aria 側で作る。
+- shadcn/Radix/Tailwind/lucide は不使用（撤去済み・追加禁止）。
+
+Directory structure follows the old repo's
+`../DigitalContentExpressCheckoutUI/docs/ARCHITECTURE.md`:
+`src/app`（ルーティングのみ）/ `src/features/{feature}`（api / types / queries / actions /
+hooks / {page}/{section} の Container+Presentational）/ `src/shared`（components/ui,
+providers, types, mock）/ `src/lib`（query-client 等）。依存方向: app → features → shared / lib。
 
 ## Where to look things up
 - Component APIs / examples / icons / illustrations: use the **`react-spectrum-s2`
@@ -21,10 +34,11 @@ UI library: **Adobe React Spectrum — Spectrum 2 (`@react-spectrum/s2`)**. Not 
   `client-only`, so any file using one needs `"use client";` at the top.
 - **Import from subpaths, not the barrel** (`@react-spectrum/s2/CardView`,
   `@react-spectrum/s2/Button`, …) — better tree-shaking; the skill docs match this.
-- **Styling = the `style()` macro** from `@react-spectrum/s2/style` imported
-  `with { type: "macro" }`. No Tailwind, no global CSS. Prefer Spectrum tokens
-  (e.g. `font: "heading"`, spacing on a 4px grid). Native HTML elements take
-  `className={style(...)}`; S2 components take a layout-only `styles={style(...)}`.
+- **Styling** — 2 系統を使い分ける（どちらも raw hex のベタ書き禁止）:
+  - React Aria Components / ネイティブ要素 → `globals.css` の CSS 変数を参照する
+    コンポーネント CSS（`src/shared/components/ui/*.css`）。Tailwind は使わない。
+  - S2 コンポーネント → `style()` macro（`with { type: "macro" }`）。S2 トークン名のみ。
+    layout-only の `styles={style(...)}`。
 - **Provider/layout are already wired** in `src/app/provider.tsx` (`<Provider
   elementType="html">` + App Router navigation) and `src/app/layout.tsx` (locale
   resolved server-side from `accept-language`). Don't render `<html>` manually.
@@ -35,4 +49,6 @@ UI library: **Adobe React Spectrum — Spectrum 2 (`@react-spectrum/s2`)**. Not 
   Use S2's own icons.
 
 ## Status
-- Design tokens are intentionally not configured yet — set them once the design is final.
+- Design tokens configured in `src/app/globals.css`（出典: docs/DESIGN-TOKENS.md + Figma SoT）。
+  accent = **#007AFF（Apple system blue）**。Express indigo #5157e4 は廃止。
+- TanStack Query wired: `src/lib/query-client.ts` + `src/shared/providers/query-provider.tsx`（layout 結線済み）。
