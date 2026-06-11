@@ -26,6 +26,7 @@ export default function Home() {
           <CardPreview>
             <Image
               src="https://images.unsplash.com/photo-1705034598432-1694e203cdf3?q=80&w=600&auto=format&fit=crop"
+              alt=""
               width={600}
               height={400}
             />
@@ -40,6 +41,7 @@ export default function Home() {
           <CardPreview>
             <Image
               src="https://images.unsplash.com/photo-1722233987129-61dc344db8b6?q=80&w=600&auto=format&fit=crop"
+              alt=""
               width={600}
               height={900}
             />
