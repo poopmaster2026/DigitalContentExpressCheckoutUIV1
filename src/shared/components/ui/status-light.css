@@ -1,0 +1,21 @@
+.ui-status-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.ui-status-light__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.ui-status-light--positive .ui-status-light__dot {
+  background: var(--positive);
+}
+
+.ui-status-light--neutral .ui-status-light__dot {
+  background: var(--text-muted);
+}

@@ -1,0 +1,20 @@
+/* AppShell — header 56 / sidebar 80 / content = キャンバス(gray-75) */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--canvas);
+}
+
+.app-shell__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-shell__content {
+  flex: 1;
+  min-width: 0;
+  padding: 32px;
+}

@@ -1,0 +1,51 @@
+.products-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1296px;
+}
+
+.products-page__back {
+  align-self: flex-start;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.products-page__back[data-hovered] {
+  color: var(--ink);
+}
+
+.products-page__back[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.products-page__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* heading-lg(28) extra-bold — CJK はウェイトが 1 段下がって 700 */
+.products-page__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.products-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.products-toolbar__search {
+  width: 220px;
+}

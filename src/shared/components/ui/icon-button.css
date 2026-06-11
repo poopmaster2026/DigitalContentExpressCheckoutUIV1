@@ -1,0 +1,33 @@
+.ui-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 130ms cubic-bezier(0.45, 0, 0.4, 1);
+  --iconPrimary: var(--text-secondary);
+}
+
+.ui-icon-button[data-hovered] {
+  background: var(--surface-muted);
+}
+
+.ui-icon-button[data-pressed] {
+  background: var(--border);
+}
+
+.ui-icon-button[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.ui-icon-button[data-disabled] {
+  cursor: default;
+  --iconPrimary: var(--text-disabled);
+}

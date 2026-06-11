@@ -1,0 +1,79 @@
+.ui-search-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding-inline: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+.ui-search-field:has(.ui-search-field__input[data-focused]) {
+  border-color: var(--accent);
+}
+
+.ui-search-field:has(.ui-search-field__input[data-focus-visible]) {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.ui-search-field__icon {
+  display: inline-flex;
+  color: var(--text-muted);
+  --iconPrimary: var(--text-muted);
+}
+
+.ui-search-field__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ui-search-field__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.ui-search-field__input::placeholder {
+  color: var(--text-muted);
+}
+
+/* WebKit 既定の × を消して自前のクリアボタンに寄せる */
+.ui-search-field__input::-webkit-search-cancel-button,
+.ui-search-field__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+.ui-search-field__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  cursor: pointer;
+  --iconPrimary: var(--text-secondary);
+}
+
+.ui-search-field__clear svg {
+  width: 12px;
+  height: 12px;
+}
+
+.ui-search-field__clear[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.ui-search-field[data-empty] .ui-search-field__clear {
+  display: none;
+}

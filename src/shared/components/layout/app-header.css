@@ -1,0 +1,28 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding-inline: 16px;
+  background: var(--brand-chrome);
+  color: var(--brand-chrome-text);
+}
+
+.app-header__logo {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+}
+
+.app-header__logo[data-focus-visible] {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Phase 0 のアバターはプレースホルダ（グラデーションリング） */
+.app-header__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background-image: var(--brand-hero-gradient);
+}

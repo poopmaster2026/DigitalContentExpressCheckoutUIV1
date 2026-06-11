@@ -1,0 +1,54 @@
+.ui-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay);
+  transition: opacity 130ms cubic-bezier(0.45, 0, 0.4, 1);
+}
+
+.ui-modal-overlay[data-entering],
+.ui-modal-overlay[data-exiting] {
+  opacity: 0;
+}
+
+.ui-modal {
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+  transition: transform 130ms cubic-bezier(0.45, 0, 0.4, 1);
+}
+
+.ui-modal-overlay[data-entering] .ui-modal,
+.ui-modal-overlay[data-exiting] .ui-modal {
+  transform: translateY(8px);
+}
+
+.ui-alert-dialog {
+  padding: 24px;
+  outline: none;
+}
+
+.ui-alert-dialog__title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 500; /* title ロール bold（CJK は 1 段下がって 500） */
+  color: var(--ink);
+}
+
+.ui-alert-dialog__body {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.ui-alert-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
