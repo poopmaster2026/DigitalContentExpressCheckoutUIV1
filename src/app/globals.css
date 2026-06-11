@@ -79,6 +79,14 @@
   --overlay: rgb(0 0 0 / 40%);
 }
 
+/* UA デフォルト（body margin 8px）と S2 Provider の白背景をキャンバスに合わせる */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--canvas);
+}
+
 /* Utility classes for the chrome + hero (apply on plain elements; S2 components use tokens). */
 .brand-chrome {
   background: var(--brand-chrome);
