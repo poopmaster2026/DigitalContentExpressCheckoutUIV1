@@ -30,6 +30,41 @@ Mobbin 実画面: [Home（ヒーロー+クイックアクション）](https://m
 6. コンテンツカードはサムネイル主体（角丸 default〜lg）。タイトル 13–14px、メタ情報 11–12px の gray-600 相当。
 7. プレミアム導線のみ violet（Premium member ピル / Start free trial）。アバターはグラデーションリング。
 
+### 1-2. 公式に明文化された視覚言語（出典付き・原文引用）
+
+「デザイン感」は Adobe 自身が文章で定義している。実装判断に迷ったらこの原則に照らす:
+
+- **"Adobe Express was made to be lighter, bolder, and rounder. Icons and typography were
+  more friendly, strokes were a bit thicker, colors were brighter."** — Express の見た目の公式定義
+  （[Adobe Blog: Spectrum 2 発表](https://blog.adobe.com/en/publish/2023/12/12/adobe-unveils-spectrum-2-design-system-reimagining-user-experience-over-100-adobe-applications)）
+- **"The work we'd done for Adobe Express became our starting point for Spectrum 2."**
+  — Express ≒ S2 の原型。S2 を正しく使う = Express になる、の根拠（同上）
+- アイコン: **"more clean, friendly, adaptable, playful and familiar" / "more contrast,
+  thicker strokes, and rounded edges"**（同上）
+- カラー: **"rebuilt our color system to utilize Adobe's brand colors"** + gray システムは
+  コントラスト強化（同上）。トークン実値は本ファイル §2
+- 体系的なリファレンス: [s2.spectrum.adobe.com](https://s2.spectrum.adobe.com/)（S2 公式・コンポーネント/基盤）、
+  [adobe.design: Introducing Spectrum 2](https://adobe.design/stories/design-for-scale/introducing-spectrum-2)
+- **React Aria のドキュメントは挙動・アクセシビリティの明文化**（フォーカス管理 / キーボード操作 /
+  ARIA / 状態遷移。例: [CRUD example](https://react-aria.adobe.com/examples/crud)）であり、
+  **視覚言語は書かれていない**。見た目の正は Spectrum 2、挙動の正は React Aria、と役割が分かれる。
+  S2 コンポーネントは両方を内包する。
+
+### 1-3. 実画面パターン追補（2026-06-11・実 Adobe Express スクショより言語化）
+
+§1 の Mobbin 観察に加え、実アカウントの画面から取れたページレベルの再利用パターン:
+
+| パターン | 構成 |
+| --- | --- |
+| **ホーム Hero（全幅ウォッシュ）** | ページ上部全体を覆う**低彩度パステルのグラデ・ウォッシュ**（紫→橙系）。中に 中央寄せの挨拶（`body`）+ 大見出し（`heading-xl` 級 bold「開始方法を選択してください」）+ **中央配置の白い検索ピル** |
+| **スタートタイル列** | パステル**単色**タイル（黄 / 青 / 紫 / 赤系、radius lg〜xl）+ 太字ラベル + イラスト。先頭の「アップロード」だけ**破線ボーダーの DropZone 型**（グレー地）|
+| **カテゴリタイル行**（制作方法） | 横スクロール行。各タイル = hue カラーのアイコン + `ui` 太字ラベル、地は白〜ごく淡いグラデ、hairline ボーダー |
+| **セクションヘッダー** | `title-lg` bold 見出し + 青テキストリンク「すべて表示」（accent カラー・ボタン化しない）|
+| **ファイルカード** | サムネ（白地 + hairline）+ アプリアイコンバッジ左下 + `ui-sm` タイトル + `detail-sm` 相対時刻 |
+| **機能ページの定型**（スケジュール画面） | ① `heading-l` ページタイトル + 右上にセカンダリ操作 ② 折りたたみ可能な**プロモタイル行**（pastel アイコンチップ + ラベル ×5）③ 本体（カレンダー等）。ツールバー = 「今日」ピル + `< >` + `SegmentedControl`（週/月/グリッド）+ フィルタアイコン + **accent ピル「＋新規」** |
+| **カレンダー/グリッド面** | hairline（gray-100）罫線のみ。当日 = 黒丸数字。色は乗せない |
+| **chrome 内の検索** | ヘッダー中央に**大きなダーク検索ピル**（黒地に薄グレー枠 + プレースホルダ）|
+
 ---
 
 ## 2. カラー
