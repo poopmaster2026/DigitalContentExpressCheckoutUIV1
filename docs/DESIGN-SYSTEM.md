@@ -41,9 +41,9 @@
 | アプリ背景（キャンバス） | `gray-75` | `#f3f3f3` \| `#222` |
 | カード面 | `gray-25` | `#ffffff` \| `#111` |
 | ボーダー | `gray-100` | `#e9e9e9` \| `#2c2c2c` |
-| 本文・主要テキスト | `neutral`（≒gray-900） | `#2c2c2c` \| `#e9e9e9` |
-| 副次テキスト | `neutral-subdued`（≒gray-600） | — |
-| 主要アクション（Express indigo） | `indigo-900`（≒実測 `#5157E4`） | ※ pixel-exact が要る箇所はブランド層 `--brand-accent` |
+| 本文・主要テキスト | `neutral`（= gray-800） | `#292929` \| `#dbdbdb` |
+| 副次テキスト | `neutral-subdued`（= gray-700） | `#505050` \| `#afafaf` |
+| 主要アクション（Express indigo） | ブランド層 `--brand-accent`（実測 `#5157E4`） | ※ S2 最近似は `indigo-900` だが実値 `#7155FA` は紫寄りで別物。CTA はブランド層を使う |
 | 既定 accent（参考） | `accent-color-900` | `#3B63FB` \| `#5681FF` |
 | 成功 / 公開中 | `positive` | — |
 | エラー / 返金 | `negative` | — |
@@ -53,12 +53,14 @@
 
 意味色ではなく**装飾**なので、S2 の hue トークン（`*-900`）か `brand-tokens.ts` の `category` を使う。
 
-| カテゴリ | 実値 | S2 hue |
-| --- | --- | --- |
-| デジタルDL | `#16a34a` | `green-900` |
-| コース | `#2563eb` | `blue-900` |
-| サブスク | `#7c3aed` | `purple-900` |
-| 予約 | `#0d9488` | `seafoam-900` / `cyan-900` |
+マクロでは S2 hue トークンを使う（値は S2 実値に解決される。旧 Tailwind 値とは別物なので注意）:
+
+| カテゴリ | S2 hue | S2 実値 (light) | 旧値（brand-tokens.ts `category`・Tailwind 由来） |
+| --- | --- | --- | --- |
+| デジタルDL | `green-900` | `#05834E` | `#16a34a` |
+| コース | `blue-900` | `#3B63FB` | `#2563eb` |
+| サブスク | `purple-900` | `#9A47E2` | `#7c3aed` |
+| 予約 | `seafoam-900` | `#07816D` | `#0d9488` |
 
 商品サムネのパステル背景（カード）例: green `#eafaf0→#c9efd8` / blue `#eaf2fe→#cfe0fc` /
 amber `#fdf3e6→#f8e0bd` / pink `#fdeaf3→#f9cfe1` / purple `#f3edfe→#ddccfb` / teal `#e7f6f3→#c6ebe3`。
@@ -74,9 +76,9 @@ amber `#fdf3e6→#f8e0bd` / pink `#fdeaf3→#f9cfe1` / purple `#f3edfe→#ddccfb
 | --- | --- | --- |
 | ストア名（Hero） | 28 / Bold | `heading-lg` |
 | KPI 数値（¥48,200 等） | 28 / Bold | `heading-lg`（数値は `detail` でも可） |
-| セクション見出し（商品 / 最近の注文） | 18 / Bold | `heading-sm` または `title-lg` |
-| クイックタイル / 商品カードのタイトル | 15 / Bold | `title-sm` |
-| 本文・ラベル・ボタン文言 | 13–14 | `ui-sm` / `body-sm` |
+| セクション見出し（商品 / 最近の注文） | 18 / Bold | `heading-xs`(18) または `title-lg`(18)。`heading-sm` は 20px なので注意 |
+| クイックタイル / 商品カードのタイトル | 15 / Bold | `title-sm`(14 にスナップ) |
+| 本文・ラベル・ボタン文言 | 13–14 | `ui`(14・無印) / `body-sm`(14)。`ui-sm` は 12px |
 | メタ（販売数 / 時刻 / 補足） | 11–12 | `detail-sm` / `ui-xs` |
 | Hero URL（ours.store/…） | 14 | `body-sm` |
 
@@ -105,19 +107,22 @@ amber `#fdf3e6→#f8e0bd` / pink `#fdeaf3→#f9cfe1` / purple `#f3edfe→#ddccfb
 
 S2 はキーワード指定（`none` / `sm` / `default` / `lg` / `xl` / `full` / `pill`、`md` は無い）。
 
+S2 実値: `sm`=4 / `default`=8 / `lg`=10 / `xl`=16（px）。
+
 | 要素 | デザイン実寸 | S2 |
 | --- | --- | --- |
-| カード（商品 / KPI / セクション） | 16–20 | `xl` |
-| クイックタイル / アイコンチップ | 13–16 | `lg` |
-| ピル / バッジ / アバター / ＋作成 | 999 | `full` |
+| カード（商品 / KPI / セクション） | 16–20 | `xl`(16) |
+| クイックタイル | 13–16 | `xl`(16)。`lg` は 10px なので小チップのみ |
+| ピル / バッジ / アバター / ＋作成 | 999 | `full`（ボタン・検索・チップは `pill` = 高さ÷2） |
 
 ---
 
 ## 5. エレベーション
 
 カードは**極薄ボーダー＋ソフトシャドウ**（フラットすぎない Adobe Express の質感）。
-S2 のコンポーネント既定の elevation を優先。カスタムが要る場合のみブランド層で
-`0 2px 8px rgba(13,13,13,.06), 0 8px 24px rgba(13,13,13,.05)` を使う。
+S2 のコンポーネント既定の elevation を優先。マクロでは `boxShadow: 'emphasized' | 'elevated' |
+'dragged'`（実値は [`DESIGN-TOKENS.md`](./DESIGN-TOKENS.md) §7）。カスタムが要る場合のみ
+ブランド層で `0 2px 8px rgba(13,13,13,.06), 0 8px 24px rgba(13,13,13,.05)` を使う。
 
 ---
 
