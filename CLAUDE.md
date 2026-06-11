@@ -7,6 +7,9 @@ UI library: **Adobe React Spectrum — Spectrum 2 (`@react-spectrum/s2`)**. Not 
 - Component APIs / examples / icons / illustrations: use the **`react-spectrum-s2`
   Agent Skill** (installed in `.claude/skills/`, official Adobe docs) and the
   **`react-spectrum-s2` MCP server** (`.mcp.json`). Don't guess S2 APIs from memory.
+- Design tokens (verified S2 values: color scales, semantic mapping, type roles,
+  shadows, sizing): **`docs/DESIGN-TOKENS.md`**. Design decisions: `docs/DESIGN-SYSTEM.md`.
+  Forbidden patterns: `docs/DESIGN-CONSTRAINTS.md`.
 
 ## Hard constraints (project-specific — not in the generic skill)
 - **Build = webpack, not Turbopack.** S2 styles compile via build-time macros

@@ -1,0 +1,165 @@
+# DESIGN-SYSTEM.md — Adobe Express 準拠デザインシステム（React Spectrum S2）
+
+このプロジェクトの UI は **Adobe Express の見た目**を再現する。実装基盤は **React Spectrum S2**
+（`@react-spectrum/s2`、`style()` マクロ）。Adobe Express 自体が Spectrum 製なので、見た目と
+実装ライブラリは一直線で一致する。
+
+## 基本方針（重要）
+
+1. **S2 トークン・ファースト。** 色・タイポ・余白・角丸は `style()` マクロの**トークン名**で書く
+   （`gray-100` / `accent` / `heading-lg` 等）。hex・rgb・`var(--…)` をマクロに渡さない（型エラー）。
+2. **ブランド層は S2 が持たないものだけ。** Adobe Express 固有の **黒 chrome（header/sidebar）** と
+   **マルチカラー Hero グラデ**は S2 に存在しないため、`src/app/globals.css` の CSS 変数＋
+   `src/styles/brand-tokens.ts` の定数で持つ。これ以外でブランド層を増やさない。
+3. **フォントは Adobe Clean（S2 同梱）。** `@react-spectrum/s2` が `adobe-clean-spectrum-vf` を
+   Typekit から読み込む。別フォントを足さない。日本語は S2 が locale 解決でフォールバックを当てる。
+
+> 実色は **Adobe Express の実スクショからピクセルサンプリング**して確定した（Mobbin、PIL）。
+> S2 トークン実値は `@adobe/spectrum-tokens` から取得。
+
+---
+
+## 1. カラー
+
+### 1-1. ブランド層（S2 に無い・`globals.css` / `brand-tokens.ts`）
+
+| 用途 | 値（実測） | 備考 |
+| --- | --- | --- |
+| **chrome（header / sidebar 背景）** | `#1d1d1d` | Adobe Express 実測。S2 近似 = `gray-50` dark `#1b1b1b` |
+| chrome テキスト | `#ffffff` | |
+| chrome アイコン（非アクティブ） | `#c2c2c2` | |
+| chrome 区切り線 | `#3a3a3a` | |
+| **accent indigo（＋作成 / CTA / アップグレード）** | `#5157E4` | Adobe Express 実測。S2 既定 accent は青なので indigo を採用 |
+| accent hover | `#444BD6` | |
+| premium violet | `#9674FF` | プレミアム導線 |
+| **Hero グラデ** | `linear-gradient(90deg, #FF9416 0%, #FEC082 30%, #9FB6FA 62%, #D795AC 100%)` | 実測。orange→peach→periwinkle→mauve |
+
+### 1-2. S2 トークンへマッピング（こちらを優先して使う）
+
+| 役割 | S2 トークン | 実値(light\|dark) |
+| --- | --- | --- |
+| アプリ背景（キャンバス） | `gray-75` | `#f3f3f3` \| `#222` |
+| カード面 | `gray-25` | `#ffffff` \| `#111` |
+| ボーダー | `gray-100` | `#e9e9e9` \| `#2c2c2c` |
+| 本文・主要テキスト | `neutral`（≒gray-900） | `#2c2c2c` \| `#e9e9e9` |
+| 副次テキスト | `neutral-subdued`（≒gray-600） | — |
+| 主要アクション（Express indigo） | `indigo-900`（≒実測 `#5157E4`） | ※ pixel-exact が要る箇所はブランド層 `--brand-accent` |
+| 既定 accent（参考） | `accent-color-900` | `#3B63FB` \| `#5681FF` |
+| 成功 / 公開中 | `positive` | — |
+| エラー / 返金 | `negative` | — |
+| 情報 | `informative` | — |
+
+### 1-3. カテゴリ / 装飾パレット（商品タイプ・KPI ドット）
+
+意味色ではなく**装飾**なので、S2 の hue トークン（`*-900`）か `brand-tokens.ts` の `category` を使う。
+
+| カテゴリ | 実値 | S2 hue |
+| --- | --- | --- |
+| デジタルDL | `#16a34a` | `green-900` |
+| コース | `#2563eb` | `blue-900` |
+| サブスク | `#7c3aed` | `purple-900` |
+| 予約 | `#0d9488` | `seafoam-900` / `cyan-900` |
+
+商品サムネのパステル背景（カード）例: green `#eafaf0→#c9efd8` / blue `#eaf2fe→#cfe0fc` /
+amber `#fdf3e6→#f8e0bd` / pink `#fdeaf3→#f9cfe1` / purple `#f3edfe→#ddccfb` / teal `#e7f6f3→#c6ebe3`。
+
+---
+
+## 2. タイポグラフィ
+
+フォント = **Adobe Clean**（S2 同梱）。S2 では生の px ではなく **`font` ロール**で指定する
+（`font: 'heading-lg'` 等）。ロールは `fontFamily/fontSize/fontWeight/lineHeight/color` をまとめて設定。
+
+| 画面要素 | デザイン実寸(px) | 使う S2 ロール |
+| --- | --- | --- |
+| ストア名（Hero） | 28 / Bold | `heading-lg` |
+| KPI 数値（¥48,200 等） | 28 / Bold | `heading-lg`（数値は `detail` でも可） |
+| セクション見出し（商品 / 最近の注文） | 18 / Bold | `heading-sm` または `title-lg` |
+| クイックタイル / 商品カードのタイトル | 15 / Bold | `title-sm` |
+| 本文・ラベル・ボタン文言 | 13–14 | `ui-sm` / `body-sm` |
+| メタ（販売数 / 時刻 / 補足） | 11–12 | `detail-sm` / `ui-xs` |
+| Hero URL（ours.store/…） | 14 | `body-sm` |
+
+ロール選択は**サイズでなく役割**で選ぶ: `heading-*`=ページ/セクション見出し、`title-*`=コンポーネント内タイトル、
+`body-*`=本文、`detail-*`=メタ/キャプション、`ui-*`=操作系テキスト。サイズ接尾辞 `-xs/-sm/(既定)/-lg/-xl/-2xl/-3xl`。
+
+---
+
+## 3. スペーシング
+
+**4px グリッド**（`0, 2, 4, 8, 12, 16, 20, 24, 32, …`）。マクロには数値 px をそのまま渡す（`'1rem'` 等は不可）。
+
+| 用途 | 値 |
+| --- | --- |
+| カード内パディング | `24`（実装は 22→24 にスナップ） |
+| カード間 / セクション間 gap | `20`–`24` |
+| タイル / チップ内 gap | `12` |
+| グリッド gap（商品） | `16` |
+| chrome（header）左右パディング | `16` |
+
+論理プロパティを使う（`paddingStart/End`、`marginStart/End`）。物理（Left/Right）は使わない（RTL 対応）。
+
+---
+
+## 4. 角丸（borderRadius）
+
+S2 はキーワード指定（`none` / `sm` / `default` / `lg` / `xl` / `full` / `pill`、`md` は無い）。
+
+| 要素 | デザイン実寸 | S2 |
+| --- | --- | --- |
+| カード（商品 / KPI / セクション） | 16–20 | `xl` |
+| クイックタイル / アイコンチップ | 13–16 | `lg` |
+| ピル / バッジ / アバター / ＋作成 | 999 | `full` |
+
+---
+
+## 5. エレベーション
+
+カードは**極薄ボーダー＋ソフトシャドウ**（フラットすぎない Adobe Express の質感）。
+S2 のコンポーネント既定の elevation を優先。カスタムが要る場合のみブランド層で
+`0 2px 8px rgba(13,13,13,.06), 0 8px 24px rgba(13,13,13,.05)` を使う。
+
+---
+
+## 6. Chrome（黒 header / 黒 sidebar）= Adobe Express の要
+
+S2 に「黒い chrome」トークンは無い。`globals.css` のブランド変数で背景 `#1d1d1d` を当て、
+内部の S2 コンポーネントは暗背景向けに **`colorScheme="dark"` のスコープ**（または `lightDark()`）で扱う。
+
+- **Header**（高さ 56）: 左＝グラデロゴ＋`Ours`＋ストア名、右＝検索 / アプリ切替 / アバター /
+  `アップグレード`（indigo `#5157E4`）。背景 `--brand-chrome`。
+- **Sidebar**（幅 80）: 上に **indigo「＋」作成**（`full`）、以下アイコン＋ラベルのナビ
+  （ホーム/商品/注文/顧客/分析/設定）。アクティブは `rgba(255,255,255,.12)` のハイライト＋白アイコン、
+  非アクティブは `#c2c2c2`。アイコンは **S2 の icons**（`@react-spectrum/s2/icons/...`）を使う（lucide 等は入れない）。
+- **コンテンツ領域**: 背景 `gray-75`(`#f3f3f3`)、カードは `gray-25` 面 + `gray-100` ボーダー。
+  Hero は `--brand-hero-gradient`。
+
+---
+
+## 7. コンポーネント実装の指針（S2）
+
+| デザイン要素 | S2 実装 |
+| --- | --- |
+| 商品グリッド | `CardView` + `ProductCard`（手書き card div は使わない） |
+| KPI / 統計 | ネイティブ要素＋`style()` マクロ（grid）。数値は `heading-lg` |
+| タブ（すべて/デジタルDL/…） | `SegmentedControl` / `Tabs` |
+| 検索 | `SearchField` |
+| 最近の注文リスト | `ListView`（`ListViewItem` + `Avatar` + `Text` slots） |
+| ＋新規商品 / プレビュー / 共有 | `Button`（`variant="accent"` 等）/ `ActionButton` |
+| アイコン | `@react-spectrum/s2/icons/*` のみ |
+
+詳細な API・スロット規約は `.claude/skills/react-spectrum-s2`（スキル）と `react-spectrum-s2` MCP を参照。
+**S2 API を記憶で書かない。**
+
+---
+
+## 8. ファイル
+
+- `docs/DESIGN-SYSTEM.md` — 本ファイル（仕様）。
+- `docs/DESIGN-TOKENS.md` — **S2 トークンの調査済み実値リファレンス**（全色相スケール /
+  セマンティック解決表 / タイポロール全表 / 影 / 寸法）。トークン名・実値はここで引く。
+- `src/app/globals.css` — ブランド層 CSS 変数（chrome / Hero グラデ / canvas）。`layout.tsx` で import。
+- `src/styles/brand-tokens.ts` — 同値の型付き定数（コンポーネントから利用）。
+
+> Figma SoT: fileKey `mXIeaaZlPI1oRmjaIKgnHh` / ページ `852:338`「store画面」。
+> Candidate C（黒 chrome）= フレーム `876:337` がこのデザインの基準。
