@@ -8,15 +8,6 @@
         "@react-spectrum/mcp@latest"
       ],
       "env": {}
-    },
-    "react-aria": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@react-aria/mcp@latest"
-      ],
-      "env": {}
     }
   }
 }
