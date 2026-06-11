@@ -90,13 +90,13 @@ AppShell:
 ### 禁止パターン
 | パターン | 正解 |
 |---|---|
-| `import` from `lucide-react` | `@react-spectrum/s2/icons/*` のみ |
-| shadcn/Radix の `<Card>`, `<Button>` など | `@react-spectrum/s2/*` のみ |
-| Tailwind クラス (`className="px-4 text-sm"`) | `style()` マクロ |
-| `className={cn(...)}` パターン | `className={style(...)}` |
-| グローバル CSS でデザイントークンを管理 | `style()` マクロで S2 トークンを使う。CSS 変数はブランド層のみ |
+| `import` from `lucide-react` | `@react-spectrum/s2/icons/*` のみ（RAC コンポーネント内でも使用可） |
+| shadcn/Radix の `<Card>`, `<Button>` など | **第一候補 = `react-aria-components` + トークン CSS**（基準: `src/shared/components/ui/button`）。S2 部品は既定見た目で足りる場合のみ |
+| **accent(#007AFF) が乗る部品を S2 で作る** | S2 は accent 変更不可。CTA / 選択 / フォーカスを持つ部品は RAC で作る |
+| Tailwind クラス (`className="px-4 text-sm"`) | RAC = コンポーネント CSS（`globals.css` の変数参照）/ S2 = `style()` マクロ |
+| raw hex をコンポーネント CSS に直書き | `var(--accent)` 等のトークン変数のみ（実値は globals.css が唯一の置き場） |
 
-### S2 コンポーネント対応表
+### コンポーネント対応表（実装は RAC 第一。S2 名は同等品で読み替え — STORE-SCREENS.md §2 注記参照）
 | デザイン要素 | 使う S2 コンポーネント |
 |---|---|
 | 商品グリッド | `CardView` + `AssetCard` |

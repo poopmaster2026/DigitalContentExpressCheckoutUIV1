@@ -51,7 +51,14 @@
 - 詳細へは常に 1 ホップ（旧 13-ストア設計の決定を踏襲）。
 - 戻り導線: 一覧・編集の左上に「← ストアに戻る / ← 商品に戻る」。
 
-## 2. 各画面の構成と表示形式（S2 マッピング）
+## 2. 各画面の構成と表示形式
+
+> **実装系の注記（2026-06-11・react-aria-components 移行）**: 本章のコンポーネント名は
+> **React Aria Components + `globals.css` トークン**で実装する（`SegmentedControl`→RAC
+> `Tabs`/`ToggleButtonGroup`、`SearchField`/`MenuTrigger`/`Dialog`/`DropZone`/`FileTrigger`/
+> `RadioGroup`→RAC 同名、`StatusLight`→自前の ●+テキスト、Button→`shared/components/ui/button`）。
+> **accent（#007AFF）が乗る部品を S2 で作らない**（S2 は accent 変更不可）。S2 は Provider
+> （フォント）と既定見た目で足りる部品のみ。
 
 ### 2-1. /store ダッシュボード（= Figma 876:337。2026-06-11 簡素化）
 
@@ -71,7 +78,8 @@
 
 **[React Aria の CRUD example](https://react-aria.adobe.com/examples/crud) の型をそのまま使う**
 （Table + SearchField + 行メニュー + ダイアログフォーム + ソート/列リサイズ + フォーム検証）。
-実装は S2 の `TableView`（React Aria 製なので CRUD example と同じ機能セットを Express の見た目で持つ）。
+実装は **React Aria Components の `Table`** をトークン CSS でスタイルする
+（S2 TableView は選択色などが S2 固定のため使わない。2026-06-11 決定）。
 
 - ツールバー: `SegmentedControl`（すべて / 公開中 / 下書き）+ `SearchField`（pill）+「＋新規商品」`Button accent`。
   並び替えは**テーブルヘッダクリック**（CRUD example 準拠。別途 Picker は置かない）。
@@ -127,7 +135,7 @@
 
 ### 2-5. /store/orders 注文一覧
 
-- こちらは**テーブルが正**（時系列の同型データ・スキャン用途）。S2 `TableView`。
+- こちらも**テーブルが正**（時系列の同型データ・スキャン用途）。React Aria `Table`（商品一覧と同実装）。
 - 列: 顧客（アバター+名前+メール）/ 商品 / 金額（右揃え）/ 状態（`Badge`: 完了=positive / 返金=negative / 処理中=neutral）/ 日時。
 - ツールバー: `SearchField` + `Picker`（状態）+ `DateRangePicker`（期間）。
 - 行クリック → 注文詳細は `Dialog`（Phase 0 は読み取り専用）: 購入者メール / 商品 / 金額 /
