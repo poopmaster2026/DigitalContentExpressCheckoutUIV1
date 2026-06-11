@@ -51,7 +51,10 @@
 | --- | --- | --- |
 | クイックタイル ×4 | 新規商品 / 商品を管理 / 注文 / プレビュー | 白カード + gray-100 ボーダー + radius xl。アイコンは pastel チップ + hue-800 |
 | KPI ×4 | 今月の売上 / 販売数 / 客単価 / 公開中の商品（+前月比デルタ） | 白カード。数値 `heading-lg`(28)、デルタは `Badge`（positive subtle） |
-| 商品 | カテゴリチップ + 検索 + 商品カードグリッド（上位 6）+「すべて見る」 | チップ = `SegmentedControl`（pill）、検索 = `SearchField`（pill）、グリッド = `CardView` |
+| 商品 | **ステータスチップ（すべて / 公開中 / 下書き）**+ 検索 + 商品カードグリッド（上位 6）+「すべて見る」 | チップ = `SegmentedControl`（pill）、検索 = `SearchField`（pill）、グリッド = `CardView` |
+
+商品カードの構成（digital のみのため**タイプバッジは置かない**）:
+パステルサムネ + ★評価ピル（右上）/ タイトル `title-sm` / 価格（無料は positive 色）+ 販売数（右）/ 状態（●+テキスト）。
 
 ### 2-2. /store/products 商品一覧 — テーブル（決定）
 
