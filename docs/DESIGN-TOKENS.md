@@ -240,9 +240,9 @@ dark の実値が必要なときは `@adobe/spectrum-tokens` を引く。主要 
 
 ## 11. 相違点・要判断事項
 
-1. **コンテンツ面の地色**: 現 `DESIGN-SYSTEM.md` は「キャンバス gray-75 `#F3F3F3` + 白カード」。
-   Express 実画面は「**白 base + gray-100 ボーダーのタイル**」（§1-2, §2-4）。
-   Figma（fileKey `mXIeaaZlPI1oRmjaIKgnHh` / フレーム `876:337`）が SoT — どちらに寄せるかは設計判断。
+1. **コンテンツ面の地色 → 決定済み（2026-06-11）: A 案「キャンバス gray-75 + 白カード」を採用。**
+   Figma 上で A（`876:337`）/ B 白 base（比較用 `932:337`）を並べて比較し A に確定。
+   実装は `Provider` 直下のキャンバスを gray-75 相当、カード面を白 + `gray-100` ボーダーで組む。
 2. notice / warning は orange-**600**（`#FC7D00`）と明るめが正（900 ではない）。
 3. 角丸トークンには size 連動バリアントが存在する（`corner-radius-*-default` 以外）。必要時に
    `@adobe/spectrum-tokens` を直接引く。
