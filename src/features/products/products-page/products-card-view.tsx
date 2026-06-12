@@ -52,26 +52,19 @@ const kindIllustration: Record<ProductKind, ReactNode> = {
   guide: <Education />,
 };
 
-// カテゴリーの non-semantic カラー（Spectrum Badge の 8 色以内。
-// blue は accent と紛らわしいため不使用、yellow は「無料/割引」専用）
-const KIND_BADGE: Record<ProductKind, { label: string; variant: "green" | "indigo" | "seafoam" | "magenta" | "fuchsia" | "purple" }> = {
-  book: { label: "レシピ本", variant: "green" },
-  video: { label: "動画講座", variant: "indigo" },
-  collection: { label: "レシピ集", variant: "seafoam" },
-  photo: { label: "写真素材", variant: "magenta" },
-  template: { label: "テンプレート", variant: "fuchsia" },
-  guide: { label: "ガイド", variant: "purple" },
+// カテゴリーは公式 AssetCard の description（"PNG • 2/3/2024"）と同じ
+// プレーンテキスト扱い。色付き Badge は使わない（写真が彩度を担うため）。
+const KIND_LABEL: Record<ProductKind, string> = {
+  book: "レシピ本",
+  video: "動画講座",
+  collection: "レシピ集",
+  photo: "写真素材",
+  template: "テンプレート",
+  guide: "ガイド",
 };
 
-// 左上はチェックボックスと重なるため、ステータスは左下に置く
+// プレビュー上のオーバーレイは例外状態（下書き）のみ
 const overlayBottomStart = style({ position: "absolute", bottom: 16, insetStart: 16 });
-const overlayEnd = style({ position: "absolute", top: 16, insetEnd: 16 });
-const descriptionRow = style({
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  gridArea: "description",
-});
 
 export function ProductsCardView({
   products,
@@ -126,18 +119,12 @@ export function ProductsCardView({
                 下書き
               </Badge>
             )}
-            {p.price === null && (
-              <Badge variant="yellow" styles={overlayEnd}>
-                無料
-              </Badge>
-            )}
           </CardPreview>
           <Content>
             <Text slot="title">{p.name}</Text>
-            <div className={descriptionRow}>
-              <Badge variant={KIND_BADGE[p.kind].variant}>{KIND_BADGE[p.kind].label}</Badge>
-              <Text slot="description">{formatPrice(p.price)}</Text>
-            </div>
+            <Text slot="description">
+              {KIND_LABEL[p.kind]}・{formatPrice(p.price)}
+            </Text>
           </Content>
         </Card>
       )}
