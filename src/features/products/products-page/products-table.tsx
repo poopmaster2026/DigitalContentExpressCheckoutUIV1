@@ -173,7 +173,7 @@ export function ProductsTable({
               </div>
             </Cell>
             <Cell align="center">
-              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant} fillStyle="subtle">
+              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
                 {SALE_TYPE_BADGE[p.saleType].label}
               </Badge>
             </Cell>
