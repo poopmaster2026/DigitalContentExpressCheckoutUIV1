@@ -26,7 +26,10 @@ export default async function RootLayout({
   // applies the Spectrum background layer, and loads fonts for the locale.
   return (
     <ClientProvider lang={lang}>
-      <body>
+      {/* suppressHydrationWarning: ブラウザ拡張が hydration 前に body へ属性を注入する
+          ミスマッチ（例: ColorZilla の cz-shortcut-listen）への公式対処。1 階層のみ有効。
+          https://nextjs.org/docs/messages/react-hydration-error */}
+      <body suppressHydrationWarning>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </ClientProvider>
