@@ -12,6 +12,7 @@ import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
 import ViewList from "@react-spectrum/s2/icons/ViewList";
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
 import { PRODUCTS } from "../mock";
+import { SALE_TYPE_BADGE } from "../sale-type";
 import { ProductsCardView } from "./products-card-view";
 import { ProductsTable } from "./products-table";
 
@@ -33,6 +34,7 @@ const spacer = style({ flexGrow: 1 });
 
 export function ProductsPage() {
   const [filter, setFilter] = useState<Key>("all");
+  const [saleTypeFilter, setSaleTypeFilter] = useState<Key>("all");
   const [view, setView] = useState<Key>("grid");
   const { query } = useAppSearch();
 
@@ -40,18 +42,32 @@ export function ProductsPage() {
     const q = query.trim();
     return PRODUCTS.filter((p) => {
       const okStatus = filter === "all" || p.status === filter;
+      const okSaleType = saleTypeFilter === "all" || p.saleType === saleTypeFilter;
       const okQuery = q === "" || p.name.includes(q);
-      return okStatus && okQuery;
+      return okStatus && okSaleType && okQuery;
     });
-  }, [filter, query]);
+  }, [filter, saleTypeFilter, query]);
 
-  const isFiltered = query.trim() !== "" || filter !== "all";
+  const isFiltered = query.trim() !== "" || filter !== "all" || saleTypeFilter !== "all";
 
   return (
     <div className={page}>
       <div className={titleRow}>
         <h1 className={pageTitle}>商品</h1>
         <div className={spacer} />
+        <Picker
+          aria-label="販売形態で絞り込み"
+          selectedKey={saleTypeFilter}
+          onSelectionChange={(key) => key !== null && setSaleTypeFilter(key)}
+          styles={style({ width: 160 })}
+        >
+          <PickerItem id="all">すべての形態</PickerItem>
+          {Object.entries(SALE_TYPE_BADGE).map(([id, { label }]) => (
+            <PickerItem key={id} id={id}>
+              {label}
+            </PickerItem>
+          ))}
+        </Picker>
         <Picker
           aria-label="ステータスで絞り込み"
           selectedKey={filter}
