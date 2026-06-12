@@ -24,6 +24,7 @@ import { Button } from "@react-spectrum/s2/Button";
 import { ActionButton, NotificationBadge } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
 import { Avatar } from "@react-spectrum/s2/Avatar";
+import { Image } from "@react-spectrum/s2/Image";
 import { Provider } from "@react-spectrum/s2/Provider";
 import { DialogTrigger } from "@react-spectrum/s2/Dialog";
 import { Popover } from "@react-spectrum/s2/Popover";
@@ -90,34 +91,42 @@ const toolbar = style({
   width: "full",
 });
 
-// ブランド（Figma の Brand フレーム準拠: グラデーションのロゴマーク + Ours + ストア切替）
-const brand = style({ display: "flex", alignItems: "center", gap: 8 });
-const logoMark = style({
-  width: 18,
-  height: 18,
-  borderRadius: "sm",
-  flexShrink: 0,
-  // グラデーションの色は S2 トークンを CSS 変数経由で参照（raw hex 不使用）
-  "--logoFrom": { type: "backgroundColor", value: "orange-500" },
-  "--logoTo": { type: "backgroundColor", value: "blue-500" },
-  backgroundImage: "linear-gradient(to right, var(--logoFrom), var(--logoTo))",
-});
-const brandName = style({
-  font: "title",
-  whiteSpace: "nowrap",
-  display: { default: "none", [SM]: "inline" },
+// ブランド: Figma のロゴ（ours-stan-store デザインファイル 980:2）+ 仕切り + ストア切替
+const brand = style({ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 });
+const logoImage = style({ height: 20, width: "auto", display: "block", flexShrink: 0 });
+const brandDividerWrap = style({
+  height: 16,
+  display: { default: "none", [SM]: "flex" },
+  alignItems: "stretch",
 });
 const storeSwitcherWrap = style({
   display: { default: "none", [SM]: "contents" },
 });
+// 中央の検索がブランド幅に影響されないよう、左右ゾーンを等幅 flex にする
+const toolbarSide = style({
+  flexGrow: 1,
+  flexBasis: 0,
+  minWidth: 0,
+  display: "flex",
+  alignItems: "center",
+  gap: 20,
+});
+const toolbarSideEnd = style({
+  flexGrow: 1,
+  flexBasis: 0,
+  minWidth: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "end",
+  gap: 20,
+});
 
 const searchWrap = style({
-  flexGrow: 1,
   display: { default: "none", [MD]: "block" },
-});
-const searchSpacer = style({
-  flexGrow: 1,
-  display: { default: "block", [MD]: "none" },
+  width: "full",
+  maxWidth: 472,
+  minWidth: 272,
+  flexShrink: 1,
 });
 
 const content = style({
@@ -381,14 +390,22 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div data-container className={container}>
       <div className={frame}>
         <div className={toolbar}>
-          <div className={brand}>
-            <div className={logoMark} aria-hidden />
-            <span className={brandName}>Ours</span>
-            <div className={storeSwitcherWrap}>
-              <Picker aria-label="ストアを切り替え" isQuiet defaultSelectedKey="hanako">
-                <PickerItem id="hanako">花子のストア</PickerItem>
-                <PickerItem id="atelier">アトリエ花</PickerItem>
-              </Picker>
+          <div className={toolbarSide}>
+            <div className={brand}>
+              <Image
+                src={isDark ? "/ours-logo-dark.png" : "/ours-logo.png"}
+                alt="Ours"
+                styles={logoImage}
+              />
+              <div className={brandDividerWrap}>
+                <Divider orientation="vertical" size="S" />
+              </div>
+              <div className={storeSwitcherWrap}>
+                <Picker aria-label="ストアを切り替え" isQuiet defaultSelectedKey="hanako">
+                  <PickerItem id="hanako">花子のストア</PickerItem>
+                  <PickerItem id="atelier">アトリエ花</PickerItem>
+                </Picker>
+              </div>
             </div>
           </div>
           <div className={searchWrap}>
@@ -397,10 +414,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               placeholder="商品を検索"
               value={query}
               onChange={setQuery}
-              styles={style({ maxWidth: 472, minWidth: 272, marginX: "auto" })}
+              styles={style({ width: "full" })}
             />
           </div>
-          <div className={searchSpacer} />
+          <div className={toolbarSideEnd}>
           <ActionButtonGroup>
             <div className={style({ display: { default: "contents", [MD]: "none" } })}>
               <ActionButton isQuiet aria-label="検索">
@@ -421,6 +438,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               onColorSchemeChange={(dark) => setColorScheme(dark ? "dark" : "light")}
             />
           </ActionButtonGroup>
+          </div>
         </div>
         <Sidebar />
         <main data-content className={content}>
