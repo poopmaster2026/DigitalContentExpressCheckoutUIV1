@@ -133,7 +133,7 @@ export function ProductsCardView({
               <MenuItem id="delete">削除</MenuItem>
             </ActionMenu>
             <div className={descriptionRow}>
-              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
+              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant} fillStyle="subtle">
                 {SALE_TYPE_BADGE[p.saleType].label}
               </Badge>
               <Text slot="description">{formatPrice(p.price)}</Text>

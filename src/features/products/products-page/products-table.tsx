@@ -131,7 +131,7 @@ export function ProductsTable({
         <Column id="name" isRowHeader allowsSorting minWidth={260}>
           商品
         </Column>
-        <Column id="saleType" width={130}>
+        <Column id="saleType" align="center" width={130}>
           販売形態
         </Column>
         <Column id="price" align="end" allowsSorting width={120}>
@@ -170,8 +170,8 @@ export function ProductsTable({
                 <span>{p.name}</span>
               </div>
             </Cell>
-            <Cell>
-              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
+            <Cell align="center">
+              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant} fillStyle="subtle">
                 {SALE_TYPE_BADGE[p.saleType].label}
               </Badge>
             </Cell>

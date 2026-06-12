@@ -92,8 +92,15 @@ const toolbar = style({
 });
 
 // ブランド: Figma のロゴ（ours-stan-store デザインファイル 980:2）+ 仕切り + ストア切替
-const brand = style({ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 });
-const logoImage = style({ height: 20, width: "auto", display: "block", flexShrink: 0 });
+const brand = style({ display: "flex", alignItems: "center", gap: 20, flexShrink: 0 });
+// S2 Image はスケルトン用に gray の wrapper 背景を持つため、透過ロゴでは明示的に打ち消す
+const logoImage = style({
+  height: 24,
+  width: "auto",
+  display: "block",
+  flexShrink: 0,
+  backgroundColor: "transparent",
+});
 const brandDividerWrap = style({
   height: 16,
   display: { default: "none", [SM]: "flex" },
