@@ -124,8 +124,9 @@ export function ProductsCardView({
                 {kindIllustration[p.kind]}
               </div>
             )}
+            {/* ステータスの色は Badge の semantic 割当（Informative=公開 / Neutral=下書き）に従う */}
             <Badge
-              variant={p.status === "published" ? "positive" : "neutral"}
+              variant={p.status === "published" ? "informative" : "neutral"}
               styles={overlayTopEnd}
             >
               {p.status === "published" ? "公開中" : "下書き"}

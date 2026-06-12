@@ -169,7 +169,7 @@ export function ProductsTable({
             <Cell align="end">{p.sales}</Cell>
             <Cell align="end">{formatRevenue(p)}</Cell>
             <Cell align="center">
-              <Badge variant={p.status === "published" ? "positive" : "neutral"}>
+              <Badge variant={p.status === "published" ? "informative" : "neutral"}>
                 {p.status === "published" ? "公開中" : "下書き"}
               </Badge>
             </Cell>
