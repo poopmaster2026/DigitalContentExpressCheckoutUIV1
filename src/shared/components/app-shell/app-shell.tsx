@@ -101,10 +101,16 @@ const logoImage = style({
   flexShrink: 0,
   backgroundColor: "transparent",
 });
-const brandDividerWrap = style({
+// アプリフレームの仕切りは「desktop 2px・bar/panel より濃い色」（SPECTRUM-GUIDELINES）。
+// marginStart はサイドバー展開時のコンテンツパネル左端（x≈132）に縦のラインを揃えるための値
+const brandDivider = style({
+  width: 2,
   height: 16,
-  display: { default: "none", [SM]: "flex" },
-  alignItems: "stretch",
+  borderRadius: "full",
+  backgroundColor: "gray-400",
+  flexShrink: 0,
+  marginStart: 20,
+  display: { default: "none", [SM]: "block" },
 });
 const storeSwitcherWrap = style({
   display: { default: "none", [SM]: "contents" },
@@ -412,9 +418,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 alt="Ours"
                 styles={logoImage}
               />
-              <div className={brandDividerWrap}>
-                <Divider orientation="vertical" size="S" />
-              </div>
+              <div className={brandDivider} role="separator" aria-orientation="vertical" />
               <div className={storeSwitcherWrap}>
                 <MenuTrigger>
                   <ActionButton isQuiet aria-label="ストアを切り替え">
