@@ -19,7 +19,6 @@ import {
   type ToggleButtonProps,
 } from "react-aria-components";
 import { SearchField } from "@react-spectrum/s2/SearchField";
-import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
 import { Button } from "@react-spectrum/s2/Button";
 import { ActionButton, NotificationBadge } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
@@ -46,6 +45,7 @@ import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import SearchIcon from "@react-spectrum/s2/icons/Search";
 import Settings from "@react-spectrum/s2/icons/Settings";
 import Buildings from "@react-spectrum/s2/icons/Buildings";
+import ChevronDown from "@react-spectrum/s2/icons/ChevronDown";
 import { AppSearchContext } from "./search-context";
 
 // 公式サンプルと同じコンテナクエリ（ビューポートではなく data-container 基準）
@@ -108,6 +108,14 @@ const brandDividerWrap = style({
 });
 const storeSwitcherWrap = style({
   display: { default: "none", [SM]: "contents" },
+});
+// 操作可能な要素であることが伝わるよう、ストア名は太字（S2 の ui トークンは weight 500）。
+// シェブロンはアイコンスロットだとテキストの前に配置されるため、Text 内に含めて右側に置く
+const storeSwitcherLabel = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  fontWeight: "bold",
 });
 // 中央の検索がブランド幅に影響されないよう、左右ゾーンを等幅 flex にする
 const toolbarSide = style({
@@ -408,10 +416,20 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Divider orientation="vertical" size="S" />
               </div>
               <div className={storeSwitcherWrap}>
-                <Picker aria-label="ストアを切り替え" isQuiet defaultSelectedKey="hanako">
-                  <PickerItem id="hanako">花子のストア</PickerItem>
-                  <PickerItem id="atelier">アトリエ花</PickerItem>
-                </Picker>
+                <MenuTrigger>
+                  <ActionButton isQuiet aria-label="ストアを切り替え">
+                    <Text>
+                      <span className={storeSwitcherLabel}>
+                        花子のストア
+                        <ChevronDown />
+                      </span>
+                    </Text>
+                  </ActionButton>
+                  <Menu aria-label="ストア" selectionMode="single" selectedKeys={["hanako"]}>
+                    <MenuItem id="hanako">花子のストア</MenuItem>
+                    <MenuItem id="atelier">アトリエ花</MenuItem>
+                  </Menu>
+                </MenuTrigger>
               </div>
             </div>
           </div>

@@ -62,6 +62,8 @@ const thumbIcon = {
   mint: iconStyle({ color: "seafoam" }),
 } satisfies Record<ProductThumb, unknown>;
 const productCell = style({ display: "flex", alignItems: "center", gap: 12 });
+// 商品名はカードタイトルと同じ太字（エンティティ名の一貫性）
+const productName = style({ fontWeight: "bold" });
 
 function KindIcon({
   kind,
@@ -167,7 +169,7 @@ export function ProductsTable({
                     <KindIcon kind={p.kind} styles={thumbIcon[p.thumb]} />
                   </div>
                 )}
-                <span>{p.name}</span>
+                <span className={productName}>{p.name}</span>
               </div>
             </Cell>
             <Cell align="center">
