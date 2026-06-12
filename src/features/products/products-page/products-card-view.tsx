@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { CardView } from "@react-spectrum/s2/CardView";
-import { Card, CardPreview, Content, Footer, Text } from "@react-spectrum/s2/Card";
+import { Card, CardPreview, Content, Footer, Text, Image } from "@react-spectrum/s2/Card";
 import { ActionMenu, MenuItem } from "@react-spectrum/s2/ActionMenu";
 import { StatusLight } from "@react-spectrum/s2/StatusLight";
 import { Badge } from "@react-spectrum/s2/Badge";
@@ -17,12 +17,18 @@ import type { Product, ProductKind, ProductThumb } from "../types";
 import { formatPrice } from "../mock";
 import { ProductsEmptyState } from "./products-empty-state";
 
+const previewImage = style({
+  width: "full",
+  aspectRatio: "square",
+  objectFit: "cover",
+  pointerEvents: "none",
+});
 const previewBase = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   width: "full",
-  aspectRatio: "2/1",
+  aspectRatio: "square",
 });
 
 // 二調色プレビュー背景（同一 hue の 100 インデックス）
@@ -64,9 +70,13 @@ export function ProductsCardView({
       {(p) => (
         <Card id={p.id} textValue={p.name}>
           <CardPreview>
-            <div className={`${previewBase} ${previewHue[p.thumb]}`}>
-              {kindIllustration[p.kind]}
-            </div>
+            {p.image ? (
+              <Image src={p.image} alt="" styles={previewImage} />
+            ) : (
+              <div className={`${previewBase} ${previewHue[p.thumb]}`}>
+                {kindIllustration[p.kind]}
+              </div>
+            )}
             {p.price === null && (
               <Badge variant="yellow" styles={freeBadge}>
                 無料

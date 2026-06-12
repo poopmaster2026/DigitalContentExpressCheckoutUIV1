@@ -15,4 +15,6 @@ export interface Product {
   status: ProductStatus;
   thumb: ProductThumb;
   kind: ProductKind;
+  /** 商品サムネイル画像 URL。無い場合は二調色イラストのプレースホルダー表示。 */
+  image?: string;
 }

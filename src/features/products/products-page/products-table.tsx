@@ -33,6 +33,12 @@ const thumbBase = style({
   height: 36,
   borderRadius: "default",
   flexShrink: 0,
+  overflow: "hidden",
+});
+const thumbImage = style({
+  width: "full",
+  height: "full",
+  objectFit: "cover",
 });
 // 二調色サムネイル（同一 hue: 背景 100 + アイコン）
 const thumbHue: Record<ProductThumb, string> = {
@@ -143,9 +149,16 @@ export function ProductsTable({
           <Row id={p.id}>
             <Cell>
               <div className={productCell}>
-                <div className={`${thumbBase} ${thumbHue[p.thumb]}`}>
-                  <KindIcon kind={p.kind} styles={thumbIcon[p.thumb]} />
-                </div>
+                {p.image ? (
+                  <div className={thumbBase}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.image} alt="" className={thumbImage} />
+                  </div>
+                ) : (
+                  <div className={`${thumbBase} ${thumbHue[p.thumb]}`}>
+                    <KindIcon kind={p.kind} styles={thumbIcon[p.thumb]} />
+                  </div>
+                )}
                 <span>{p.name}</span>
               </div>
             </Cell>
