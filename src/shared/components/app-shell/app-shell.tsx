@@ -29,6 +29,7 @@ import HelpCircle from "@react-spectrum/s2/icons/HelpCircle";
 import Bell from "@react-spectrum/s2/icons/Bell";
 import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import SearchIcon from "@react-spectrum/s2/icons/Search";
+import { AppSearchContext } from "./search-context";
 
 // 公式サンプルと同じコンテナクエリ（ビューポートではなく data-container 基準）
 const XS = `@container (min-width: ${480 / 16}rem)`;
@@ -333,7 +334,9 @@ function Sidebar() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const [query, setQuery] = useState("");
   return (
+    <AppSearchContext value={{ query, setQuery }}>
     <div data-container className={container}>
       <div className={frame}>
         <div className={toolbar}>
@@ -341,8 +344,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <span className={storeName}>花子のストア</span>
           <div className={searchWrap}>
             <SearchField
-              aria-label="検索"
-              placeholder="検索"
+              aria-label="商品を検索"
+              placeholder="商品を検索"
+              value={query}
+              onChange={setQuery}
               styles={style({ maxWidth: 472, minWidth: 272, marginX: "auto" })}
             />
           </div>
@@ -375,5 +380,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
+    </AppSearchContext>
   );
 }
