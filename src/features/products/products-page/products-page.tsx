@@ -25,7 +25,7 @@ const page = style({
   flexGrow: 1,
   minHeight: 0,
 });
-const pageTitle = style({ font: "heading-lg" });
+const pageTitle = style({ font: "heading" });
 const titleRow = style({
   display: "flex",
   alignItems: "center",
