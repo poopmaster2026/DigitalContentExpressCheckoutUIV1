@@ -16,8 +16,9 @@ import ImageStack from "@react-spectrum/s2/illustrations/gradient/generic1/Image
 import Photo from "@react-spectrum/s2/illustrations/gradient/generic1/Image";
 import Document from "@react-spectrum/s2/illustrations/gradient/generic1/Document";
 import Education from "@react-spectrum/s2/illustrations/gradient/generic1/Education";
-import type { Product, ProductKind, ProductThumb, SaleType } from "../types";
+import type { Product, ProductKind, ProductThumb } from "../types";
 import { formatPrice } from "../mock";
+import { SALE_TYPE_BADGE } from "../sale-type";
 import { ProductsEmptyState } from "./products-empty-state";
 
 const previewImage = style({
@@ -51,16 +52,6 @@ const kindIllustration: Record<ProductKind, ReactNode> = {
   photo: <Photo />,
   template: <Document />,
   guide: <Education />,
-};
-
-// 販売形態チップ。色味は公式 Gallery 例の yellow「Free」Badge と同じ濃さ（bold）で、
-// 形態ごとに色を変える（画像の販売形態選択 UI の配色に対応。コースの blue は
-// accent と紛らわしいため indigo で代替）。
-const SALE_TYPE_BADGE: Record<SaleType, { label: string; variant: "green" | "indigo" | "orange" | "purple" }> = {
-  digital: { label: "デジタル", variant: "green" },
-  course: { label: "コース", variant: "indigo" },
-  booking: { label: "予約", variant: "orange" },
-  subscription: { label: "サブスク", variant: "purple" },
 };
 
 // プレビュー上のオーバーレイは例外状態（下書き）のみ。位置は公式 Gallery 例と同じ右上
@@ -124,13 +115,12 @@ export function ProductsCardView({
                 {kindIllustration[p.kind]}
               </div>
             )}
-            {/* ステータスの色は Badge の semantic 割当（Informative=公開 / Neutral=下書き）に従う */}
-            <Badge
-              variant={p.status === "published" ? "informative" : "neutral"}
-              styles={overlayTopEnd}
-            >
-              {p.status === "published" ? "公開中" : "下書き"}
-            </Badge>
+            {/* オーバーレイは例外状態（下書き）のみ。正常状態（公開中）は無印 */}
+            {p.status === "draft" && (
+              <Badge variant="neutral" styles={overlayTopEnd}>
+                下書き
+              </Badge>
+            )}
           </CardPreview>
           <Content>
             <Text slot="title">{p.name}</Text>

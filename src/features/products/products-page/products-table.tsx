@@ -12,6 +12,7 @@ import {
   type SortDescriptor,
 } from "@react-spectrum/s2/TableView";
 import { Badge } from "@react-spectrum/s2/Badge";
+import { StatusLight } from "@react-spectrum/s2/StatusLight";
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
 import { Image } from "@react-spectrum/s2/Image";
@@ -26,6 +27,7 @@ import type { Product, ProductKind, ProductThumb } from "../types";
 import { formatPrice, formatRevenue } from "../mock";
 import { ProductsEmptyState } from "./products-empty-state";
 import { ProductsActionBar } from "./products-card-view";
+import { SALE_TYPE_BADGE } from "../sale-type";
 
 const thumbBase = style({
   display: "flex",
@@ -129,6 +131,9 @@ export function ProductsTable({
         <Column id="name" isRowHeader allowsSorting minWidth={260}>
           商品
         </Column>
+        <Column id="saleType" width={130}>
+          販売形態
+        </Column>
         <Column id="price" align="end" allowsSorting width={120}>
           価格
         </Column>
@@ -138,7 +143,7 @@ export function ProductsTable({
         <Column id="revenue" align="end" allowsSorting width={140}>
           売上
         </Column>
-        <Column id="status" align="center" width={140}>
+        <Column id="status" width={140}>
           状態
         </Column>
         <Column id="actions" align="end" width={56} textValue="操作">
@@ -165,13 +170,20 @@ export function ProductsTable({
                 <span>{p.name}</span>
               </div>
             </Cell>
+            <Cell>
+              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
+                {SALE_TYPE_BADGE[p.saleType].label}
+              </Badge>
+            </Cell>
             <Cell align="end">{formatPrice(p.price)}</Cell>
             <Cell align="end">{p.sales}</Cell>
             <Cell align="end">{formatRevenue(p)}</Cell>
-            <Cell align="center">
-              <Badge variant={p.status === "published" ? "informative" : "neutral"}>
+            <Cell>
+              {/* 状態は塗りチップではなく StatusLight（ドット+ラベル）。
+                  S2 公式 Card 例の Published 表現・AEM の公開ステータスと同じ */}
+              <StatusLight size="S" variant={p.status === "published" ? "positive" : "neutral"}>
                 {p.status === "published" ? "公開中" : "下書き"}
-              </Badge>
+              </StatusLight>
             </Cell>
             <Cell>
               <MenuTrigger>
