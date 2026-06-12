@@ -62,6 +62,9 @@ const descriptionRow = style({
   gap: 8,
   gridArea: "description",
 });
+// S2 の title トークンは weight 500。日本語（Adobe Clean Han）では欧文より細く
+// 見えるため、タイトルだけ bold に引き上げる（公式例の見た目に合わせる）
+const titleText = style({ fontWeight: "bold" });
 
 /** 選択時の一括操作バー（公式例どおりアイコンのみ + emphasized）。グリッド/テーブル共用。 */
 export function ProductsActionBar() {
@@ -93,9 +96,7 @@ export function ProductsCardView({
     <CardView
       aria-label="商品一覧"
       layout="grid"
-      variant="quiet"
       selectionMode="multiple"
-      selectionStyle="highlight"
       selectedKeys={selected}
       onSelectionChange={setSelected}
       items={products}
@@ -123,7 +124,9 @@ export function ProductsCardView({
             )}
           </CardPreview>
           <Content>
-            <Text slot="title">{p.name}</Text>
+            <Text slot="title">
+              <span className={titleText}>{p.name}</span>
+            </Text>
             <ActionMenu aria-label="操作" onAction={() => {}}>
               <MenuItem id="edit">編集</MenuItem>
               <MenuItem id="duplicate">複製</MenuItem>
