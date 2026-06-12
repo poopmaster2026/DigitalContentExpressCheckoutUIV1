@@ -76,6 +76,7 @@ const toolbar = style({
 const brandName = style({
   font: "title",
   whiteSpace: "nowrap",
+  display: { default: "none", [SM]: "inline" },
 });
 const storeName = style({
   font: "ui",
