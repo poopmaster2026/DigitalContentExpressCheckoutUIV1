@@ -5,8 +5,16 @@
  * system. Color / spacing / typography come from the S2 `style()` macro and
  * Spectrum tokens (see docs/DESIGN.md). Do NOT add a custom color/token layer
  * here. Keep this file minimal — base resets only.
+ *
+ * S2 uses CSS cascade layers, and unlayered global CSS would override S2's
+ * styles. So this reset lives in a `reset` layer declared BEFORE S2's `_`
+ * layer. See docs/DESIGN.md → "CSS リセット".
  */
 
-body {
-  margin: 0;
+@layer reset, _;
+
+@layer reset {
+  body {
+    margin: 0;
+  }
 }
