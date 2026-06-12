@@ -16,7 +16,7 @@ import ImageStack from "@react-spectrum/s2/illustrations/gradient/generic1/Image
 import Photo from "@react-spectrum/s2/illustrations/gradient/generic1/Image";
 import Document from "@react-spectrum/s2/illustrations/gradient/generic1/Document";
 import Education from "@react-spectrum/s2/illustrations/gradient/generic1/Education";
-import type { Product, ProductKind, ProductThumb } from "../types";
+import type { Product, ProductKind, ProductThumb, SaleType } from "../types";
 import { formatPrice } from "../mock";
 import { ProductsEmptyState } from "./products-empty-state";
 
@@ -53,29 +53,18 @@ const kindIllustration: Record<ProductKind, ReactNode> = {
   guide: <Education />,
 };
 
-// カテゴリーは公式 AssetCard の description（"PNG • 2/3/2024"）と同じ
-// プレーンテキスト扱い。色付き Badge は使わない（写真が彩度を担うため）。
-const KIND_LABEL: Record<ProductKind, string> = {
-  book: "レシピ本",
-  video: "動画講座",
-  collection: "レシピ集",
-  photo: "写真素材",
-  template: "テンプレート",
-  guide: "ガイド",
+// 販売形態チップ。色味は公式 Gallery 例の yellow「Free」Badge と同じ濃さ（bold）で、
+// 形態ごとに色を変える（画像の販売形態選択 UI の配色に対応。コースの blue は
+// accent と紛らわしいため indigo で代替）。
+const SALE_TYPE_BADGE: Record<SaleType, { label: string; variant: "green" | "indigo" | "orange" | "purple" }> = {
+  digital: { label: "デジタル", variant: "green" },
+  course: { label: "コース", variant: "indigo" },
+  booking: { label: "予約", variant: "orange" },
+  subscription: { label: "サブスク", variant: "purple" },
 };
 
 // プレビュー上のオーバーレイは例外状態（下書き）のみ。位置は公式 Gallery 例と同じ右上
 const overlayTopEnd = style({ position: "absolute", top: 16, insetEnd: 16 });
-// カテゴリーチップは「販売形態」で色分け（コース = indigo / デジタルDL = gray）。
-// カテゴリーごとの多色分けは装飾ノイズになるため、形態の2グループのみ。
-const KIND_BADGE_VARIANT: Record<ProductKind, "indigo" | "gray"> = {
-  video: "indigo", // 動画コース
-  book: "gray",
-  collection: "gray",
-  photo: "gray",
-  template: "gray",
-  guide: "gray",
-};
 const descriptionRow = style({
   display: "flex",
   alignItems: "center",
@@ -135,11 +124,12 @@ export function ProductsCardView({
                 {kindIllustration[p.kind]}
               </div>
             )}
-            {p.status === "draft" && (
-              <Badge variant="neutral" styles={overlayTopEnd}>
-                下書き
-              </Badge>
-            )}
+            <Badge
+              variant={p.status === "published" ? "positive" : "neutral"}
+              styles={overlayTopEnd}
+            >
+              {p.status === "published" ? "公開中" : "下書き"}
+            </Badge>
           </CardPreview>
           <Content>
             <Text slot="title">{p.name}</Text>
@@ -152,8 +142,8 @@ export function ProductsCardView({
               <MenuItem id="delete">削除</MenuItem>
             </ActionMenu>
             <div className={descriptionRow}>
-              <Badge variant={KIND_BADGE_VARIANT[p.kind]} fillStyle="subtle">
-                {KIND_LABEL[p.kind]}
+              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
+                {SALE_TYPE_BADGE[p.saleType].label}
               </Badge>
               <Text slot="description">{formatPrice(p.price)}</Text>
             </div>
