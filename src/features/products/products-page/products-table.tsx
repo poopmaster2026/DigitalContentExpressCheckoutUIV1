@@ -25,6 +25,7 @@ import Education from "@react-spectrum/s2/icons/Education";
 import type { Product, ProductKind, ProductThumb } from "../types";
 import { formatPrice, formatRevenue } from "../mock";
 import { ProductsEmptyState } from "./products-empty-state";
+import { ProductsActionBar } from "./products-card-view";
 
 const thumbBase = style({
   display: "flex",
@@ -118,8 +119,10 @@ export function ProductsTable({
   return (
     <TableView
       aria-label="商品一覧"
+      selectionMode="multiple"
       sortDescriptor={sortDescriptor ?? undefined}
       onSortChange={setSortDescriptor}
+      renderActionBar={() => <ProductsActionBar />}
       styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginTop: 8 })}
     >
       <TableHeader>
@@ -135,7 +138,7 @@ export function ProductsTable({
         <Column id="revenue" align="end" allowsSorting width={140}>
           売上
         </Column>
-        <Column id="status" width={140}>
+        <Column id="status" align="center" width={140}>
           状態
         </Column>
         <Column id="actions" align="end" width={56} textValue="操作">
@@ -165,8 +168,8 @@ export function ProductsTable({
             <Cell align="end">{formatPrice(p.price)}</Cell>
             <Cell align="end">{p.sales}</Cell>
             <Cell align="end">{formatRevenue(p)}</Cell>
-            <Cell>
-              <Badge variant={p.status === "published" ? "positive" : "neutral"} fillStyle="subtle">
+            <Cell align="center">
+              <Badge variant={p.status === "published" ? "positive" : "neutral"}>
                 {p.status === "published" ? "公開中" : "下書き"}
               </Badge>
             </Cell>

@@ -66,13 +66,39 @@ const KIND_LABEL: Record<ProductKind, string> = {
 
 // プレビュー上のオーバーレイは例外状態（下書き）のみ。位置は公式 Gallery 例と同じ右上
 const overlayTopEnd = style({ position: "absolute", top: 16, insetEnd: 16 });
-// カテゴリーは単色（gray）のチップで表現（複数色だと装飾ノイズになるため）
+// カテゴリーチップは「販売形態」で色分け（コース = indigo / デジタルDL = gray）。
+// カテゴリーごとの多色分けは装飾ノイズになるため、形態の2グループのみ。
+const KIND_BADGE_VARIANT: Record<ProductKind, "indigo" | "gray"> = {
+  video: "indigo", // 動画コース
+  book: "gray",
+  collection: "gray",
+  photo: "gray",
+  template: "gray",
+  guide: "gray",
+};
 const descriptionRow = style({
   display: "flex",
   alignItems: "center",
   gap: 8,
   gridArea: "description",
 });
+
+/** 選択時の一括操作バー（公式例どおりアイコンのみ + emphasized）。グリッド/テーブル共用。 */
+export function ProductsActionBar() {
+  return (
+    <ActionBar isEmphasized>
+      <ActionButton aria-label="編集" onPress={() => {}}>
+        <Edit />
+      </ActionButton>
+      <ActionButton aria-label="複製" onPress={() => {}}>
+        <Copy />
+      </ActionButton>
+      <ActionButton aria-label="削除" onPress={() => {}}>
+        <Delete />
+      </ActionButton>
+    </ActionBar>
+  );
+}
 
 export function ProductsCardView({
   products,
@@ -97,22 +123,7 @@ export function ProductsCardView({
       // 相殺し、カード列をタイトル/テーブルと左右で揃える（公式 Photos の手法）
       styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginX: -16 })}
       renderEmptyState={() => <ProductsEmptyState isFiltered={isFiltered} />}
-      renderActionBar={() => (
-        <ActionBar isEmphasized>
-          <ActionButton onPress={() => {}}>
-            <Edit />
-            <Text>編集</Text>
-          </ActionButton>
-          <ActionButton onPress={() => {}}>
-            <Copy />
-            <Text>複製</Text>
-          </ActionButton>
-          <ActionButton onPress={() => {}}>
-            <Delete />
-            <Text>削除</Text>
-          </ActionButton>
-        </ActionBar>
-      )}
+      renderActionBar={() => <ProductsActionBar />}
     >
       {(p) => (
         <Card id={p.id} textValue={p.name}>
@@ -141,7 +152,7 @@ export function ProductsCardView({
               <MenuItem id="delete">削除</MenuItem>
             </ActionMenu>
             <div className={descriptionRow}>
-              <Badge variant="gray" fillStyle="subtle">
+              <Badge variant={KIND_BADGE_VARIANT[p.kind]} fillStyle="subtle">
                 {KIND_LABEL[p.kind]}
               </Badge>
               <Text slot="description">{formatPrice(p.price)}</Text>
