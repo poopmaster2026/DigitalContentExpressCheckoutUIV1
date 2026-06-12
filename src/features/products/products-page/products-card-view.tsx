@@ -118,7 +118,7 @@ export function ProductsCardView({
               </div>
             )}
             {p.status === "draft" && (
-              <Badge variant="notice" styles={overlayTopEnd}>
+              <Badge variant="neutral" styles={overlayTopEnd}>
                 下書き
               </Badge>
             )}
