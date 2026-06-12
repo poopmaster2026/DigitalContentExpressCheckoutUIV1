@@ -5,6 +5,7 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { CardView, type Selection } from "@react-spectrum/s2/CardView";
 import { Card, CardPreview, Content, Text, Image } from "@react-spectrum/s2/Card";
 import { ActionBar, ActionButton } from "@react-spectrum/s2/ActionBar";
+import { ActionMenu, MenuItem } from "@react-spectrum/s2/ActionMenu";
 import { Badge } from "@react-spectrum/s2/Badge";
 import Edit from "@react-spectrum/s2/icons/Edit";
 import Copy from "@react-spectrum/s2/icons/Copy";
@@ -63,8 +64,8 @@ const KIND_LABEL: Record<ProductKind, string> = {
   guide: "ガイド",
 };
 
-// プレビュー上のオーバーレイは例外状態（下書き）のみ
-const overlayBottomStart = style({ position: "absolute", bottom: 16, insetStart: 16 });
+// プレビュー上のオーバーレイは例外状態（下書き）のみ。位置は公式 Gallery 例と同じ右上
+const overlayTopEnd = style({ position: "absolute", top: 16, insetEnd: 16 });
 
 export function ProductsCardView({
   products,
@@ -85,7 +86,9 @@ export function ProductsCardView({
       selectedKeys={selected}
       onSelectionChange={setSelected}
       items={products}
-      styles={style({ width: "full", flexGrow: 1, minHeight: 0 })}
+      // marginX -16 = size M の GridLayout が CardView 内側に持つ 16px の端ガターを
+      // 相殺し、カード列をタイトル/テーブルと左右で揃える（公式 Photos の手法）
+      styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginX: -16 })}
       renderEmptyState={() => <ProductsEmptyState isFiltered={isFiltered} />}
       renderActionBar={() => (
         <ActionBar>
@@ -115,13 +118,21 @@ export function ProductsCardView({
               </div>
             )}
             {p.status === "draft" && (
-              <Badge variant="neutral" styles={overlayBottomStart}>
+              <Badge variant="neutral" styles={overlayTopEnd}>
                 下書き
               </Badge>
             )}
           </CardPreview>
           <Content>
             <Text slot="title">{p.name}</Text>
+            <ActionMenu aria-label="操作" onAction={() => {}}>
+              <MenuItem id="edit">編集</MenuItem>
+              <MenuItem id="duplicate">複製</MenuItem>
+              <MenuItem id="toggle">
+                {p.status === "published" ? "下書きに戻す" : "公開する"}
+              </MenuItem>
+              <MenuItem id="delete">削除</MenuItem>
+            </ActionMenu>
             <Text slot="description">
               {KIND_LABEL[p.kind]}・{formatPrice(p.price)}
             </Text>

@@ -14,6 +14,7 @@ import {
 import { StatusLight } from "@react-spectrum/s2/StatusLight";
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
+import { Image } from "@react-spectrum/s2/Image";
 import More from "@react-spectrum/s2/icons/More";
 import FileText from "@react-spectrum/s2/icons/FileText";
 import Video from "@react-spectrum/s2/icons/Video";
@@ -119,7 +120,7 @@ export function ProductsTable({
       aria-label="商品一覧"
       sortDescriptor={sortDescriptor ?? undefined}
       onSortChange={setSortDescriptor}
-      styles={style({ width: "full", flexGrow: 1, minHeight: 0 })}
+      styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginTop: 8 })}
     >
       <TableHeader>
         <Column id="name" isRowHeader allowsSorting minWidth={260}>
@@ -151,8 +152,7 @@ export function ProductsTable({
               <div className={productCell}>
                 {p.image ? (
                   <div className={thumbBase}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.image} alt="" className={thumbImage} />
+                    <Image src={p.image} alt="" styles={thumbImage} />
                   </div>
                 ) : (
                   <div className={`${thumbBase} ${thumbHue[p.thumb]}`}>

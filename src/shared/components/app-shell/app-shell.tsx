@@ -4,7 +4,13 @@
 // packages/dev/s2-docs/pages/s2/home/ExampleApp.tsx + app/Sidebar.tsx）の
 // アプリフレーム実装を移植したもの。SideNav は S2 未提供のため、公式サンプルと
 // 同じ RAC ToggleButtonGroup + style macro の実装を使う。
-import { useRef, useState, type ComponentType, type ReactNode } from "react";
+import {
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { style, size, focusRing } from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   ToggleButtonGroup as RACToggleButtonGroup,
@@ -14,9 +20,16 @@ import {
 } from "react-aria-components";
 import { SearchField } from "@react-spectrum/s2/SearchField";
 import { Button } from "@react-spectrum/s2/Button";
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
+import { ActionButton, NotificationBadge } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
 import { Avatar } from "@react-spectrum/s2/Avatar";
+import { Provider } from "@react-spectrum/s2/Provider";
+import { DialogTrigger } from "@react-spectrum/s2/Dialog";
+import { Popover } from "@react-spectrum/s2/Popover";
+import { MenuTrigger, Menu, MenuSection, MenuItem, SubmenuTrigger } from "@react-spectrum/s2/Menu";
+import { Switch } from "@react-spectrum/s2/Switch";
+import { Divider } from "@react-spectrum/s2/Divider";
+import { Text } from "@react-spectrum/s2/Text";
 import { createIcon } from "@react-spectrum/s2/Icon";
 import { pressScale } from "@react-spectrum/s2/pressScale";
 import Add from "@react-spectrum/s2/icons/Add";
@@ -29,6 +42,8 @@ import HelpCircle from "@react-spectrum/s2/icons/HelpCircle";
 import Bell from "@react-spectrum/s2/icons/Bell";
 import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import SearchIcon from "@react-spectrum/s2/icons/Search";
+import Settings from "@react-spectrum/s2/icons/Settings";
+import Buildings from "@react-spectrum/s2/icons/Buildings";
 import { AppSearchContext } from "./search-context";
 
 // 公式サンプルと同じコンテナクエリ（ビューポートではなく data-container 基準）
@@ -333,10 +348,26 @@ function Sidebar() {
   );
 }
 
+function subscribePrefersDark(callback: () => void) {
+  const m = matchMedia("(prefers-color-scheme: dark)");
+  m.addEventListener("change", callback);
+  return () => m.removeEventListener("change", callback);
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const [query, setQuery] = useState("");
+  // 公式サンプルの ColorSchemeProvider 相当: ダークテーマ切替（既定は OS 設定に追従）
+  const [colorScheme, setColorScheme] = useState<"light" | "dark" | null>(null);
+  const prefersDark = useSyncExternalStore(
+    subscribePrefersDark,
+    () => matchMedia("(prefers-color-scheme: dark)").matches,
+    () => false,
+  );
+  const isDark = colorScheme == null ? prefersDark : colorScheme === "dark";
+
   return (
     <AppSearchContext value={{ query, setQuery }}>
+    <Provider colorScheme={colorScheme ?? undefined} styles={style({ display: "contents" })}>
     <div data-container className={container}>
       <div className={frame}>
         <div className={toolbar}>
@@ -362,16 +393,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               <ActionButton isQuiet aria-label="ヘルプ">
                 <HelpCircle />
               </ActionButton>
-              <ActionButton isQuiet aria-label="通知">
-                <Bell />
-              </ActionButton>
+              <Notifications />
               <ActionButton isQuiet aria-label="アプリ">
                 <AppsAll />
               </ActionButton>
             </div>
-            <ActionButton isQuiet aria-label="アカウント">
-              <Avatar alt="花子" src="https://i.pravatar.cc/64?img=47" />
-            </ActionButton>
+            <AccountMenu
+              isDark={isDark}
+              onColorSchemeChange={(dark) => setColorScheme(dark ? "dark" : "light")}
+            />
           </ActionButtonGroup>
         </div>
         <Sidebar />
@@ -380,6 +410,127 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
+    </Provider>
     </AppSearchContext>
+  );
+}
+
+// --- 通知（公式サンプル app/Notifications.tsx の移植） ---
+
+const NOTIFICATIONS = [
+  {
+    author: "田中 さくら",
+    avatar: "https://i.pravatar.cc/64?img=5",
+    date: "2時間前",
+    body: "「やさしい料理の基本」を購入しました。",
+  },
+  {
+    author: "佐藤 はる",
+    avatar: "https://i.pravatar.cc/64?img=32",
+    date: "6月12日",
+    body: "「献立テンプレ30日分」に ★5 のレビューが届きました。",
+  },
+  {
+    author: "鈴木 みなと",
+    avatar: "https://i.pravatar.cc/64?img=12",
+    date: "6月11日",
+    body: "「旬の野菜 動画レッスン」を購入しました。",
+  },
+];
+
+function Notifications() {
+  return (
+    <DialogTrigger>
+      <ActionButton isQuiet aria-label="3件の通知">
+        <Bell />
+        <NotificationBadge value={3} />
+      </ActionButton>
+      <Popover styles={style({ maxWidth: 300 })}>
+        <div
+          className={style({
+            display: "flex",
+            flexDirection: "column",
+            rowGap: 20,
+            overflow: "auto",
+            flexGrow: 1,
+            minHeight: 0,
+          })}
+        >
+          <h3 className={style({ font: "title-lg", marginY: 0 })}>通知</h3>
+          {NOTIFICATIONS.map((n, i) => (
+            <div key={i} className={style({ display: "flex", gap: 8 })}>
+              <Avatar alt="" src={n.avatar} size={32} />
+              <div className={style({ display: "flex", flexDirection: "column", gap: 4 })}>
+                <div className={style({ display: "flex", alignItems: "baseline", gap: 8 })}>
+                  <span className={style({ font: "ui", fontWeight: "bold" })}>{n.author}</span>
+                  <span className={style({ font: "detail" })}>{n.date}</span>
+                </div>
+                <span className={style({ font: "body-xs" })}>{n.body}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Popover>
+    </DialogTrigger>
+  );
+}
+
+// --- アカウントメニュー（公式サンプル app/AccountMenu.tsx の移植） ---
+
+function AccountMenu({
+  isDark,
+  onColorSchemeChange,
+}: {
+  isDark: boolean;
+  onColorSchemeChange: (isDark: boolean) => void;
+}) {
+  return (
+    <MenuTrigger>
+      <ActionButton isQuiet aria-label="アカウント">
+        <Avatar alt="花子" src="https://i.pravatar.cc/64?img=47" />
+      </ActionButton>
+      <Popover hideArrow placement="bottom end">
+        <div className={style({ paddingTop: 4, display: "flex", flexDirection: "column", gap: 12 })}>
+          <div className={style({ display: "flex", gap: 12, alignItems: "center", marginX: 12 })}>
+            <Avatar alt="花子" src="https://i.pravatar.cc/64?img=47" size={56} />
+            <div>
+              <div className={style({ font: "title" })}>花子</div>
+              <div className={style({ font: "ui" })}>hanako@ours.jp</div>
+              <Switch
+                isSelected={isDark}
+                onChange={onColorSchemeChange}
+                styles={style({ marginTop: 4 })}
+              >
+                ダークテーマ
+              </Switch>
+            </div>
+          </div>
+          <Divider styles={style({ marginX: 12 })} />
+          <Menu aria-label="アカウント">
+            <MenuSection>
+              <SubmenuTrigger>
+                <MenuItem>
+                  <Buildings />
+                  <Text slot="label">ストア</Text>
+                  <Text slot="value">花子のストア</Text>
+                </MenuItem>
+                <Menu selectionMode="single" selectedKeys={["hanako"]}>
+                  <MenuItem id="hanako">花子のストア</MenuItem>
+                  <MenuItem id="atelier">アトリエ花</MenuItem>
+                </Menu>
+              </SubmenuTrigger>
+              <MenuItem>
+                <Settings />
+                <Text slot="label">設定</Text>
+              </MenuItem>
+            </MenuSection>
+            <MenuSection>
+              <MenuItem>利用規約</MenuItem>
+              <MenuItem>ログアウト</MenuItem>
+            </MenuSection>
+          </Menu>
+        </div>
+      </Popover>
+    </MenuTrigger>
   );
 }

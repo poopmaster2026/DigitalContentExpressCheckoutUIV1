@@ -15,14 +15,15 @@ import { PRODUCTS } from "../mock";
 import { ProductsCardView } from "./products-card-view";
 import { ProductsTable } from "./products-table";
 
+// 公式 Photos ページのリズム: タイトル行 marginBottom 8 + CardView 内蔵の上オフセット
 const page = style({
   display: "flex",
   flexDirection: "column",
-  gap: 16,
+  gap: 8,
   flexGrow: 1,
   minHeight: 0,
 });
-const pageTitle = style({ font: "heading" });
+const pageTitle = style({ font: "heading", marginY: 0 });
 const titleRow = style({
   display: "flex",
   alignItems: "center",
