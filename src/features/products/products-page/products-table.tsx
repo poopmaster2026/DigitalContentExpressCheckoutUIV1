@@ -11,7 +11,7 @@ import {
   Cell,
   type SortDescriptor,
 } from "@react-spectrum/s2/TableView";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
+import { Badge } from "@react-spectrum/s2/Badge";
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
 import { Image } from "@react-spectrum/s2/Image";
@@ -32,7 +32,7 @@ const thumbBase = style({
   justifyContent: "center",
   width: 36,
   height: 36,
-  borderRadius: "default",
+  borderRadius: "sm",
   flexShrink: 0,
   overflow: "hidden",
 });
@@ -162,13 +162,13 @@ export function ProductsTable({
                 <span>{p.name}</span>
               </div>
             </Cell>
-            <Cell>{formatPrice(p.price)}</Cell>
-            <Cell>{p.sales}</Cell>
-            <Cell>{formatRevenue(p)}</Cell>
+            <Cell align="end">{formatPrice(p.price)}</Cell>
+            <Cell align="end">{p.sales}</Cell>
+            <Cell align="end">{formatRevenue(p)}</Cell>
             <Cell>
-              <StatusLight variant={p.status === "published" ? "positive" : "neutral"} size="S">
+              <Badge variant={p.status === "published" ? "positive" : "neutral"} fillStyle="subtle">
                 {p.status === "published" ? "公開中" : "下書き"}
-              </StatusLight>
+              </Badge>
             </Cell>
             <Cell>
               <MenuTrigger>

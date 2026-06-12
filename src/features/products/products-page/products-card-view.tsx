@@ -66,6 +66,13 @@ const KIND_LABEL: Record<ProductKind, string> = {
 
 // プレビュー上のオーバーレイは例外状態（下書き）のみ。位置は公式 Gallery 例と同じ右上
 const overlayTopEnd = style({ position: "absolute", top: 16, insetEnd: 16 });
+// カテゴリーは単色（gray）のチップで表現（複数色だと装飾ノイズになるため）
+const descriptionRow = style({
+  display: "flex",
+  alignItems: "center",
+  gap: 8,
+  gridArea: "description",
+});
 
 export function ProductsCardView({
   products,
@@ -91,7 +98,7 @@ export function ProductsCardView({
       styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginX: -16 })}
       renderEmptyState={() => <ProductsEmptyState isFiltered={isFiltered} />}
       renderActionBar={() => (
-        <ActionBar>
+        <ActionBar isEmphasized>
           <ActionButton onPress={() => {}}>
             <Edit />
             <Text>編集</Text>
@@ -133,9 +140,12 @@ export function ProductsCardView({
               </MenuItem>
               <MenuItem id="delete">削除</MenuItem>
             </ActionMenu>
-            <Text slot="description">
-              {KIND_LABEL[p.kind]}・{formatPrice(p.price)}
-            </Text>
+            <div className={descriptionRow}>
+              <Badge variant="gray" fillStyle="subtle">
+                {KIND_LABEL[p.kind]}
+              </Badge>
+              <Text slot="description">{formatPrice(p.price)}</Text>
+            </div>
           </Content>
         </Card>
       )}
