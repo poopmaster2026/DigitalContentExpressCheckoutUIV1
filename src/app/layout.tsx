@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { ClientProvider } from "./provider";
 import { QueryProvider } from "@/shared/providers/query-provider";
-// Design tokens + brand layer (docs/DESIGN-TOKENS.md / Figma SoT 準拠)。
-// React Aria Components はこの CSS 変数でスタイルする。S2 は style() マクロのまま。
+// Global base styles only. Design comes from React Spectrum S2 (style() macro
+// + Spectrum tokens) — see docs/DESIGN.md. No custom token layer here.
 import "./globals.css";
 
 export const metadata: Metadata = {
