@@ -19,6 +19,7 @@ import {
   type ToggleButtonProps,
 } from "react-aria-components";
 import { SearchField } from "@react-spectrum/s2/SearchField";
+import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
 import { Button } from "@react-spectrum/s2/Button";
 import { ActionButton, NotificationBadge } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
@@ -89,16 +90,25 @@ const toolbar = style({
   width: "full",
 });
 
+// ブランド（Figma の Brand フレーム準拠: グラデーションのロゴマーク + Ours + ストア切替）
+const brand = style({ display: "flex", alignItems: "center", gap: 8 });
+const logoMark = style({
+  width: 18,
+  height: 18,
+  borderRadius: "sm",
+  flexShrink: 0,
+  // グラデーションの色は S2 トークンを CSS 変数経由で参照（raw hex 不使用）
+  "--logoFrom": { type: "backgroundColor", value: "orange-500" },
+  "--logoTo": { type: "backgroundColor", value: "blue-500" },
+  backgroundImage: "linear-gradient(to right, var(--logoFrom), var(--logoTo))",
+});
 const brandName = style({
   font: "title",
   whiteSpace: "nowrap",
   display: { default: "none", [SM]: "inline" },
 });
-const storeName = style({
-  font: "ui",
-  color: "neutral-subdued",
-  whiteSpace: "nowrap",
-  display: { default: "none", [SM]: "inline" },
+const storeSwitcherWrap = style({
+  display: { default: "none", [SM]: "contents" },
 });
 
 const searchWrap = style({
@@ -371,8 +381,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div data-container className={container}>
       <div className={frame}>
         <div className={toolbar}>
-          <span className={brandName}>Ours</span>
-          <span className={storeName}>花子のストア</span>
+          <div className={brand}>
+            <div className={logoMark} aria-hidden />
+            <span className={brandName}>Ours</span>
+            <div className={storeSwitcherWrap}>
+              <Picker aria-label="ストアを切り替え" isQuiet defaultSelectedKey="hanako">
+                <PickerItem id="hanako">花子のストア</PickerItem>
+                <PickerItem id="atelier">アトリエ花</PickerItem>
+              </Picker>
+            </div>
+          </div>
           <div className={searchWrap}>
             <SearchField
               aria-label="商品を検索"
