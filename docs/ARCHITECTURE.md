@@ -1,350 +1,91 @@
-# アーキテクチャガイド
+# アーキテクチャガイド（Feature + Layer V2 構成）
 
-> **このリポジトリ向けの調整メモ**: 本ドキュメントは旧リポ
-> `../DigitalContentExpressCheckoutUI/docs/ARCHITECTURE.md` を移植したもの。
-> **設計骨格**（`app` / `features` / `shared` / `lib` の層分け・依存方向・
-> `queries` / `actions` / `hooks` / `utils` / `types` の責務分離・Container/Presentational・
-> UI 4 状態・queryKey ファクトリ・Mutation 規約）は旧リポを踏襲する。
-> ただし**デザイン系は全面的に本リポに合わせて差し替え済み**:
+> **真理ソース**: 本リポのディレクトリ構成・命名規則・責務分離は、rcmr_stadium の
+> **neymar V2 構成** `neymar/src/features/docs/directory-structure.md`（Feature + Layer 型 /
+> Container・Presentational / `api`・Mapper / TanStack Query）を**踏襲**する。
 >
-> | 観点 | 旧リポ | 本リポ（V1） |
+> ただし**技術スタックが異なる**ため、以下を読み替える（＝「やりたいことは違うが、構成は同じ」）:
+>
+> | 観点 | neymar V2（出典） | 本リポ（V1 / S2） |
 > | --- | --- | --- |
-> | デザインシステム | shadcn/ui | **React Spectrum S2（`@react-spectrum/s2`）一本** |
-> | スタイリング | Tailwind `className` + `cn()` | **`style()` macro + S2 トークン名のみ**（raw hex 禁止） |
-> | ファイル名 | PascalCase（`ProductsPage.tsx`） | **kebab-case（`products-page.tsx`）** / export は PascalCase |
-> | UI 検証 | Storybook + Vitest | **`npm run build` + `npm run lint`**（Storybook/Vitest 不使用） |
-> | Figma 翻訳 | Figma Auto Layout → Tailwind class 表 | **Figma は構成把握のみ。寸法/色は S2 スケール+トークンが正** |
-> | データ層 | Supabase | backend 非依存の `api/`（fetch）+ TanStack Query。**現状は mock 直読み（Phase 0）** |
+> | UI ライブラリ | Shopify Polaris | **React Spectrum S2**（`style()` macro + S2 トークン） |
+> | データ取得 | hey-api 生成クライアント（`client/*`） | **fetch ベースの `api/`（将来）**。Phase 0 は `@/shared/mock/*` 直読み |
+> | ルーティング | Next Pages Router（`getStaticProps`） | **Next App Router**（`src/app/`） |
+> | 権限制御 | `useUserMeStore` + Polaris `<SaveBar editPermission>` | 権限基盤は未導入。**原則のみ継承**（後述） |
+> | 状態管理 | Zustand | 未使用 |
+> | 検証 | `pnpm lint` | **`npm run build` + `npm run lint`**（Storybook / Vitest なし） |
 >
-> デザイン方針の正は [docs/DESIGN.md](./DESIGN.md)、Spectrum の設計思想は
-> [docs/SPECTRUM-GUIDELINES.md](./SPECTRUM-GUIDELINES.md) と [docs/spectrum/](./spectrum/)。
-> 技術スタック / ハード制約は [CLAUDE.md](../CLAUDE.md) を参照。
+> S2 固有の制約（client-only / subpath import / `style()` macro / 色トークンの決め方）は
+> [docs/DESIGN.md](./DESIGN.md)、Spectrum の設計思想は [docs/SPECTRUM-GUIDELINES.md](./SPECTRUM-GUIDELINES.md)。
+> 技術スタック / ハード制約は [CLAUDE.md](../CLAUDE.md)。
 
-## ディレクトリ構成（詳細）
-
-```
-src/
-├── app/                          # Next.js App Router（ルーティング定義のみ）
-│   ├── layout.tsx                # ルートレイアウト（locale はサーバ側で解決）
-│   ├── provider.tsx              # <Provider elementType="html"> + App Router ナビゲーション結線
-│   ├── globals.css               # base reset のみ（@layer reset に隔離）。デザイントークンは持たない
-│   ├── page.tsx                  # トップ
-│   └── store/
-│       ├── layout.tsx            # ストア配下の共通レイアウト（app-shell）
-│       └── products/
-│           └── page.tsx          # 商品一覧画面（features を呼ぶだけ）
-│
-├── features/                     # 機能単位のモジュール
-│   └── products/                 # デジタルコンテンツ（商品）
-│
-├── shared/                       # 複数 feature をまたいで使う共通物
-│   ├── components/
-│   │   └── app-shell/            # アプリ外枠（sidebar / account-menu / notifications 等）
-│   ├── providers/
-│   │   └── query-provider.tsx    # TanStack Query Provider（layout 結線済み）
-│   ├── types/
-│   │   └── product.ts            # ドメイン基本型（feature から再エクスポート）
-│   └── mock/                     # モックデータ（Phase 0 で Container が直読み）
-│       ├── products.ts
-│       └── notifications.ts
-│
-└── lib/                          # ライブラリ設定
-    └── query-client.ts           # QueryClient 設定（実 API 接続時に本格利用）
-```
-
-> **Phase 0（mock 段階）の注意**: TanStack Query は結線済みだが**意図的に未使用**。
-> 各 Container（`ProductsPage` 等）は `@/shared/mock/*` を直接読む。実 API 接続時に
-> `features/{feature}/api` + `queries`（`queryOptions` + `useQuery`）へ差し替える。
-> 未使用は見落としではない（[CLAUDE.md](../CLAUDE.md) の Status 参照）。
-
-## feature モジュール内構成
-
-feature は**小さいうちは flat**に保ち、規模に応じてサブディレクトリへ分割する。
-本リポの `products` は現状 flat 寄り。データ層が入る将来形を含めた完全版は次の通り:
+## ディレクトリ構成
 
 ```
-features/{feature}/
-├── {helper}.ts(x)               # feature 直下の単機能ヘルパ（表示マップ・整形・ドメイン関数）
-│                                #   例: format.ts（純粋整形）/ display.tsx（表示トークンの単一定義）/ product-menu.ts
-│                                #   ※「メニュー項目生成」等の UI ヘルパは product-menu.ts。
-│                                #     product-actions.ts は actions/ の Server Actions 専用名なので root に置かない
-├── types.ts                     # この feature の型（shared/types を再エクスポート + feature 固有型）
-├── api/                         # データアクセス層（fetch ベース。モック → 実 API 差し替え対象）
-│   └── {feature}-api.ts
-├── queries/                     # TanStack Query の queryOptions + queryKey ファクトリ
-│   ├── {feature}-queries.ts
-│   └── {feature}-keys.ts
-├── actions/                     # Server Actions（'use server'）
-│   └── {feature}-actions.ts
-├── hooks/                       # この feature 専用フック（impure なロジック）
-│   └── use-{feature}.ts
-└── {page-name}/                 # ページ単位のディレクトリ
-    ├── {page-name}.tsx          # ページ Container（状態・データ取得・組み立て）
-    ├── {page-name}-skeleton.tsx # ローディング表示（Skeleton）
-    ├── utils.ts                 # ページ固有の純粋ロジック（計算・変換・フィルタ）
-    └── {section}.tsx            # セクション（Presentational。props で描画）
+features/
+└── {feature-name}/
+    ├── api/              # データ取得（queryOptions / Mapper）。Phase 0 は未作成（mock 直読み）
+    ├── types/            # 型定義（index.ts。増えたら名前付きファイルに分割）
+    ├── components/       # Feature 共通 Presentational コンポーネント（必要時のみ）
+    ├── hooks/            # Feature 共通 hooks（必要時のみ）
+    ├── {helper}.ts(x)    # Feature 共通の非コンポーネント・ヘルパ（表示マップ / 整形 / メニュー生成）
+    └── {PageName}Page.tsx                # ページ（feature が単一ページならフォルダを挟まず直下に置く）
+        ├── {PageName}Page.tsx            # 最上位 Container（Suspense + Skeleton + Content の組み立て）
+        ├── {PageName}PageSkeleton.tsx    # ローディング表示
+        └── {SectionName}/                # セクション単位の Container（フォルダにまとめる）
+            ├── {SectionName}.tsx         # Container（hooks 呼び出し・データ・props 受け渡し）
+            ├── {SectionName}UI.tsx       # Presentational（props のみで描画）
+            ├── hooks/                     # セクション固有 hooks（ビジネスロジック）
+            │   └── use{Logic}.ts
+            └── components/                # Presentational 部品（UI 表示制御の useState は可）
 ```
 
-### 本リポの実例（`features/products/`）
+> neymar の参照実装（`features/settings/portal/domain/`）と同様、**feature が単一ページのときは
+> `{pagename}/` 中間フォルダを設けず、feature 直下に `{PageName}Page.tsx` 以下を置く**。
+> 複数ページを持つ feature では `{pagename}/` でページごとに区切る。
+
+### 命名規則
+
+| 対象 | 規則 | 例 |
+| --- | --- | --- |
+| Container / Presentational のファイル | **PascalCase** | `ProductsPage.tsx`, `ProductsContent.tsx`, `ProductsContentUI.tsx` |
+| api / hooks / 非コンポーネントヘルパ | **camelCase**（hooks は `use~`） | `productsApi.ts`, `useProductsFilter.ts`, `productMenu.ts` |
+| Container フォルダ | PascalCase | `ProductsContent/` |
+| 構造フォルダ / feature 名 | 小文字 | `api/`, `types/`, `components/`, `hooks/`, `products/` |
+| Presentational | 対応 Container に **`UI` サフィックス** | `ProductsContentUI.tsx` |
+
+- Container に「Container」サフィックスは付けない（利用側から見て実装詳細の語が入るのは不自然）。
+- `UI` サフィックスは、Container に 1:1 で対応する Presentational に付ける。
+
+### ルール
+
+- **Container はフォルダにまとめる** — `ProductsContent/` に `ProductsContent.tsx`（Container）+
+  `ProductsContentUI.tsx`（Presentational）+ `components/` + `hooks/` を同居させる。
+- **`components/` には Presentational だけ** — ビジネスロジック（データ取得・mutation 呼び出し・
+  API データの状態管理）を入れない。組み立ては親 `~UI` が行い、**`components/` 内のコンポーネント
+  同士は import しない**。ただし **UI 表示制御用の `useState`（ソート・選択・開閉など）は許容**する。
+- **hooks にはビジネスロジック** — 状態管理・フィルタ・データ取得・mutation 呼び出し等。
+- **api には Container 対応の API**（queryOptions / Mapper）を置く。
+- **types は `index.ts` 起点**、増えたら対応する名前のファイルに分割する。
+- **S2 制約** — S2 コンポーネントを使うファイルは先頭に `"use client";`。barrel ではなく
+  subpath import（`@react-spectrum/s2/Button` 等）。スタイルは `style()` macro + S2 トークンのみ。
+
+### Feature 共通の非コンポーネント・ヘルパ
+
+表示マップ・フォーマッタ・メニュー生成のような **feature をまたいで共通だが「コンポーネントでも
+api でも hooks でも types でもない」ヘルパ**は、feature 直下に camelCase で置く（本リポの調整）。
 
 ```
 features/products/
-├── types.ts                     # shared/types/product の再エクスポート + ProductFilters
-├── format.ts                    # 価格・売上の表示整形（純粋関数。JSX なし）
-├── display.tsx                  # 表示トークンの単一定義: SALE_TYPE_BADGE / THUMB_HUE / KIND_ICON / KIND_ILLUSTRATION（"use client"）
-├── product-menu.ts              # 操作メニュー項目の生成（カード/テーブル共用）
-└── products-page/
-    ├── products-page.tsx        # Container（state + mock 読み + view 切替）
-    ├── utils.ts                 # filterProducts / isFiltered / compareProducts（純粋）
-    ├── products-card-view.tsx   # セクション: グリッド（CardView）
-    ├── products-table.tsx       # セクション: テーブル（TableView）
-    ├── products-action-bar.tsx  # セクション: 選択時のアクションバー
-    └── products-empty-state.tsx # セクション: 空状態（IllustratedMessage）
+├── display.tsx       # 表示トークンの単一定義（SALE_TYPE_BADGE / THUMB_HUE / KIND_ICON / KIND_ILLUSTRATION）
+├── format.ts         # 価格・売上の表示整形（純粋関数）
+└── productMenu.ts    # 操作メニュー項目の生成（カード / テーブル共用）
 ```
 
-### 各ディレクトリ / ファイルの配置基準
+- `components/` は **Presentational コンポーネント専用**なので、非コンポーネントのヘルパはそこに
+  入れない。これらは複数のセクション（カード / テーブル）から参照し、**表現のブレを防ぐ単一定義**にする。
 
-| 配置先                   | 配置するもの                                      | 配置しないもの            |
-| ------------------------ | ------------------------------------------------- | ------------------------- |
-| `{helper}.ts(x)`（直下） | 表示マップ・整形・ドメイン関数（単機能）          | UI コンポーネント、ページ状態 |
-| `api/`                   | データ取得関数（モック / 実 API。fetch ベース）   | UI コンポーネント、型定義 |
-| `types.ts`               | feature 固有の interface / type、shared 型の再エクスポート | ロジック、関数定義 |
-| `hooks/`                 | impure なカスタムフック（`useState`, `useRouter` 等） | 純粋な計算ロジック    |
-| `queries/`               | `queryOptions` 定義、queryKey ファクトリ          | UI ロジック、型定義       |
-| `actions/`               | Server Actions                                    | データ取得（Query 側）    |
-| `{page-name}/{page-name}.tsx` | ページ Container（状態・取得・組み立て）     | 純粋な計算ロジック        |
-| `{page-name}/utils.ts`   | 純粋な計算・変換・フィルタ・ソート比較            | データ取得、副作用        |
-| `{page-name}/{section}.tsx` | props で描画するセクション（Presentational）   | feature レベルの型定義    |
-
-### types と utils の分離ガイド
-
-- **`types.ts`**: 「何であるか」を定義する。interface, type alias, enum。
-  ドメイン基本型は `shared/types/` に置き、feature の `types.ts` から再エクスポートして
-  依存方向（`app → features → shared`）を保つ。
-- **`utils.ts`**: 「何をするか」を定義する。計算関数、変換関数、フィルタリング、ソート比較。
-
-```typescript
-// features/products/types.ts — 「何であるか」（shared 型の再エクスポート + 固有型）
-export type { Product, ProductStatus, SaleType } from "@/shared/types/product";
-export interface ProductFilters {
-  status: Key;
-  saleType: Key;
-  query: string;
-}
-
-// features/products/products-page/utils.ts — 「何をするか」（純粋関数）
-export function filterProducts(products: Product[], f: ProductFilters): Product[] { ... }
-export function compareProducts(a: Product, b: Product, column: SortDescriptor["column"]): number { ... }
-```
-
-### hooks の設計指針
-
-hooks にはビジネスロジック（impure な副作用を伴う処理）を配置する。純粋な計算ロジックは
-`utils.ts` に分離する。
-
-| 配置先     | 内容                                             | 例                                       |
-| ---------- | ------------------------------------------------ | ---------------------------------------- |
-| `hooks/`   | `useState`, `useRouter`, `useSearchParams` を使うロジック | `useAuthForm`, `useDateFilter`   |
-| `utils.ts` | 入力 → 出力の純粋な計算・変換関数               | `filterProducts`, `compareProducts`      |
-
-**hooks に含めるもの:**
-
-- フォーム状態管理（`useState` / `react-hook-form` + バリデーション + Server Action 呼び出し）
-- URL 状態管理（`useSearchParams` + `useRouter`）
-- mutation のトリガーと UI フィードバック（toast 表示、ダイアログ制御）
-
-**hooks に含めないもの:**
-
-- 配列の集計・フィルタリング・ソート → `utils.ts`
-- 日付フォーマット・通貨フォーマット → `{helper}.ts` / `shared/utils/`
-- DTO → ViewModel の変換 → `utils.ts` または `queries/` の `select`
-
-> 単純なローカル状態（タブ切替・フィルタ選択など）だけなら Container 内に直接 `useState`
-> で持つ（本リポの `ProductsPage` がこの形）。専用 hook に切り出すのは、ロジックが
-> 複数コンポーネントで再利用される / テスト容易性のために分離したいときだけ。
-
-## コンポーネントパターン
-
-### Container / Presentational パターン
-
-**Container（`{page-name}.tsx` / `{section}.tsx` のうちロジックを持つもの）**
-
-- データ取得（mock 直読み → 将来 `useQuery`）
-- ローカル状態（`useState`：フィルタ・選択・ソート・view 切替）
-- mutations（`useMutation`）・URL 同期（`useSearchParams`, `useRouter`）
-- Presentational / セクションへのデータ受け渡し
-
-```tsx
-// features/products/products-page/products-page.tsx（抜粋）
-"use client";
-
-import { useMemo, useState } from "react";
-import { PRODUCTS } from "@/shared/mock/products";       // Phase 0: mock 直読み
-import { filterProducts } from "./utils";
-import { ProductsCardView } from "./products-card-view";
-import { ProductsTable } from "./products-table";
-
-export function ProductsPage() {
-  const [view, setView] = useState<Key>("grid");
-  const products = useMemo(() => filterProducts(PRODUCTS, { /* ... */ }), [/* ... */]);
-  return view === "grid"
-    ? <ProductsCardView products={products} isFiltered={/* ... */} />
-    : <ProductsTable products={products} isFiltered={/* ... */} />;
-}
-```
-
-**Presentational（セクション）**
-
-- props のみで描画する。データ取得は持たない。
-- 本リポでは `UI` サフィックスは付けない。`{section}.tsx`（例: `products-table.tsx`）の単位で、
-  S2 コンポーネント（`TableView` / `CardView` 等）に props を流し込む。
-
-```tsx
-// features/products/products-page/products-table.tsx（抜粋）
-"use client";
-
-export function ProductsTable({ products, isFiltered }: {
-  products: Product[];
-  isFiltered: boolean;
-}) {
-  // S2 の TableView に行データを流すだけ。状態は Container（ProductsPage）が持つ
-  return <TableView aria-label="商品一覧" /* ... */>{/* rows */}</TableView>;
-}
-```
-
-> **旧リポとの違い**: 旧リポは Container を `Xxx.tsx`、ペアの Presentational を `XxxUI.tsx`
-> として 1:1 で分けていた。本リポは S2 コンポーネント自体が表示責務を強く持つため、
-> セクション = props 駆動の `{section}.tsx` として置き、`UI` サフィックスは付けない。
-> セクション内のローカル UI 状態（テーブルの `sortDescriptor`、グリッドの選択など、
-> その表示にしか使わない state）はセクション側に持ってよい。
-
-### セクションの分割と共有
-
-- セクションが大きくなったら、意味のある単位で別ファイルのセクションに切り出す
-  （目安: 1 ファイルが読みにくくなる / 同じ UI 部品を複数箇所で再利用したいとき）。
-- **ページ内セクション間の共有部品は、共有元のセクションを直接 import してよい**
-  （例: `products-table.tsx` と `products-card-view.tsx` がともに
-  `products-action-bar.tsx` / `products-empty-state.tsx` を使う）。
-- **feature をまたぐ共有は禁止**。複数 feature で使う部品は `shared/components/` に置く。
-- 種別マップ・整形・操作項目など**表示ロジックの単一定義**は feature 直下のヘルパ
-  （`display.tsx` / `format.ts` / `product-menu.ts`）に集約し、
-  カード枝・テーブル枝の両方から参照して**表現のブレを防ぐ**。
-
-### Skeleton コンポーネントパターン
-
-`useSuspenseQuery` を使う段階になると `<Suspense>` の fallback にローディング UI が要る。
-Skeleton はページ / セクション単位で作り、対象の直下に置く。
-
-```
-features/{feature}/{page-name}/
-├── {page-name}.tsx
-├── {page-name}-skeleton.tsx     # ← ページ単位の Skeleton
-└── {section}.tsx
-```
-
-Skeleton は **S2 の Skeleton プリミティブ**で組む（`@react-spectrum/s2` の Skeleton 系。
-正確な API は `react-spectrum-s2` skill / MCP で確認。**記憶で書かない**）。実レイアウトに
-合わせた形状（テキスト幅・カード数）にする。スタイルは `style()` macro + S2 トークンのみ。
-
-### UI 状態の網羅（Default / Empty / Loading / Error）
-
-データ依存 UI は **4 状態を常に意識する**。状態ごとに「どこで分岐するか」を統一する。
-
-| 状態 | 何が表示されるか | 責務の所在（本リポ） |
-| --- | --- | --- |
-| **Default** | データが 1 件以上ある通常表示 | セクション（props で受け取る） |
-| **Empty** | データが空（`length === 0`） | S2 コレクションの `renderEmptyState`（`TableView` / `CardView`）。共通の空状態は `{feature}/{page}/{...}-empty-state.tsx` に切り出す |
-| **Loading** | データ取得中 | **Container の外側で `<Suspense fallback={<XxxSkeleton />}>`**（Phase 0 の mock 段階では同期描画のため不要） |
-| **Error** | データ取得失敗 | **route segment の `error.tsx`**、または Container の外側で ErrorBoundary |
-
-**ルール:**
-
-- **Empty は表示側の責務** — S2 の `TableView` / `CardView` は `renderEmptyState` を持つ。
-  本リポは `renderEmptyState={() => <ProductsEmptyState isFiltered={...} />}` で空状態を出し、
-  `ProductsEmptyState` は S2 の `IllustratedMessage`（`Heading` / `Content` + illustration）で組む。
-- **Loading は Skeleton で表現** — `useSuspenseQuery` 採用時、`<Suspense>` の fallback に切替。
-  セクション内に `isLoading` 分岐を作らない。
-- **Error は外側で扱う** — `useSuspenseQuery` のエラーは throw され、`error.tsx` / ErrorBoundary
-  がキャッチする。セクション内に `isError` 分岐を作らない。
-
-```tsx
-// ❌ NG: isLoading / isError を表示セクションに持ち込む（取得層と密結合する）
-export function ProductsTable({ products, isLoading, isError }: Props) {
-  if (isLoading) return <Skeleton />;
-  if (isError) return <ErrorBanner />;
-  // ...
-}
-
-// ✅ OK: Empty は renderEmptyState、Loading/Error は外側
-export function ProductsTable({ products, isFiltered }: Props) {
-  return (
-    <TableView renderEmptyState={() => <ProductsEmptyState isFiltered={isFiltered} />}>
-      {/* rows */}
-    </TableView>
-  );
-}
-```
-
-## スタイリング規約
-
-### React Spectrum S2 + `style()` macro
-
-スタイリングの正は [docs/DESIGN.md](./DESIGN.md)。要点のみ:
-
-- **`style()` macro + S2 トークン名のみ**。raw hex のベタ書き禁止。Tailwind / shadcn / `cn()` /
-  CSS Modules / SCSS は不使用。自前のデザイントークン層（CSS 変数）を作らない。
-- **モジュール先頭で `style()` を定数に括る**。コンポーネント JSX では生成済みクラス名を
-  `className` に渡す。S2 コンポーネントへは**レイアウト系のみ**を `styles` prop で渡す
-  （色・内部 padding はコンポーネント内ではカスタム不可。許容プロパティは DESIGN.md 参照）。
-
-```tsx
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-
-const page = style({ display: "flex", flexDirection: "column", gap: 8, flexGrow: 1, minHeight: 0 });
-const boldText = style({ fontWeight: "bold" });
-
-<div className={page}>
-  <span className={boldText}>{name}</span>
-</div>
-```
-
-- **条件付きスタイル**は `cn()` ではなく `style()` の条件オブジェクト（`default` / `isHovered` /
-  `isSelected` / variant 等。最後に一致したものが勝つ）か、生成済みクラス名の**テンプレート
-  連結**で表現する。
-
-```tsx
-// 静的クラス + 動的に選ぶクラスのテンプレート連結（本リポ products-table の手法）
-<div className={`${thumbBase} ${THUMB_HUE[p.thumb]}`}>...</div>
-
-// 状態でのスタイル分岐は style() の条件オブジェクト（runtime condition は関数を返す）
-const styles = style({
-  backgroundColor: { default: "gray-100", isHovered: "gray-200", isSelected: "gray-900" },
-});
-<div className={styles({ isSelected })} />
-```
-
-- アイコンの色は `iconStyle({ color: ... })`、illustration は S2 の illustration を使う。
-  外部アイコン（lucide 等）は追加しない。アイコン / イラストの検索は S2 MCP。
-
-### コンポーネント / トークン / アイコンの調べ方
-
-**記憶で S2 の API を書かない。** 必ず次で特定する（[CLAUDE.md](../CLAUDE.md) のハード制約）:
-
-- `react-spectrum-s2` Agent Skill（`.claude/skills/react-spectrum-s2/`、Adobe 公式）
-- `react-spectrum-s2` MCP サーバー（`.mcp.json` → `@react-spectrum/mcp`）
-- **実ソース（最終的な正）**: `/Users/ryoheiokuma/work/Ours/react-spectrum`（`adobe/react-spectrum`
-  のチェックアウト）。トークン・既定 props・内部実装は `packages/@react-spectrum/s2/src/` と
-  `…/style/` で直接確認。**読み取り専用**。
-- S2 コンポーネントは **client-only**（使うファイルは `"use client";`）。**barrel ではなく
-  subpath import**（`@react-spectrum/s2/Button` など）。
-
-### Figma を起点にする場合
-
-- Figma は **構成のイメージ把握にのみ**使う。寸法 / フォント / 色は転記せず、**S2 のスケール・
-  トークンが正**。4px グリッド外の任意値や raw hex を持ち込まない。
-- 実装は `react-spectrum-s2` skill の「Figma → S2 実装」ガイドに従う。
-
-## 依存関係ルール
+## 依存方向
 
 ```
 app → features → shared
@@ -352,83 +93,195 @@ app → features → shared
         lib
 ```
 
-- `app/` は `features/` と `shared/` を import する（ルーティングと組み立てのみ）。
-- `features/` は `shared/` と `lib/` を import する。
-- **`features/` 間の直接 import は禁止**（共通部分は `shared/` に）。
+- `app/` はルーティングと組み立てのみ。`features/` と `shared/` を import する。
+- `features/` は `shared/` と `lib/` を import する。**`features/` 間の直接 import は禁止**（共通は `shared/`）。
 - `shared/` は `lib/` のみ import 可能。
 
-## 命名規則
+## pages（`src/app/`）
 
-| 対象                   | 規則                               | 例                                       |
-| ---------------------- | ---------------------------------- | ---------------------------------------- |
-| ディレクトリ           | kebab-case                         | `products-page/`, `app-shell/`           |
-| ファイル（全般）       | **kebab-case**                     | `products-page.tsx`, `product-menu.ts`, `query-client.ts` |
-| コンポーネントの export | PascalCase                        | `export function ProductsPage()`         |
-| 関数 / 変数            | camelCase                          | `filterProducts`, `formatPrice`          |
-| 型 / interface         | PascalCase                         | `Product`, `ProductFilters`              |
-| 定数マップ             | UPPER_SNAKE                        | `SALE_TYPE_BADGE`, `KIND_ICON`           |
-| hooks                  | kebab-case ファイル / `use` prefix export | `use-product-form.ts` → `useProductForm` |
-
-> **旧リポとの違い**: 旧リポはコンポーネントファイルを PascalCase（`ProductsPage.tsx`）に
-> していたが、本リポは**ファイル名を一律 kebab-case** に統一し、**export だけ PascalCase**。
-
-## app/ ディレクトリのルール
-
-`app/` はルーティング定義と最小の組み立てのみ。ロジックや UI は `features/` に置く。
-`<html>` を手で描画しない（`provider.tsx` の `<Provider elementType="html">` が担う）。
+ルーティングの責務だけを持つ。`<html>` を手で描画しない（`provider.tsx` の
+`<Provider elementType="html">` が担う）。
 
 ```tsx
-// app/store/products/page.tsx
-import { ProductsPage } from "@/features/products/products-page/products-page";
+// src/app/store/products/page.tsx
+import { ProductsPage } from "@/features/products/ProductsPage";
 
 export default function Page() {
   return <ProductsPage />;
 }
 ```
 
-## shared モジュール構成
+## 実装パターン
 
-`shared/` には複数の feature をまたいで使うものを配置する。特定 feature にしか使わない
-ものは `features/{feature}/` に置く。
+### Page コンポーネント（最上位 Container）
+
+ページのトップ。Suspense と Skeleton を配置し、セクション Container を呼ぶ。
+
+```tsx
+// features/products/ProductsPage.tsx
+"use client";
+
+import { Suspense } from "react";
+import { ProductsContent } from "./ProductsContent/ProductsContent";
+import { ProductsPageSkeleton } from "./ProductsPageSkeleton";
+
+export function ProductsPage() {
+  return (
+    <Suspense fallback={<ProductsPageSkeleton />}>
+      <ProductsContent />
+    </Suspense>
+  );
+}
+```
+
+> **Phase 0（mock）の注意**: mock は同期読みのため、この `Suspense` は実際には suspend しない
+> （Skeleton も発火しない）。**構造を先に用意**しておき、Phase 1 で `useSuspenseQuery` に差し替えた
+> 瞬間に Skeleton が機能するようにしておく（neymar の Page → Suspense → Content と同じ骨格）。
+
+### Skeleton コンポーネント
+
+ローディング表示。Page 直下に置く。S2 では `style()` macro + S2 トークンで実レイアウトに近い
+プレースホルダを組む（raw hex 禁止）。
+
+```tsx
+// features/products/ProductsPageSkeleton.tsx
+"use client";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
+const block = style({ backgroundColor: "gray-100", borderRadius: "default" });
+// ...実レイアウト（タイトル + カードグリッド）に合わせた箱を並べる
+```
+
+### Container / Presentational 分離
+
+Container にロジック（hooks 呼び出し・データ・状態）、Presentational に UI（props 描画）を分離する。
+
+**Container（`ProductsContent.tsx`）** — hooks を呼び、Presentational に props を渡すだけ:
+
+```tsx
+"use client";
+import { useProductsFilter } from "./hooks/useProductsFilter";
+import { ProductsContentUI } from "./ProductsContentUI";
+
+export function ProductsContent() {
+  const f = useProductsFilter();
+  return (
+    <ProductsContentUI
+      products={f.products}
+      isFiltered={f.filtered}
+      statusFilter={f.statusFilter}
+      onStatusChange={f.setStatusFilter}
+      saleTypeFilter={f.saleTypeFilter}
+      onSaleTypeChange={f.setSaleTypeFilter}
+      view={f.view}
+      onViewChange={f.setView}
+    />
+  );
+}
+```
+
+**Presentational（`ProductsContentUI.tsx`）** — props のみで描画。`useState` 等のロジックは持たない:
+
+```tsx
+"use client";
+// toolbar（Picker / SegmentedControl）+ ProductsCardView / ProductsTable の切り替えを props で描画
+export function ProductsContentUI({ products, isFiltered, view, onViewChange /* ... */ }: Props) {
+  return (
+    <div className={page}>
+      {/* title + filters + view 切替 */}
+      {view === "grid"
+        ? <ProductsCardView products={products} isFiltered={isFiltered} />
+        : <ProductsTable products={products} isFiltered={isFiltered} />}
+    </div>
+  );
+}
+```
+
+**hooks（`hooks/useProductsFilter.ts`）** — ビジネスロジック（状態 + フィルタ）:
+
+```tsx
+"use client";
+import { useMemo, useState } from "react";
+import { PRODUCTS } from "@/shared/mock/products"; // Phase 0: mock 直読み（Phase 1 で useSuspenseQuery 化）
+
+export function useProductsFilter() {
+  const [statusFilter, setStatusFilter] = useState<Key>("all");
+  const [saleTypeFilter, setSaleTypeFilter] = useState<Key>("all");
+  const [view, setView] = useState<Key>("grid");
+  const { query } = useAppSearch();
+  const products = useMemo(() => filterProducts(PRODUCTS, { status: statusFilter, saleType: saleTypeFilter, query }), [/* ... */]);
+  return { products, filtered: isFiltered(/* ... */), statusFilter, setStatusFilter, /* ... */ view, setView };
+}
+```
+
+> Phase 1 では `useProductsFilter` 内の `PRODUCTS` 直読みを
+> `useSuspenseQuery(productListQueryOptions())` に差し替える。state とフィルタロジックはそのまま残る。
+
+### UI 状態の網羅（Default / Empty / Loading / Error）
+
+| 状態 | 責務の所在（本リポ） |
+| --- | --- |
+| **Default** | Presentational（`~UI` / `components/`）が props で受けて描画 |
+| **Empty** | S2 コレクションの `renderEmptyState`（`TableView` / `CardView`）→ 共用 `ProductsEmptyState`（`IllustratedMessage`） |
+| **Loading** | Page の `<Suspense fallback={<XxxPageSkeleton />}>`（Phase 0 は mock 同期のため未発火） |
+| **Error** | route segment の `error.tsx`、または Page 外側の ErrorBoundary |
+
+Presentational 内に `isLoading` / `isError` 分岐を作らない（Empty のみ Presentational の責務）。
+
+## api/ ディレクトリの設計規約（Phase 1 target）
+
+> Phase 0（mock）では `api/` を作らず、hooks が `@/shared/mock/*` を直読みする。
+> TanStack Query は結線済みだが意図的に未使用（[CLAUDE.md](../CLAUDE.md) Status）。実 API 接続時に下記へ移行する。
+
+### api/ に含めるもの・含めないもの
+
+| 含めるもの | 含めないもの |
+| --- | --- |
+| `queryOptions` 定義（Query） | React コンポーネント |
+| `useMutation` 定義（Mutation） | UI ロジック（toast / モーダル制御） |
+| Mapper 関数（DTO → ViewModel 変換） | Zod スキーマ（→ `types/`） |
+| `invalidateQueries`（キャッシュ無効化） | ViewModel 型定義（→ `types/`） |
+
+### ファイル構成
 
 ```
-shared/
-├── components/
-│   └── app-shell/                # アプリ外枠（sidebar / account-menu / notifications / search-context）
-├── providers/
-│   └── query-provider.tsx        # TanStack Query Provider（layout 結線済み）
-├── types/
-│   └── product.ts                # ドメイン基本型（feature が再エクスポート）
-└── mock/                         # 開発用モック（Phase 0 で Container が直読み）
-    ├── products.ts
-    └── notifications.ts
+api/
+├── {pageName}Api.ts        # Query / Mutation 定義（ページ単位で 1 ファイル）
+└── {entityName}Mapper.ts   # DTO → ViewModel 変換（エンティティ単位）
 ```
 
-> 旧リポにあった `shared/components/ui/`（shadcn 生成物）は**存在しない**。汎用 UI プリミティブは
-> S2 コンポーネントをそのまま使う。S2 に無い部品だけ、S2 公式手法（`style()` macro +
-> React Aria Components）で作る（DESIGN.md「カスタムコンポーネント」参照）。
-> `shared/utils/` / `shared/hooks/` は必要になった時点で追加する（複数 feature 共通の
-> フォーマッタ・フックの置き場）。
+Api ファイルが Mapper を import する（逆方向の依存は禁止）。
+本リポは hey-api を使わず、**fetch ベースのクライアント**（`src/lib/api/` 等。実装時に用意）を `queryFn` で呼ぶ。
 
-## queries/ ディレクトリの設計規約（実 API 接続フェーズ）
+### Query 定義パターン（fetch + select に Mapper）
 
-> Phase 0（mock）では未使用。実 API に繋ぐ段階で `api/` + `queries/` を起こす。
+```tsx
+// api/productsApi.ts
+import { queryOptions } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api/client";
+import { productKeys } from "./productKeys";
+import { toProducts } from "./productMapper";
 
-### queries/ に含めるもの・含めないもの
+export const productListQueryOptions = (storeId: string) =>
+  queryOptions({
+    queryKey: productKeys.list(storeId),
+    queryFn: async ({ signal }) => apiClient.get(`/stores/${storeId}/products`, { signal }),
+    select: toProducts, // キャッシュは生 DTO、消費側で ViewModel に変換
+  });
+```
 
-| 含めるもの                              | 含めないもの                                 |
-| --------------------------------------- | -------------------------------------------- |
-| `queryOptions` 定義                     | React コンポーネント                         |
-| queryKey ファクトリ（`xxxKeys`）        | UI に関するロジック（toast、モーダル制御等） |
-| API fetch 関数（`fetchXxx`）            | Mutation 定義（→ Container 側に配置）        |
-| `select` による DTO → ViewModel 変換    | Server Actions（→ `actions/` に配置）        |
+| ルール | 理由 |
+| --- | --- |
+| `queryOptions()` でラップして export | 型推論が効き、`useSuspenseQuery` にスプレッドできる |
+| `queryKey` は **ファクトリ**で生成（手書き禁止） | キー管理の一元化・部分一致 invalidate |
+| `queryFn` に `signal` を渡す | アンマウント時にリクエストをキャンセル |
+| 取得失敗時は throw する | ErrorBoundary / `error.tsx` でキャッチ |
+| `select` に Mapper を渡す | 生 DTO をキャッシュし、消費側で ViewModel に変換（差し替え容易） |
 
-### queryKey ファクトリパターン
+queryKey は階層ファクトリで管理する:
 
-queryKey は階層構造のファクトリで管理する。手書きの文字列配列は禁止。
-
-```typescript
-// queries/product-keys.ts
+```tsx
+// api/productKeys.ts
 export const productKeys = {
   all: ["products"] as const,
   list: (storeId: string) => [...productKeys.all, "list", storeId] as const,
@@ -436,223 +289,116 @@ export const productKeys = {
 };
 ```
 
-| ルール | 理由 |
-| --- | --- |
-| `as const` で型を固定する | 型推論の精度向上、IDE 補完の改善 |
-| パラメータを queryKey に含める | パラメータが変わればキャッシュが分離される |
-| ファクトリ関数で生成する | `invalidateQueries` で部分一致（`productKeys.all`）が使える |
-| 手書きの `["products", id]` は禁止 | タイポ防止、一箇所で管理 |
+### Mapper（DTO → ViewModel）
 
-### queryOptions 定義パターン
-
-```typescript
-// queries/product-queries.ts
-import { queryOptions } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api/client";
-import type { Product } from "../types";
-import { productKeys } from "./product-keys";
-
-async function fetchProducts(storeId: string): Promise<Product[]> {
-  return apiClient.get<Product[]>(`/stores/${storeId}/products`);
-}
-
-export function productListQueryOptions(storeId: string) {
-  return queryOptions({
-    queryKey: productKeys.list(storeId),
-    queryFn: () => fetchProducts(storeId),
-    staleTime: 5 * 60 * 1000, // 5分
-  });
-}
-```
-
-| ルール | 理由 |
-| --- | --- |
-| `queryOptions()` でラップして export する | 型推論が効く、`useSuspenseQuery` にスプレッドできる |
-| `queryKey` は queryKey ファクトリを使う | キー管理の一元化 |
-| `staleTime` を明示する（デフォルト: 5分） | 意図しない再フェッチを防ぐ |
-| `queryFn` 内で `if (error) throw error` する | ErrorBoundary / `error.tsx` でエラーをキャッチするため |
-| fetch のパラメータは引数で受け取る | Server/Client 両方で同じ queryOptions を使えるため |
-
-### select による DTO → ViewModel 変換
-
-API が返す snake_case を、コンポーネントが使う ViewModel に変換する場合は `select` を使う。
-
-```typescript
-function toOrderSummary(row: OrderRow): OrderSummary {
-  return { id: row.id, buyerEmail: row.buyer_email, amount: row.amount, createdAt: new Date(row.created_at) };
-}
-
-export function orderListQueryOptions(storeId: string) {
-  return queryOptions({
-    queryKey: orderKeys.list(storeId),
-    queryFn: () => apiClient.get<OrderRow[]>(`/stores/${storeId}/orders`),
-    select: (rows) => rows.map(toOrderSummary), // キャッシュは生データ、消費側で変換
-  });
-}
-```
-
-**理由:** キャッシュには生 DTO が残るので、同じ API から詳細用・サマリー用の ViewModel を
-作り分けでき、変換関数の差し替えも容易。
-
-## Mutation パターン（Server Actions + useMutation）
-
-Server Actions を `useMutation` でラップして使う。UI フィードバックは **S2 の toast**
-（API は `react-spectrum-s2` skill / MCP で確認。**記憶で書かない**）で出す。
+OpenAPI 由来の snake_case DTO を FE 全体に散りばめず、必ず Mapper で camelCase の ViewModel に変換する。
 
 ```tsx
-// Container 内
-const queryClient = useQueryClient();
+// api/productMapper.ts
+import type { Product } from "../types";
+export const toProduct = (dto: ProductDto): Product => ({ id: dto.id, name: dto.name, /* ... */ });
+export const toProducts = (dtos: ProductDto[]): Product[] => dtos.map(toProduct);
+```
 
-const mutation = useMutation({
-  mutationFn: (values: FormValues) => createProductAction(values),
-  onSuccess: (result) => {
-    if (result.success) {
-      void queryClient.invalidateQueries({ queryKey: productKeys.list(storeId) });
-      // S2 の toast で成功表示
-      handleClose();
-    } else {
-      // result.error を S2 の toast（negative）で表示
-    }
-  },
-  onError: () => {
-    // ネットワークエラー等の汎用フォールバックを S2 の toast で表示
-  },
+| ファイル名 | 関数名 | 一覧用 | サマリー用 |
+| --- | --- | --- | --- |
+| `{entity}Mapper.ts` | `to{Entity}` | `to{Entity}s` / `to{Entity}List` | `to{Entity}Summary` |
+
+Mapper に含めるもの: snake→camel 変換、日付文字列→Date、ネスト変換、配列 map。
+含めないもの: 副作用、UI フォーマット、バリデーション（→ Zod / types）、デフォルト補完（→ hooks）。
+
+### Mutation パターン
+
+`useMutation` を api 層でカスタムフック化し、`onSuccess` に `invalidateQueries`（キャッシュ操作）を
+置く。toast / form.reset / ナビゲーション等の **UI 処理は呼び出し側の `mutate()` コールバック**に置く。
+
+```tsx
+// api 層: キャッシュ操作のみ（コンポーネントがアンマウントされても実行される）
+export const useUpdateProductMutation = (storeId: string) =>
+  useMutation({
+    mutationFn: (input: UpdateProductInput) => apiClient.put(`/products/${input.id}`, input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: productKeys.list(storeId) }),
+  });
+
+// 呼び出し側（hooks）: UI 処理のみ
+mutation.mutate(values, {
+  onSuccess: () => { form.reset(values); showToast("保存しました"); },
+  onError:   () => { showToast("更新に失敗しました", true); },
 });
 ```
 
-### Server Action の戻り値規約
+`queryClient` は `useQueryClient` フックではなく `lib` のシングルトンを import する
+（Mutation 定義のスコープでフックは使えないため）。
 
-Server Actions は常に `ActionResult` を返す。HTTP エラーではなく結果オブジェクトで成否を判定する。
+### キャッシュ無効化と react-hook-form
 
-```typescript
-// shared/types/action.ts
-export type ActionResult =
-  | { success: true; data?: unknown }
-  | { success: false; error: string };
+`useForm` の `defaultValues` はマウント時に一度だけ評価される。`useSuspenseQuery` が古いキャッシュを
+返すと初期値も古くなる。Mutation の `onSuccess` で必ず `invalidateQueries` し、再マウント時に最新値が
+`defaultValues` に渡るようにする。
+
+## 編集権限の取り扱い（将来 / 原則のみ継承）
+
+neymar V2 は Polaris `<SaveBar>` / `<Modal>` 等に `editPermission` / `disabled` を**明示的に渡す**ことを
+必須とする（ラッパのデフォルトへの暗黙依存＝ fail-open を禁止）。**本リポは権限基盤未導入のため現状
+未適用**だが、権限制御を入れる際は次の原則を継承する:
+
+- 権限・活性状態を制御する prop（`isDisabled` 等）を**省略しない**。「省略 = 既定で活性」に暗黙依存しない。
+- 値は単一の権限ソースから取得し、同 feature の保存ロジックと UI 活性状態を**同じフラグで揃える**。
+- lint / 型チェックでは検出できないため、**権限あり / なし両方のユーザーで挙動を手動確認**する。
+
+## スタイリング規約（S2）
+
+正は [docs/DESIGN.md](./DESIGN.md)。要点:
+
+- **`style()` macro + S2 トークン名のみ**（raw hex 禁止）。Tailwind / shadcn / `cn()` は不使用。
+- モジュール先頭で `style()` を定数に括り、JSX では生成済みクラス名を `className` に渡す。
+- S2 コンポーネントへは **レイアウト系のみ**を `styles` prop で渡す（色・内部 padding はカスタム不可）。
+- 条件付きは `style()` の条件オブジェクト（`default` / `isHovered` / `isSelected` / variant）か、
+  生成済みクラス名のテンプレート連結（例: `` `${base} ${HUE[p.thumb]}` ``）で表現する。
+- コンポーネント / トークン / アイコンは `react-spectrum-s2` skill・MCP・実ソースで特定する（記憶で書かない）。
+
+## ディレクトリ構成の具体例（商品一覧）
+
+```
+features/products/
+├── types/
+│   └── index.ts                      # Product 系の型 + ProductFilters
+├── display.tsx                       # 表示トークンの単一定義（Badge variant / hue / icon / illustration）
+├── format.ts                         # 価格・売上の整形（純粋関数）
+├── productMenu.ts                    # 操作メニュー項目の生成（カード / テーブル共用）
+├── ProductsPage.tsx                  # 最上位 Container（Suspense + Skeleton + Content）
+├── ProductsPageSkeleton.tsx          # ローディング表示
+└── ProductsContent/                  # セクション Container（フォルダ化）
+    ├── ProductsContent.tsx           # Container（useProductsFilter を呼び props を渡す）
+    ├── ProductsContentUI.tsx         # Presentational（toolbar + card/table 切替）
+    ├── hooks/
+    │   └── useProductsFilter.ts       # filter/saleType/view state + filterProducts/isFiltered
+    └── components/                   # Presentational 部品（UI 表示制御の useState は可）
+        ├── ProductsCardView.tsx      # グリッド（CardView。選択 state を内部保持）
+        ├── ProductsTable.tsx         # テーブル（TableView。ソート state + compareProducts を内部保持）
+        ├── ProductsActionBar.tsx     # 選択時アクションバー（カード / テーブル共用）
+        └── ProductsEmptyState.tsx    # 空状態（IllustratedMessage、共用）
 ```
 
-```typescript
-// actions/product-actions.ts
-"use server";
+実 API 接続フェーズ（Phase 1）で追加:
 
-export async function createProductAction(input: CreateProductInput): Promise<ActionResult> {
-  try {
-    await apiClient.post("/products", input);
-    return { success: true };
-  } catch {
-    return { success: false, error: "データの登録に失敗しました" };
-  }
-}
+```
+features/products/
+└── api/
+    ├── productsApi.ts                # queryOptions（+ 将来 useMutation）
+    ├── productKeys.ts                # queryKey ファクトリ
+    └── productMapper.ts              # DTO → ViewModel 変換
 ```
 
-### onSuccess に含めるもの・含めないもの
+## 検証
 
-| 含めるもの | 含めないもの |
-| --- | --- |
-| `invalidateQueries` によるキャッシュ無効化 | 別の API 呼び出し（→ 別の Mutation を定義） |
-| toast（成功 / 失敗）の表示 | ページ全体のリロード |
-| `form.reset()` によるフォーム状態のリセット | リトライロジック（→ TanStack Query の `retry` 設定） |
-| ダイアログの close / ナビゲーション | |
-
-### キャッシュ無効化と react-hook-form の関係
-
-`useForm` の `defaultValues` はマウント時に一度だけ評価される。`useSuspenseQuery` が古い
-キャッシュを返すとフォーム初期値も古くなる。**対策:** Mutation の `onSuccess` で必ず
-`invalidateQueries` を呼び、再マウント時に最新データが `defaultValues` に渡るようにする。
-
-## エラーハンドリングパターン
-
-### Mutation のエラー（2 段階）
-
-1. **`result.success` が `false`**: Server Action が返したビジネスエラー → `result.error` を
-   toast（negative）で表示。
-2. **`onError`**: ネットワークエラーや予期しない例外 → 汎用エラーメッセージを toast で表示。
-
-### Query のエラー
-
-`useSuspenseQuery` のエラーは throw され、**route segment の `error.tsx`** または外側の
-ErrorBoundary がキャッチする。セクション内で `isError` を判定しない。
-
-```tsx
-// app/store/products/error.tsx（route segment のエラー境界）
-"use client";
-export default function Error({ reset }: { error: Error; reset: () => void }) {
-  // S2 の IllustratedMessage + Button(reset) でエラー UI を組む
-}
-```
-
-## 変換関数（utils.ts）パターン
-
-ページ固有の計算・変換ロジックは `{page-name}/utils.ts` に置く。
-
-| 変換の種類 | 配置先 | 理由 |
-| --- | --- | --- |
-| API レスポンス → ViewModel（snake → camel） | `queries/` の `select` | キャッシュと変換を分離できる |
-| 配列の集計・ランキング・フィルタ・ソート比較 | `{page-name}/utils.ts` | ページ固有のビジネスロジック |
-| 日付・通貨の表示フォーマット | feature 直下の `{helper}.ts` / `shared/utils/` | 単一 feature 内 or 複数 feature で共通利用 |
-
-```typescript
-// features/products/products-page/utils.ts（本リポ実例）
-export function filterProducts(products: Product[], { status, saleType, query }: ProductFilters): Product[] {
-  const q = query.trim();
-  return products.filter(
-    (p) =>
-      (status === "all" || p.status === status) &&
-      (saleType === "all" || p.saleType === saleType) &&
-      (q === "" || p.name.includes(q)),
-  );
-}
-```
-
-**utils.ts に含めないもの:** 副作用（API 呼び出し・状態更新）、React hooks、UI 固有の表示
-フォーマット（→ コンポーネント側 / `{helper}.ts`）。
-
-## 検証（Storybook / Vitest は使わない）
-
-本リポは **Storybook も Vitest も導入しない**（[CLAUDE.md](../CLAUDE.md)）。検証は次で行う:
+Storybook / Vitest は導入しない。検証は以下で行う:
 
 ```bash
-npm run build   # S2 macro を含む webpack ビルドが通ること（型・macro 解決の確認）
+npm run build   # S2 macro を含む webpack ビルド + 型チェックが通ること
 npm run lint    # eslint
 ```
 
-> **build cache 注意**: `macro-*.css Module not found` でビルドが落ちたら `rm -rf .next` で
-> クリーンビルドする。ビルドは Turbopack 非対応のため `--webpack`（`next.config.ts` の macro
-> plugin + `s2-styles` splitChunks を維持）。
-
-- UI の 4 状態（Default / Empty / Loading / Error）は Storybook の Story ではなく、**実コードの
-  分岐**（`renderEmptyState`・`Suspense` fallback・`error.tsx`）と**実アプリでの目視**で確認する。
-- 純粋ロジック（`utils.ts` のフィルタ・ソート・集計）はテスト基盤が無いぶん、**純粋関数として
-  切り出して**入出力を追いやすく保つ（テストを足す場合も同じ境界が効く）。
-
-## ディレクトリ構成の具体例（商品一覧ページ）
-
-```
-features/products/
-├── types.ts                      # shared 型の再エクスポート + ProductFilters
-├── format.ts                     # 価格・売上の整形（純粋関数）
-├── display.tsx                   # 表示トークンの単一定義（SALE_TYPE_BADGE / THUMB_HUE / KIND_ICON / KIND_ILLUSTRATION）
-├── product-menu.ts               # 操作メニュー項目の生成
-└── products-page/
-    ├── products-page.tsx         # ページ Container（state + mock 読み + view 切替）
-    ├── utils.ts                  # filterProducts / isFiltered / compareProducts
-    ├── products-card-view.tsx    # セクション: グリッド（CardView）
-    ├── products-table.tsx        # セクション: テーブル（TableView）
-    ├── products-action-bar.tsx   # セクション: 選択時アクションバー（カード/テーブル共用）
-    └── products-empty-state.tsx  # セクション: 空状態（IllustratedMessage、共用）
-```
-
-実 API 接続フェーズで追加する想定:
-
-```
-features/products/
-├── api/
-│   └── products-api.ts           # fetch ベースのデータアクセス
-├── queries/
-│   ├── product-keys.ts           # queryKey ファクトリ
-│   └── product-queries.ts        # queryOptions + fetch 関数
-├── actions/
-│   └── product-actions.ts        # Server Actions（ActionResult を返す。UI メニューの product-menu.ts とは別物）
-└── hooks/
-    └── use-product-form.ts        # フォームロジック（react-hook-form + Server Action）
-```
+> ビルドが `macro-*.css Module not found` で落ちたら `rm -rf .next` でクリーンビルド。
+> ビルドは Turbopack 非対応のため `--webpack`（`next.config.ts` の macro plugin +
+> `s2-styles` splitChunks を維持）。
