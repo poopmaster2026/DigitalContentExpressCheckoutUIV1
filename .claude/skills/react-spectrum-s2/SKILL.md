@@ -16,6 +16,17 @@ If the request involves a Figma design, frame, or URL — or if the Figma MCP (`
 
 When writing tests that exercise S2 components, consult [Testing with React Spectrum S2](references/guides/test-utils-guidance.md) and prefer the ARIA pattern testers from `@react-spectrum/test-utils` over hand-rolled role/selector queries.
 
+## Local source of truth (this workspace)
+
+A full checkout of the real `adobe/react-spectrum` monorepo is available at
+`/Users/ryoheiokuma/work/Ours/react-spectrum` — this is the library's **actual source code**,
+not a summary or copy. When this skill, the MCP, or memory are ambiguous or seem to disagree,
+verify against the source directly: S2 components at `packages/@react-spectrum/s2/src/*.tsx`,
+style tokens / theme at `packages/@react-spectrum/s2/style/` (`spectrum-theme.ts`, `index.ts`),
+and the official sample app (the one this project's app-shell and products page were ported
+from) at `packages/dev/s2-docs/pages/s2/home/`. The source is the final authority on component
+internals, tokens, and default props. Treat it as **read-only** — it lives outside the project.
+
 ## React Spectrum S2 vs React Aria Components
 
 React Spectrum S2 is built on top of React Aria Components. The S2 components add Spectrum 2 styling, behavior, and slot structure on top of the unstyled React Aria primitives. Always prefer S2 components for React Spectrum work because they are pre-styled, design-system compliant, and cover most common UI patterns.

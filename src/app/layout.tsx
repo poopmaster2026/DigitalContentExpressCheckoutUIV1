@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { ClientProvider } from "./provider";
 import { QueryProvider } from "@/shared/providers/query-provider";
-// Design tokens + brand layer (docs/DESIGN-TOKENS.md / Figma SoT 準拠)。
-// React Aria Components はこの CSS 変数でスタイルする。S2 は style() マクロのまま。
+// Global base styles only. Design comes from React Spectrum S2 (style() macro
+// + Spectrum tokens) — see docs/DESIGN.md. No custom token layer here.
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,7 +26,10 @@ export default async function RootLayout({
   // applies the Spectrum background layer, and loads fonts for the locale.
   return (
     <ClientProvider lang={lang}>
-      <body>
+      {/* suppressHydrationWarning: ブラウザ拡張が hydration 前に body へ属性を注入する
+          ミスマッチ（例: ColorZilla の cz-shortcut-listen）への公式対処。1 階層のみ有効。
+          https://nextjs.org/docs/messages/react-hydration-error */}
+      <body suppressHydrationWarning>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </ClientProvider>
