@@ -65,7 +65,9 @@ feature は**小さいうちは flat**に保ち、規模に応じてサブディ
 ```
 features/{feature}/
 ├── {helper}.ts(x)               # feature 直下の単機能ヘルパ（表示マップ・整形・ドメイン関数）
-│                                #   例: format.ts / sale-type.ts / thumb.ts / kind.tsx / product-actions.ts
+│                                #   例: format.ts（純粋整形）/ display.tsx（表示トークンの単一定義）/ product-menu.ts
+│                                #   ※「メニュー項目生成」等の UI ヘルパは product-menu.ts。
+│                                #     product-actions.ts は actions/ の Server Actions 専用名なので root に置かない
 ├── types.ts                     # この feature の型（shared/types を再エクスポート + feature 固有型）
 ├── api/                         # データアクセス層（fetch ベース。モック → 実 API 差し替え対象）
 │   └── {feature}-api.ts
@@ -88,11 +90,9 @@ features/{feature}/
 ```
 features/products/
 ├── types.ts                     # shared/types/product の再エクスポート + ProductFilters
-├── format.ts                    # 価格・売上の表示整形（純粋関数）
-├── sale-type.ts                 # 販売形態 → Badge 表示定義（label / variant マップ）
-├── thumb.ts                     # サムネイル背景 hue のクラスマップ
-├── kind.tsx                     # コンテンツ種別 → アイコン / イラストのマップ（"use client"）
-├── product-actions.ts           # 操作メニュー項目の生成（カード/テーブル共用）
+├── format.ts                    # 価格・売上の表示整形（純粋関数。JSX なし）
+├── display.tsx                  # 表示トークンの単一定義: SALE_TYPE_BADGE / THUMB_HUE / KIND_ICON / KIND_ILLUSTRATION（"use client"）
+├── product-menu.ts              # 操作メニュー項目の生成（カード/テーブル共用）
 └── products-page/
     ├── products-page.tsx        # Container（state + mock 読み + view 切替）
     ├── utils.ts                 # filterProducts / isFiltered / compareProducts（純粋）
@@ -227,7 +227,7 @@ export function ProductsTable({ products, isFiltered }: {
   `products-action-bar.tsx` / `products-empty-state.tsx` を使う）。
 - **feature をまたぐ共有は禁止**。複数 feature で使う部品は `shared/components/` に置く。
 - 種別マップ・整形・操作項目など**表示ロジックの単一定義**は feature 直下のヘルパ
-  （`kind.tsx` / `sale-type.ts` / `format.ts` / `product-actions.ts`）に集約し、
+  （`display.tsx` / `format.ts` / `product-menu.ts`）に集約し、
   カード枝・テーブル枝の両方から参照して**表現のブレを防ぐ**。
 
 ### Skeleton コンポーネントパターン
@@ -362,7 +362,7 @@ app → features → shared
 | 対象                   | 規則                               | 例                                       |
 | ---------------------- | ---------------------------------- | ---------------------------------------- |
 | ディレクトリ           | kebab-case                         | `products-page/`, `app-shell/`           |
-| ファイル（全般）       | **kebab-case**                     | `products-page.tsx`, `sale-type.ts`, `query-client.ts` |
+| ファイル（全般）       | **kebab-case**                     | `products-page.tsx`, `product-menu.ts`, `query-client.ts` |
 | コンポーネントの export | PascalCase                        | `export function ProductsPage()`         |
 | 関数 / 変数            | camelCase                          | `filterProducts`, `formatPrice`          |
 | 型 / interface         | PascalCase                         | `Product`, `ProductFilters`              |
@@ -631,10 +631,8 @@ npm run lint    # eslint
 features/products/
 ├── types.ts                      # shared 型の再エクスポート + ProductFilters
 ├── format.ts                     # 価格・売上の整形（純粋関数）
-├── sale-type.ts                  # 販売形態 → Badge 表示定義
-├── thumb.ts                      # サムネイル背景 hue のクラスマップ
-├── kind.tsx                      # 種別 → アイコン / イラスト
-├── product-actions.ts            # 操作メニュー項目の生成
+├── display.tsx                   # 表示トークンの単一定義（SALE_TYPE_BADGE / THUMB_HUE / KIND_ICON / KIND_ILLUSTRATION）
+├── product-menu.ts               # 操作メニュー項目の生成
 └── products-page/
     ├── products-page.tsx         # ページ Container（state + mock 読み + view 切替）
     ├── utils.ts                  # filterProducts / isFiltered / compareProducts
@@ -654,7 +652,7 @@ features/products/
 │   ├── product-keys.ts           # queryKey ファクトリ
 │   └── product-queries.ts        # queryOptions + fetch 関数
 ├── actions/
-│   └── product-actions.ts        # Server Actions（ActionResult を返す）
+│   └── product-actions.ts        # Server Actions（ActionResult を返す。UI メニューの product-menu.ts とは別物）
 └── hooks/
     └── use-product-form.ts        # フォームロジック（react-hook-form + Server Action）
 ```

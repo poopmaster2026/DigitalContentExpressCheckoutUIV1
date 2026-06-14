@@ -8,10 +8,8 @@ import { ActionMenu, MenuItem } from "@react-spectrum/s2/ActionMenu";
 import { Badge } from "@react-spectrum/s2/Badge";
 import type { Product } from "../types";
 import { formatPrice } from "../format";
-import { SALE_TYPE_BADGE } from "../sale-type";
-import { THUMB_HUE } from "../thumb";
-import { KIND_ILLUSTRATION } from "../kind";
-import { productMenuItems } from "../product-actions";
+import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ILLUSTRATION } from "../display";
+import { productMenuItems } from "../product-menu";
 import { ProductsActionBar } from "./products-action-bar";
 import { ProductsEmptyState } from "./products-empty-state";
 

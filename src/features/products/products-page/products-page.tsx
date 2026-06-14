@@ -12,7 +12,7 @@ import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
 import ViewList from "@react-spectrum/s2/icons/ViewList";
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
 import { PRODUCTS } from "@/shared/mock/products";
-import { SALE_TYPE_BADGE } from "../sale-type";
+import { SALE_TYPE_BADGE } from "../display";
 import { filterProducts, isFiltered } from "./utils";
 import { ProductsCardView } from "./products-card-view";
 import { ProductsTable } from "./products-table";
@@ -52,8 +52,8 @@ export function ProductsPage() {
         <div className={spacer} />
         <Picker
           aria-label="販売形態で絞り込み"
-          selectedKey={saleTypeFilter}
-          onSelectionChange={(key) => key !== null && setSaleTypeFilter(key)}
+          value={saleTypeFilter}
+          onChange={(key) => key !== null && setSaleTypeFilter(key)}
           styles={style({ width: 160 })}
         >
           <PickerItem id="all">すべての形態</PickerItem>
@@ -65,8 +65,8 @@ export function ProductsPage() {
         </Picker>
         <Picker
           aria-label="ステータスで絞り込み"
-          selectedKey={filter}
-          onSelectionChange={(key) => key !== null && setFilter(key)}
+          value={filter}
+          onChange={(key) => key !== null && setFilter(key)}
           styles={style({ width: 160 })}
         >
           <PickerItem id="all">すべての商品</PickerItem>
