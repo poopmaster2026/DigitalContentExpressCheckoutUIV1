@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Key } from "react-aria-components";
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
-import { PRODUCTS } from "@/shared/mock/products";
+import { PRODUCTS } from "../../mock";
 import type { Product, ProductFilters } from "../../types";
 
 /** ステータス・販売形態・検索語で商品を絞り込む。 */

@@ -1,9 +1,10 @@
-import type { Product } from "@/shared/types/product";
+import type { Product } from "./types";
 
 const unsplash = (id: string) => `https://images.unsplash.com/${id}?w=600&q=80&auto=format&fit=crop`;
 
 /**
  * Phase 0 のモックデータ（販売形態: デジタル / コース / 予約 / サブスク）。
+ * products feature 固有のため shared/mock ではなくこの feature 内に置く。
  * 画像は販売形態・コンテンツ種別（電子書籍 / 動画講座 / 相談 / 会員制）に合わせた
  * デジタルコンテンツ系のビジュアル。実 API 接続までの仮データ。
  */
