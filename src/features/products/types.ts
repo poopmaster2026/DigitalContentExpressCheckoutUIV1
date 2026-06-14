@@ -1,24 +1,18 @@
-export type ProductStatus = "published" | "draft";
+import type { Key } from "react-aria-components";
 
-export type ProductThumb = "sage" | "sky" | "sand" | "rose" | "lilac" | "mint";
+// 商品ドメインの基本型は shared/types に置き、features からは再エクスポートする
+// （依存方向 app → features → shared を守る）。
+export type {
+  Product,
+  ProductStatus,
+  ProductThumb,
+  ProductKind,
+  SaleType,
+} from "@/shared/types/product";
 
-/** コンテンツ種別。カードプレビューのイラスト選択に使う。 */
-export type ProductKind = "book" | "video" | "collection" | "photo" | "template" | "guide";
-
-/** 販売形態。カードのチップ表示と色分けに使う。 */
-export type SaleType = "digital" | "course" | "booking" | "subscription";
-
-export interface Product {
-  id: string;
-  name: string;
-  /** null = 無料 */
-  price: number | null;
-  sales: number;
-  revenue: number;
-  status: ProductStatus;
-  thumb: ProductThumb;
-  kind: ProductKind;
-  saleType: SaleType;
-  /** 商品サムネイル画像 URL。無い場合は二調色イラストのプレースホルダー表示。 */
-  image?: string;
+/** 商品一覧の絞り込み条件（products-page/utils の filterProducts/isFiltered で使用）。 */
+export interface ProductFilters {
+  status: Key;
+  saleType: Key;
+  query: string;
 }

@@ -17,17 +17,15 @@ import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
 import { Image } from "@react-spectrum/s2/Image";
 import More from "@react-spectrum/s2/icons/More";
-import FileText from "@react-spectrum/s2/icons/FileText";
-import Video from "@react-spectrum/s2/icons/Video";
-import Images from "@react-spectrum/s2/icons/Images";
-import ImageIcon from "@react-spectrum/s2/icons/Image";
-import File from "@react-spectrum/s2/icons/File";
-import Education from "@react-spectrum/s2/icons/Education";
 import type { Product, ProductKind, ProductThumb } from "../types";
-import { formatPrice, formatRevenue } from "../mock";
-import { ProductsEmptyState } from "./products-empty-state";
-import { ProductsActionBar } from "./products-card-view";
+import { formatPrice, formatRevenue } from "../format";
 import { SALE_TYPE_BADGE } from "../sale-type";
+import { THUMB_HUE } from "../thumb";
+import { KIND_ICON } from "../kind";
+import { productMenuItems } from "../product-actions";
+import { compareProducts } from "./utils";
+import { ProductsActionBar } from "./products-action-bar";
+import { ProductsEmptyState } from "./products-empty-state";
 
 const thumbBase = style({
   display: "flex",
@@ -44,15 +42,7 @@ const thumbImage = style({
   height: "full",
   objectFit: "cover",
 });
-// 二調色サムネイル（同一 hue: 背景 100 + アイコン）
-const thumbHue: Record<ProductThumb, string> = {
-  sage: style({ backgroundColor: "celery-100" }),
-  sky: style({ backgroundColor: "blue-100" }),
-  sand: style({ backgroundColor: "orange-100" }),
-  rose: style({ backgroundColor: "pink-100" }),
-  lilac: style({ backgroundColor: "purple-100" }),
-  mint: style({ backgroundColor: "seafoam-100" }),
-};
+// 二調色サムネイル: 共有の背景 hue（THUMB_HUE）+ 同一 hue のアイコン
 const thumbIcon = {
   sage: iconStyle({ color: "celery" }),
   sky: iconStyle({ color: "blue" }),
@@ -62,8 +52,8 @@ const thumbIcon = {
   mint: iconStyle({ color: "seafoam" }),
 } satisfies Record<ProductThumb, unknown>;
 const productCell = style({ display: "flex", alignItems: "center", gap: 12 });
-// 商品名はカードタイトルと同じ太字（エンティティ名の一貫性）
-const productName = style({ fontWeight: "bold" });
+// 商品名・価格は一覧での視認性を優先して太字（プロダクト判断。S2 既定より太い）
+const boldText = style({ fontWeight: "bold" });
 
 function KindIcon({
   kind,
@@ -72,35 +62,8 @@ function KindIcon({
   kind: ProductKind;
   styles: (typeof thumbIcon)[ProductThumb];
 }) {
-  switch (kind) {
-    case "book":
-      return <FileText styles={styles} />;
-    case "video":
-      return <Video styles={styles} />;
-    case "collection":
-      return <Images styles={styles} />;
-    case "photo":
-      return <ImageIcon styles={styles} />;
-    case "template":
-      return <File styles={styles} />;
-    case "guide":
-      return <Education styles={styles} />;
-  }
-}
-
-function compareProducts(a: Product, b: Product, column: SortDescriptor["column"]) {
-  switch (column) {
-    case "name":
-      return a.name.localeCompare(b.name, "ja");
-    case "price":
-      return (a.price ?? 0) - (b.price ?? 0);
-    case "sales":
-      return a.sales - b.sales;
-    case "revenue":
-      return a.revenue - b.revenue;
-    default:
-      return 0;
-  }
+  const Icon = KIND_ICON[kind];
+  return <Icon styles={styles} />;
 }
 
 export function ProductsTable({
@@ -165,11 +128,11 @@ export function ProductsTable({
                     <Image src={p.image} alt="" styles={thumbImage} />
                   </div>
                 ) : (
-                  <div className={`${thumbBase} ${thumbHue[p.thumb]}`}>
+                  <div className={`${thumbBase} ${THUMB_HUE[p.thumb]}`}>
                     <KindIcon kind={p.kind} styles={thumbIcon[p.thumb]} />
                   </div>
                 )}
-                <span className={productName}>{p.name}</span>
+                <span className={boldText}>{p.name}</span>
               </div>
             </Cell>
             <Cell align="center">
@@ -177,7 +140,9 @@ export function ProductsTable({
                 {SALE_TYPE_BADGE[p.saleType].label}
               </Badge>
             </Cell>
-            <Cell align="end">{formatPrice(p.price)}</Cell>
+            <Cell align="end">
+              <span className={boldText}>{formatPrice(p.price)}</span>
+            </Cell>
             <Cell align="end">{p.sales}</Cell>
             <Cell align="end">{formatRevenue(p)}</Cell>
             <Cell>
@@ -187,18 +152,17 @@ export function ProductsTable({
                 {p.status === "published" ? "公開中" : "下書き"}
               </StatusLight>
             </Cell>
-            <Cell>
+            <Cell align="end">
               <MenuTrigger>
                 <ActionButton isQuiet aria-label="操作">
                   <More />
                 </ActionButton>
                 <Menu onAction={() => {}}>
-                  <MenuItem id="edit">編集</MenuItem>
-                  <MenuItem id="duplicate">複製</MenuItem>
-                  <MenuItem id="toggle">
-                    {p.status === "published" ? "下書きに戻す" : "公開する"}
-                  </MenuItem>
-                  <MenuItem id="delete">削除</MenuItem>
+                  {productMenuItems(p).map((a) => (
+                    <MenuItem key={a.id} id={a.id}>
+                      {a.label}
+                    </MenuItem>
+                  ))}
                 </Menu>
               </MenuTrigger>
             </Cell>

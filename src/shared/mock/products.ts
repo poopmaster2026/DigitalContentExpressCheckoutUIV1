@@ -1,4 +1,4 @@
-import type { Product } from "./types";
+import type { Product } from "@/shared/types/product";
 
 const unsplash = (id: string) => `https://images.unsplash.com/${id}?w=600&q=80&auto=format&fit=crop`;
 
@@ -26,11 +26,3 @@ export const PRODUCTS: Product[] = [
   { id: "16", name: "1対1 料理相談（60分）", price: 5000, sales: 9, revenue: 45000, status: "published", thumb: "rose", kind: "video", saleType: "booking", image: unsplash("photo-1542744173-8e7e53415bb0") },
   { id: "17", name: "花子のキッチン 月額会員", price: 980, sales: 76, revenue: 74480, status: "published", thumb: "lilac", kind: "collection", saleType: "subscription", image: unsplash("photo-1521737711867-e3b97375f902") },
 ];
-
-const yen = new Intl.NumberFormat("ja-JP");
-
-export const formatPrice = (price: number | null) =>
-  price === null ? "無料" : `¥${yen.format(price)}`;
-
-export const formatRevenue = (p: Product) =>
-  p.price === null ? "—" : `¥${yen.format(p.revenue)}`;

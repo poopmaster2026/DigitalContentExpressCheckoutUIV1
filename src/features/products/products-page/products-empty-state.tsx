@@ -19,7 +19,7 @@ export function ProductsEmptyState({ isFiltered }: { isFiltered: boolean }) {
     <IllustratedMessage size="L">
       <FileText />
       <Heading>最初の商品を作成しましょう</Heading>
-      <Content>「新規商品」からデジタルコンテンツを登録できます。</Content>
+      <Content>サイドバーの「新規作成」からデジタルコンテンツを登録できます。</Content>
     </IllustratedMessage>
   );
 }

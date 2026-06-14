@@ -11,12 +11,12 @@ import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
 import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
 import ViewList from "@react-spectrum/s2/icons/ViewList";
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
-import { PRODUCTS } from "../mock";
+import { PRODUCTS } from "@/shared/mock/products";
 import { SALE_TYPE_BADGE } from "../sale-type";
+import { filterProducts, isFiltered } from "./utils";
 import { ProductsCardView } from "./products-card-view";
 import { ProductsTable } from "./products-table";
 
-// 公式 Photos ページのリズム: タイトル行 marginBottom 8 + CardView 内蔵の上オフセット
 const page = style({
   display: "flex",
   flexDirection: "column",
@@ -38,17 +38,12 @@ export function ProductsPage() {
   const [view, setView] = useState<Key>("grid");
   const { query } = useAppSearch();
 
-  const products = useMemo(() => {
-    const q = query.trim();
-    return PRODUCTS.filter((p) => {
-      const okStatus = filter === "all" || p.status === filter;
-      const okSaleType = saleTypeFilter === "all" || p.saleType === saleTypeFilter;
-      const okQuery = q === "" || p.name.includes(q);
-      return okStatus && okSaleType && okQuery;
-    });
-  }, [filter, saleTypeFilter, query]);
+  const products = useMemo(
+    () => filterProducts(PRODUCTS, { status: filter, saleType: saleTypeFilter, query }),
+    [filter, saleTypeFilter, query],
+  );
 
-  const isFiltered = query.trim() !== "" || filter !== "all" || saleTypeFilter !== "all";
+  const filtered = isFiltered({ status: filter, saleType: saleTypeFilter, query });
 
   return (
     <div className={page}>
@@ -93,9 +88,9 @@ export function ProductsPage() {
       </div>
 
       {view === "grid" ? (
-        <ProductsCardView products={products} isFiltered={isFiltered} />
+        <ProductsCardView products={products} isFiltered={filtered} />
       ) : (
-        <ProductsTable products={products} isFiltered={isFiltered} />
+        <ProductsTable products={products} isFiltered={filtered} />
       )}
     </div>
   );
