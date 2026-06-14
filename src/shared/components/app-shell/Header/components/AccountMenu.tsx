@@ -11,6 +11,7 @@ import { Divider } from "@react-spectrum/s2/Divider";
 import { Text } from "@react-spectrum/s2/Text";
 import Settings from "@react-spectrum/s2/icons/Settings";
 import Buildings from "@react-spectrum/s2/icons/Buildings";
+import { STORES, DEFAULT_STORE_ID, DEFAULT_STORE } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
 
@@ -58,11 +59,14 @@ export function AccountMenu({
                 <MenuItem>
                   <Buildings />
                   <Text slot="label">ストア</Text>
-                  <Text slot="value">花子のストア</Text>
+                  <Text slot="value">{DEFAULT_STORE?.name}</Text>
                 </MenuItem>
-                <Menu selectionMode="single" selectedKeys={["hanako"]}>
-                  <MenuItem id="hanako">花子のストア</MenuItem>
-                  <MenuItem id="atelier">アトリエ花</MenuItem>
+                <Menu selectionMode="single" selectedKeys={[DEFAULT_STORE_ID]}>
+                  {STORES.map((s) => (
+                    <MenuItem key={s.id} id={s.id}>
+                      {s.name}
+                    </MenuItem>
+                  ))}
                 </Menu>
               </SubmenuTrigger>
               <MenuItem>

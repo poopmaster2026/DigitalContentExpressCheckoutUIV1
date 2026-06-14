@@ -1,0 +1,92 @@
+"use client";
+
+import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Button } from "@react-spectrum/s2/Button";
+import Add from "@react-spectrum/s2/icons/Add";
+import { SideNav, SideNavItem } from "./components/SideNav";
+import { PanelToggleButton } from "./components/PanelToggleButton";
+import { NAV_ENTRIES } from "./navEntries";
+import type { NavState } from "./hooks/useSidebarToggle";
+
+const SM = `@container (min-width: ${640 / 16}rem)`;
+const LG = `@container (width > ${1024 / 16}rem)`;
+
+const sidebar = style({
+  gridArea: "sidebar",
+  display: { default: "none", [SM]: "flex" },
+  flexDirection: "column",
+  gap: 8,
+  paddingX: 16,
+  paddingBottom: 16,
+  width: {
+    default: 32,
+    [LG]: 100,
+    state: { expanded: 100, collapsed: 32 },
+  },
+  overflow: "clip",
+  transition: "[width]",
+  transitionDuration: 300,
+});
+
+const sidebarText = style({
+  opacity: {
+    default: 0,
+    [LG]: 1,
+    state: { expanded: 1, collapsed: 0 },
+  },
+  transition: "default",
+  transitionDuration: 300,
+  whiteSpace: "nowrap",
+});
+
+// 公式サンプルの展開幅は 80（"Create"）。「新規作成」は欧文より幅を要すため 96
+const createButton = style({
+  marginBottom: 8,
+  width: { default: 32, [LG]: 96, state: { expanded: 96, collapsed: 32 } },
+});
+
+/** サイドナビ本体（Presentational）。開閉状態は props で受ける。 */
+export function SidebarUI({
+  state,
+  onToggle,
+}: {
+  state: NavState;
+  onToggle: (containerEl: HTMLElement | null) => void;
+}) {
+  return (
+    <div className={sidebar({ state })}>
+      {/* 公式サンプルと同じ: 開閉状態に追従する accent ボタン */}
+      <Button
+        variant="accent"
+        styles={createButton({ state })}
+        UNSAFE_style={{
+          alignItems: "center",
+          justifyContent: "start",
+          overflow: "clip",
+          transition: "all 300ms",
+        }}
+      >
+        <span className={style({ marginStart: size(6) })}>
+          <Add />
+        </span>
+        <span className={sidebarText({ state })}>新規作成</span>
+      </Button>
+      {/* 実ルートは /store/products のみのため、選択状態は商品に固定した静的表示 */}
+      <SideNav
+        aria-label="メインナビゲーション"
+        orientation="vertical"
+        selectedKeys={["products"]}
+        disallowEmptySelection
+      >
+        {NAV_ENTRIES.map((entry) => (
+          <SideNavItem key={entry.key} id={entry.key}>
+            <entry.icon />
+            <span className={sidebarText({ state })}>{entry.label}</span>
+          </SideNavItem>
+        ))}
+      </SideNav>
+      <div className={style({ flexGrow: 1 })} />
+      <PanelToggleButton state={state} onToggle={onToggle} />
+    </div>
+  );
+}
