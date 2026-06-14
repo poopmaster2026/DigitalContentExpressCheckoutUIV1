@@ -22,31 +22,39 @@ function isFiltered({ status, saleType, query }: ProductFilters): boolean {
   return query.trim() !== "" || status !== "all" || saleType !== "all";
 }
 
+/** 絞り込み条件のローカル状態（status / saleType をまとめて保持。query はヘッダー検索由来）。 */
+type FilterState = Pick<ProductFilters, "status" | "saleType">;
+
+const INITIAL_FILTERS: FilterState = { status: "all", saleType: "all" };
+
 /**
  * 商品一覧のフィルタ / 表示形式の状態管理（ビジネスロジック）。
+ * 同じ ProductFilters に属する status / saleType は 1 つの filters オブジェクトに集約する。
+ * view は「絞り込み」ではなく表示モードなので別 state に分離する。
  * Phase 0 は mock を直読みする。Phase 1 で `PRODUCTS` 直読みを
  * `useSuspenseQuery(productListQueryOptions())` に差し替える（state とフィルタはそのまま）。
  */
 export function useProductsFilter() {
-  const [statusFilter, setStatusFilter] = useState<Key>("all");
-  const [saleTypeFilter, setSaleTypeFilter] = useState<Key>("all");
+  const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [view, setView] = useState<Key>("grid");
   const { query } = useAppSearch();
 
   const products = useMemo(
-    () => filterProducts(PRODUCTS, { status: statusFilter, saleType: saleTypeFilter, query }),
-    [statusFilter, saleTypeFilter, query],
+    () => filterProducts(PRODUCTS, { ...filters, query }),
+    [filters, query],
   );
 
-  const filtered = isFiltered({ status: statusFilter, saleType: saleTypeFilter, query });
+  const filtered = isFiltered({ ...filters, query });
 
+  // 内部表現（filters オブジェクト）は隠し、UI へは個別の値 + コールバックで公開する
+  // （ProductsContentUI の props 形状を変えずに済む）。
   return {
     products,
     filtered,
-    statusFilter,
-    setStatusFilter,
-    saleTypeFilter,
-    setSaleTypeFilter,
+    status: filters.status,
+    saleType: filters.saleType,
+    onStatusChange: (status: Key) => setFilters((f) => ({ ...f, status })),
+    onSaleTypeChange: (saleType: Key) => setFilters((f) => ({ ...f, saleType })),
     view,
     setView,
   };

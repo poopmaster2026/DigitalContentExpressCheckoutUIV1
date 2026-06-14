@@ -8,10 +8,10 @@ export function ProductsContent() {
   const {
     products,
     filtered,
-    statusFilter,
-    setStatusFilter,
-    saleTypeFilter,
-    setSaleTypeFilter,
+    status,
+    saleType,
+    onStatusChange,
+    onSaleTypeChange,
     view,
     setView,
   } = useProductsFilter();
@@ -20,10 +20,10 @@ export function ProductsContent() {
     <ProductsContentUI
       products={products}
       isFiltered={filtered}
-      statusFilter={statusFilter}
-      onStatusChange={setStatusFilter}
-      saleTypeFilter={saleTypeFilter}
-      onSaleTypeChange={setSaleTypeFilter}
+      statusFilter={status}
+      onStatusChange={onStatusChange}
+      saleTypeFilter={saleType}
+      onSaleTypeChange={onSaleTypeChange}
       view={view}
       onViewChange={setView}
     />
