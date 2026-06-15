@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { style, iconStyle } from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   TableView,
@@ -87,6 +88,7 @@ export function ProductsTable({
   isFiltered: boolean;
 }) {
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(null);
+  const router = useRouter();
 
   let rows = products;
   if (sortDescriptor) {
@@ -170,7 +172,11 @@ export function ProductsTable({
                 <ActionButton isQuiet aria-label="操作">
                   <More />
                 </ActionButton>
-                <Menu onAction={() => {}}>
+                <Menu
+                  onAction={(key) => {
+                    if (key === "edit") router.push(`/store/products/${p.id}`);
+                  }}
+                >
                   {productMenuItems(p).map((a) => (
                     <MenuItem key={a.id} id={a.id}>
                       {a.label}

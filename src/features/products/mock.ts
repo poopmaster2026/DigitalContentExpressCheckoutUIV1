@@ -1,4 +1,4 @@
-import type { Product } from "./types";
+import type { Product, ProductDetail, ProductFile } from "./types";
 
 const unsplash = (id: string) => `https://images.unsplash.com/${id}?w=600&q=80&auto=format&fit=crop`;
 
@@ -27,3 +27,62 @@ export const PRODUCTS: Product[] = [
   { id: "16", name: "1対1 料理相談（60分）", price: 5000, sales: 9, revenue: 45000, status: "published", thumb: "rose", kind: "video", saleType: "booking", image: unsplash("photo-1542744173-8e7e53415bb0") },
   { id: "17", name: "花子のキッチン 月額会員", price: 980, sales: 76, revenue: 74480, status: "published", thumb: "lilac", kind: "collection", saleType: "subscription", image: unsplash("photo-1521737711867-e3b97375f902") },
 ];
+
+/**
+ * 詳細/編集画面用の追加データ（説明・カテゴリ・slug・配信ファイル）。
+ * 一覧の Product に上乗せして ProductDetail を組み立てる。実 API 接続時に api + queries へ差し替える。
+ */
+interface DetailExtra {
+  description: string;
+  category: string;
+  slug: string;
+  contentFile?: ProductFile;
+}
+
+const DETAIL_EXTRAS: Record<string, DetailExtra> = {
+  "1": {
+    description:
+      "旬の食材で作る、やさしい日々の料理。基本の出汁の引き方からていねいに解説した入門ガイドです。はじめてでも失敗しにくい工程写真つきで、献立づくりの土台が身につきます。",
+    category: "料理",
+    slug: "yasashii-ryori-no-kihon",
+    contentFile: { name: "yasashii-ryori-no-kihon.pdf", size: 4_404_019 },
+  },
+  "3": {
+    description:
+      "春夏秋冬の手しごとをまとめた季節のレシピ集。旬の食材の使い切りと、食卓を彩るスタイリングのヒントを添えました。印刷してもタブレットで見ても使いやすい構成です。",
+    category: "レシピ集",
+    slug: "kisetsu-no-recipe",
+    contentFile: { name: "kisetsu-no-recipe.pdf", size: 8_912_233 },
+  },
+  "4": {
+    description:
+      "忙しい朝でも作れる30分以内の朝食レシピを30品。写真付きで手順がわかりやすく、平日の朝の定番づくりに役立ちます。",
+    category: "レシピ集",
+    slug: "choshoku-recipe-30",
+    contentFile: { name: "choshoku-recipe-30.pdf", size: 5_242_880 },
+  },
+  "6": {
+    description:
+      "和食の土台となる「だし」を基礎から学べるガイドブック。素材ごとの引き方と保存のコツ、だしを活かした定番レシピまで一冊にまとめました。",
+    category: "ガイド",
+    slug: "dashi-no-kihon",
+    contentFile: { name: "dashi-no-kihon-guide.pdf", size: 6_710_886 },
+  },
+};
+
+function fallbackExtra(p: Product): DetailExtra {
+  return {
+    description: `${p.name}の商品説明です。詳細・編集画面のモックデータとして表示しています。`,
+    category: "デジタル",
+    slug: p.id,
+    contentFile:
+      p.saleType === "digital" ? { name: `${p.id}.pdf`, size: 2_516_582 } : undefined,
+  };
+}
+
+/** id から詳細データを取得（存在しなければ undefined）。 */
+export function getProductDetail(id: string): ProductDetail | undefined {
+  const product = PRODUCTS.find((p) => p.id === id);
+  if (!product) return undefined;
+  return { ...product, ...(DETAIL_EXTRAS[id] ?? fallbackExtra(product)) };
+}

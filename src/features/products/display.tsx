@@ -14,6 +14,11 @@ import ImagesIcon from "@react-spectrum/s2/icons/Images";
 import ImageIcon from "@react-spectrum/s2/icons/Image";
 import FileIcon from "@react-spectrum/s2/icons/File";
 import EducationIcon from "@react-spectrum/s2/icons/Education";
+// カバー画像プレースホルダ用は generic2（一覧タイルの generic1 とレイヤを分ける）
+import FileTextG2 from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
+import EducationG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
+import CalendarG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Calendar";
+import CardTapPaymentG2 from "@react-spectrum/s2/illustrations/gradient/generic2/CardTapPayment";
 import type { ProductKind, ProductThumb, SaleType } from "./types";
 
 /**
@@ -59,6 +64,17 @@ export const KIND_ILLUSTRATION: Record<ProductKind, ReactNode> = {
   photo: <ImageIllustration />,
   template: <DocumentIllustration />,
   guide: <EducationIllustration />,
+};
+
+/**
+ * カバー画像が未設定のときのプレースホルダ・イラスト（generic2）。
+ * ランダムにせず販売形態で固定する（詳細/編集のカバー欄・プレビューで共用）。
+ */
+export const COVER_ILLUSTRATION: Record<SaleType, ReactNode> = {
+  digital: <FileTextG2 />,
+  course: <EducationG2 />,
+  booking: <CalendarG2 />,
+  subscription: <CardTapPaymentG2 />,
 };
 
 /** テーブルサムネイル用アイコン（line icon）。色は呼び出し側が styles で渡す。 */

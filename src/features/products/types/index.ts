@@ -35,6 +35,28 @@ export interface Product {
   image?: string;
 }
 
+/** デジタル商品の配信ファイル。 */
+export interface ProductFile {
+  name: string;
+  /** バイト数（表示は整形する）。 */
+  size: number;
+}
+
+/**
+ * 詳細/編集画面で扱う商品。一覧用の Product に編集対象の追加項目を足したもの。
+ * 一覧（Product）は最小構成のため、詳細はこの型で読み込む。
+ */
+export interface ProductDetail extends Product {
+  /** 商品説明。 */
+  description: string;
+  /** カテゴリ。 */
+  category: string;
+  /** 購入者向け公開ページの slug。 */
+  slug: string;
+  /** デジタル配信ファイル（saleType === "digital" のとき）。 */
+  contentFile?: ProductFile;
+}
+
 /** 商品一覧の絞り込み条件（products-page/utils の filterProducts/isFiltered で使用）。 */
 export interface ProductFilters {
   status: Key;
