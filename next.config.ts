@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
   webpack(config) {
     config.plugins.push(macrosPlugin);
 
+    // unplugin-parcel-macros emits virtual `macro-<hash>.css` modules whose
+    // hash changes with the source. webpack's *persistent* filesystem cache
+    // (.next/cache) can hold stale references to these and fail with
+    // "Module not found: macro-<hash>.css" after branch switches / pulls /
+    // dep bumps. Drop the persistent layer (keep in-memory for HMR/incremental
+    // speed within a run) so those stale references can't survive a restart.
+    config.cache = { type: "memory" };
+
     // Consolidate the CSS that the S2 macros emit into a single chunk so
     // styles aren't duplicated/split across the app.
     config.optimization.splitChunks ||= {};
