@@ -12,6 +12,9 @@ const container = style({
   containerType: "inline-size",
   height: "screen",
   position: "relative",
+  // アプリ外枠で document 自体はスクロールさせない（スクロールは content 領域に集約）。
+  // これがないと、内部に overflow:auto を持つ画面で window と content の二重スクロールが起きる。
+  overflow: "hidden",
 });
 
 const frame = style({

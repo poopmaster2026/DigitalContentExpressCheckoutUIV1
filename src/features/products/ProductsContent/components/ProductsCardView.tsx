@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { CardView, type Selection } from "@react-spectrum/s2/CardView";
 import { Card, CardPreview, Content, Text, Image } from "@react-spectrum/s2/Card";
@@ -49,6 +50,7 @@ export function ProductsCardView({
   isFiltered: boolean;
 }) {
   const [selected, setSelected] = useState<Selection>(new Set());
+  const router = useRouter();
 
   return (
     <CardView
@@ -85,7 +87,12 @@ export function ProductsCardView({
             <Text slot="title">
               <span className={boldText}>{p.name}</span>
             </Text>
-            <ActionMenu aria-label="操作" onAction={() => {}}>
+            <ActionMenu
+              aria-label="操作"
+              onAction={(key) => {
+                if (key === "edit") router.push(`/store/products/${p.id}`);
+              }}
+            >
               {productMenuItems(p).map((a) => (
                 <MenuItem key={a.id} id={a.id}>
                   {a.label}
