@@ -1,19 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { CardView, type Selection } from "@react-spectrum/s2/CardView";
 import { Card, CardPreview, Content, Text, Image } from "@react-spectrum/s2/Card";
 import { ActionMenu, MenuItem } from "@react-spectrum/s2/ActionMenu";
 import { Badge } from "@react-spectrum/s2/Badge";
-import type { Product } from "../types";
-import { formatPrice } from "../format";
-import { SALE_TYPE_BADGE } from "../sale-type";
-import { THUMB_HUE } from "../thumb";
-import { KIND_ILLUSTRATION } from "../kind";
-import { productMenuItems } from "../product-actions";
-import { ProductsActionBar } from "./products-action-bar";
-import { ProductsEmptyState } from "./products-empty-state";
+import type { Product } from "../../types";
+import { formatPrice } from "../../format";
+import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ILLUSTRATION } from "../../display";
+import { productMenuItems } from "../../productMenu";
+import { ProductsActionBar } from "./ProductsActionBar";
+import { ProductsEmptyState } from "./ProductsEmptyState";
 
 // S2 Card の grid 画像既定は 3/2。デジタルコンテンツのタイルを画像寸法に依らず
 // 均一に見せるため square に固定し、画像枝とイラスト枝で同じ比率を共有する
@@ -51,6 +50,7 @@ export function ProductsCardView({
   isFiltered: boolean;
 }) {
   const [selected, setSelected] = useState<Selection>(new Set());
+  const router = useRouter();
 
   return (
     <CardView
@@ -87,7 +87,12 @@ export function ProductsCardView({
             <Text slot="title">
               <span className={boldText}>{p.name}</span>
             </Text>
-            <ActionMenu aria-label="操作" onAction={() => {}}>
+            <ActionMenu
+              aria-label="操作"
+              onAction={(key) => {
+                if (key === "edit") router.push(`/store/products/${p.id}`);
+              }}
+            >
               {productMenuItems(p).map((a) => (
                 <MenuItem key={a.id} id={a.id}>
                   {a.label}

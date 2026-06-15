@@ -1,21 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   SegmentedControl,
   SegmentedControlItem,
-  type Key,
 } from "@react-spectrum/s2/SegmentedControl";
 import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
 import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
 import ViewList from "@react-spectrum/s2/icons/ViewList";
-import { useAppSearch } from "@/shared/components/app-shell/search-context";
-import { PRODUCTS } from "@/shared/mock/products";
-import { SALE_TYPE_BADGE } from "../sale-type";
-import { filterProducts, isFiltered } from "./utils";
-import { ProductsCardView } from "./products-card-view";
-import { ProductsTable } from "./products-table";
+import type { Key } from "react-aria-components";
+import type { Product } from "../types";
+import { SALE_TYPE_BADGE } from "../display";
+import { ProductsCardView } from "./components/ProductsCardView";
+import { ProductsTable } from "./components/ProductsTable";
 
 const page = style({
   display: "flex",
@@ -32,19 +29,27 @@ const titleRow = style({
 });
 const spacer = style({ flexGrow: 1 });
 
-export function ProductsPage() {
-  const [filter, setFilter] = useState<Key>("all");
-  const [saleTypeFilter, setSaleTypeFilter] = useState<Key>("all");
-  const [view, setView] = useState<Key>("grid");
-  const { query } = useAppSearch();
+type Props = {
+  products: Product[];
+  isFiltered: boolean;
+  statusFilter: Key;
+  onStatusChange: (key: Key) => void;
+  saleTypeFilter: Key;
+  onSaleTypeChange: (key: Key) => void;
+  view: Key;
+  onViewChange: (key: Key) => void;
+};
 
-  const products = useMemo(
-    () => filterProducts(PRODUCTS, { status: filter, saleType: saleTypeFilter, query }),
-    [filter, saleTypeFilter, query],
-  );
-
-  const filtered = isFiltered({ status: filter, saleType: saleTypeFilter, query });
-
+export function ProductsContentUI({
+  products,
+  isFiltered,
+  statusFilter,
+  onStatusChange,
+  saleTypeFilter,
+  onSaleTypeChange,
+  view,
+  onViewChange,
+}: Props) {
   return (
     <div className={page}>
       <div className={titleRow}>
@@ -53,7 +58,7 @@ export function ProductsPage() {
         <Picker
           aria-label="販売形態で絞り込み"
           selectedKey={saleTypeFilter}
-          onSelectionChange={(key) => key !== null && setSaleTypeFilter(key)}
+          onSelectionChange={(key) => key !== null && onSaleTypeChange(key)}
           styles={style({ width: 160 })}
         >
           <PickerItem id="all">すべての形態</PickerItem>
@@ -65,8 +70,8 @@ export function ProductsPage() {
         </Picker>
         <Picker
           aria-label="ステータスで絞り込み"
-          selectedKey={filter}
-          onSelectionChange={(key) => key !== null && setFilter(key)}
+          selectedKey={statusFilter}
+          onSelectionChange={(key) => key !== null && onStatusChange(key)}
           styles={style({ width: 160 })}
         >
           <PickerItem id="all">すべての商品</PickerItem>
@@ -76,7 +81,7 @@ export function ProductsPage() {
         <SegmentedControl
           aria-label="表示形式"
           selectedKey={view}
-          onSelectionChange={setView}
+          onSelectionChange={onViewChange}
         >
           <SegmentedControlItem id="grid" aria-label="グリッド表示">
             <ViewGrid />
@@ -88,9 +93,9 @@ export function ProductsPage() {
       </div>
 
       {view === "grid" ? (
-        <ProductsCardView products={products} isFiltered={filtered} />
+        <ProductsCardView products={products} isFiltered={isFiltered} />
       ) : (
-        <ProductsTable products={products} isFiltered={filtered} />
+        <ProductsTable products={products} isFiltered={isFiltered} />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { style, iconStyle } from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   TableView,
@@ -17,15 +18,28 @@ import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
 import { Image } from "@react-spectrum/s2/Image";
 import More from "@react-spectrum/s2/icons/More";
-import type { Product, ProductKind, ProductThumb } from "../types";
-import { formatPrice, formatRevenue } from "../format";
-import { SALE_TYPE_BADGE } from "../sale-type";
-import { THUMB_HUE } from "../thumb";
-import { KIND_ICON } from "../kind";
-import { productMenuItems } from "../product-actions";
-import { compareProducts } from "./utils";
-import { ProductsActionBar } from "./products-action-bar";
-import { ProductsEmptyState } from "./products-empty-state";
+import type { Product, ProductKind, ProductThumb } from "../../types";
+import { formatPrice, formatRevenue } from "../../format";
+import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../display";
+import { productMenuItems } from "../../productMenu";
+import { ProductsActionBar } from "./ProductsActionBar";
+import { ProductsEmptyState } from "./ProductsEmptyState";
+
+/** テーブルのソート比較（列ごと）。ソート state はこの Presentational の UI 表示制御に閉じる。 */
+function compareProducts(a: Product, b: Product, column: SortDescriptor["column"]): number {
+  switch (column) {
+    case "name":
+      return a.name.localeCompare(b.name, "ja");
+    case "price":
+      return (a.price ?? 0) - (b.price ?? 0);
+    case "sales":
+      return a.sales - b.sales;
+    case "revenue":
+      return a.revenue - b.revenue;
+    default:
+      return 0;
+  }
+}
 
 const thumbBase = style({
   display: "flex",
@@ -74,6 +88,7 @@ export function ProductsTable({
   isFiltered: boolean;
 }) {
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(null);
+  const router = useRouter();
 
   let rows = products;
   if (sortDescriptor) {
@@ -157,7 +172,11 @@ export function ProductsTable({
                 <ActionButton isQuiet aria-label="操作">
                   <More />
                 </ActionButton>
-                <Menu onAction={() => {}}>
+                <Menu
+                  onAction={(key) => {
+                    if (key === "edit") router.push(`/store/products/${p.id}`);
+                  }}
+                >
                   {productMenuItems(p).map((a) => (
                     <MenuItem key={a.id} id={a.id}>
                       {a.label}
