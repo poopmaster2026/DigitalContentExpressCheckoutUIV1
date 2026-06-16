@@ -21,8 +21,16 @@ const page = style({
   flexGrow: 1,
   minHeight: 0,
 });
-const pageTitle = style({ font: "heading", marginY: 0 });
+const pageTitle = style({ font: "heading", marginY: 0, flexShrink: 0 });
 const titleRow = style({
+  display: "flex",
+  alignItems: "center",
+  flexWrap: "wrap",
+  gap: 12,
+  rowGap: 8,
+});
+// Picker + SegmentedControl をひとまとめにして、狭幅時に h1 の下へ折り返す
+const controlsGroup = style({
   display: "flex",
   alignItems: "center",
   gap: 12,
@@ -55,41 +63,41 @@ export function ProductsContentUI({
       <div className={titleRow}>
         <h1 className={pageTitle}>商品</h1>
         <div className={spacer} />
-        <Picker
-          aria-label="販売形態で絞り込み"
-          selectedKey={saleTypeFilter}
-          onSelectionChange={(key) => key !== null && onSaleTypeChange(key)}
-          styles={style({ width: 160 })}
-        >
-          <PickerItem id="all">すべての形態</PickerItem>
-          {Object.entries(SALE_TYPE_BADGE).map(([id, { label }]) => (
-            <PickerItem key={id} id={id}>
-              {label}
-            </PickerItem>
-          ))}
-        </Picker>
-        <Picker
-          aria-label="ステータスで絞り込み"
-          selectedKey={statusFilter}
-          onSelectionChange={(key) => key !== null && onStatusChange(key)}
-          styles={style({ width: 160 })}
-        >
-          <PickerItem id="all">すべての商品</PickerItem>
-          <PickerItem id="published">公開中</PickerItem>
-          <PickerItem id="draft">下書き</PickerItem>
-        </Picker>
-        <SegmentedControl
-          aria-label="表示形式"
-          selectedKey={view}
-          onSelectionChange={onViewChange}
-        >
-          <SegmentedControlItem id="grid" aria-label="グリッド表示">
-            <ViewGrid />
-          </SegmentedControlItem>
-          <SegmentedControlItem id="list" aria-label="リスト表示">
-            <ViewList />
-          </SegmentedControlItem>
-        </SegmentedControl>
+        <div className={controlsGroup}>
+          <Picker
+            aria-label="販売形態で絞り込み"
+            selectedKey={saleTypeFilter}
+            onSelectionChange={(key) => key !== null && onSaleTypeChange(key)}
+          >
+            <PickerItem id="all">すべての形態</PickerItem>
+            {Object.entries(SALE_TYPE_BADGE).map(([id, { label }]) => (
+              <PickerItem key={id} id={id}>
+                {label}
+              </PickerItem>
+            ))}
+          </Picker>
+          <Picker
+            aria-label="ステータスで絞り込み"
+            selectedKey={statusFilter}
+            onSelectionChange={(key) => key !== null && onStatusChange(key)}
+          >
+            <PickerItem id="all">すべての商品</PickerItem>
+            <PickerItem id="published">公開中</PickerItem>
+            <PickerItem id="draft">下書き</PickerItem>
+          </Picker>
+          <SegmentedControl
+            aria-label="表示形式"
+            selectedKey={view}
+            onSelectionChange={onViewChange}
+          >
+            <SegmentedControlItem id="grid" aria-label="グリッド表示">
+              <ViewGrid />
+            </SegmentedControlItem>
+            <SegmentedControlItem id="list" aria-label="リスト表示">
+              <ViewList />
+            </SegmentedControlItem>
+          </SegmentedControl>
+        </div>
       </div>
 
       {view === "grid" ? (
