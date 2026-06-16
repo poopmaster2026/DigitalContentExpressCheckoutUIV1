@@ -46,7 +46,7 @@ export function Header({
         />
       ) : (
         <>
-          <Brand isDark={isDark} />
+          <Brand />
           <HeaderSearch />
           <div className={spacer} />
           <HeaderActions

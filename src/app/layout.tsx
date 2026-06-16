@@ -8,7 +8,7 @@ import { QueryProvider } from "@/shared/providers/query-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Digital Content Express Checkout",
+  title: "SetLink",
   description: "React Spectrum (S2) UI",
 };
 

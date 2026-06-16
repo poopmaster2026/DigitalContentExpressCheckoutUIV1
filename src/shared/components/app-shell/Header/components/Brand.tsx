@@ -7,13 +7,19 @@ import { StoreSwitcher } from "./StoreSwitcher";
 const SM = `@container (min-width: ${640 / 16}rem)`;
 
 const brand = style({ display: "flex", alignItems: "center", gap: 20, flexShrink: 0 });
+const logoWrap = style({ display: "flex", alignItems: "center", gap: 8 });
 // S2 Image はスケルトン用に gray の wrapper 背景を持つため、透過ロゴでは明示的に打ち消す
 const logoImage = style({
-  height: 24,
+  height: 36,
   width: "auto",
   display: "block",
   flexShrink: 0,
   backgroundColor: "transparent",
+});
+const brandName = style({
+  fontSize: "heading-sm",
+  fontWeight: "bold",
+  color: "heading",
 });
 // ブランドとストア切替の区切り。色は S2 Divider の既定トークン（gray-200）に合わせる。
 // marginStart はサイドバー展開時のコンテンツパネル左端に縦のラインを揃えるための値
@@ -30,15 +36,14 @@ const storeSwitcherWrap = style({
   display: { default: "none", [SM]: "contents" },
 });
 
-/** ロゴ + 区切り + ストア切替。ロゴは色スキームで差し替える。 */
-export function Brand({ isDark }: { isDark: boolean }) {
+/** ロゴ + ブランド名 + 区切り + ストア切替。 */
+export function Brand() {
   return (
     <div className={brand}>
-      <Image
-        src={isDark ? "/ours-logo-dark.png" : "/ours-logo.png"}
-        alt="Ours"
-        styles={logoImage}
-      />
+      <div className={logoWrap}>
+        <Image src="/setlink-logo.png" alt="" styles={logoImage} />
+        <span className={brandName}>SetLink</span>
+      </div>
       <div className={brandDivider} role="separator" aria-orientation="vertical" />
       <div className={storeSwitcherWrap}>
         <StoreSwitcher />
