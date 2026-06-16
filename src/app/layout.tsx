@@ -3,12 +3,11 @@ import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { ClientProvider } from "./provider";
 import { QueryProvider } from "@/shared/providers/query-provider";
-// Global base styles only. Design comes from React Spectrum S2 (style() macro
-// + Spectrum tokens) — see docs/DESIGN.md. No custom token layer here.
+// グローバルなベーススタイルのみ。デザインは React Spectrum S2（style() マクロ + Spectrum トークン）由来 — docs/DESIGN.md を参照。ここに独自のトークン層は持たない。
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Digital Content Express Checkout",
+  title: "SetLink",
   description: "React Spectrum (S2) UI",
 };
 

@@ -34,7 +34,7 @@ export function Header({
 }) {
   return (
     <div className={toolbar}>
-      <Brand isDark={isDark} />
+      <Brand />
       <HeaderSearch />
       <div className={spacer} />
       <HeaderActions isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
