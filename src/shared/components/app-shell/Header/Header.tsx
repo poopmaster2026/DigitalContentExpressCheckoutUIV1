@@ -5,6 +5,8 @@ import { Brand } from "./components/Brand";
 import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderActions } from "./components/HeaderActions";
 
+const MD = `@container (min-width: ${768 / 16}rem)`;
+
 const toolbar = style({
   gridArea: "toolbar",
   display: "flex",
@@ -15,23 +17,11 @@ const toolbar = style({
   alignItems: "center",
   width: "full",
 });
-// 中央の検索がブランド幅に影響されないよう、左右ゾーンを等幅 flex にする
-const toolbarSide = style({
+// 検索が隠れる狭幅（< MD）でアクション群を右端へ押すスペーサー（公式 S2 サンプル準拠）。
+// 検索ラッパー自身が flexGrow:1 で中央余白を埋めるため、表示時はこのスペーサーは不要。
+const spacer = style({
   flexGrow: 1,
-  flexBasis: 0,
-  minWidth: 0,
-  display: "flex",
-  alignItems: "center",
-  gap: 20,
-});
-const toolbarSideEnd = style({
-  flexGrow: 1,
-  flexBasis: 0,
-  minWidth: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "end",
-  gap: 20,
+  display: { default: "block", [MD]: "none" },
 });
 
 /** アプリ上部のツールバー。Brand / 検索 / アクション群を配置する Presentational。 */
@@ -44,13 +34,10 @@ export function Header({
 }) {
   return (
     <div className={toolbar}>
-      <div className={toolbarSide}>
-        <Brand isDark={isDark} />
-      </div>
+      <Brand isDark={isDark} />
       <HeaderSearch />
-      <div className={toolbarSideEnd}>
-        <HeaderActions isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
-      </div>
+      <div className={spacer} />
+      <HeaderActions isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
     </div>
   );
 }
