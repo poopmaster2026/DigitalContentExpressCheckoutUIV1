@@ -87,22 +87,25 @@ export function ProductsTable({
   products: Product[];
   isFiltered: boolean;
 }) {
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(null);
+  // 初期ソートを「売上の降順」に固定する。S2 のソート矢印はアクティブ列にしか描画されないため、
+  // 初期ソート無し（null）だと一度クリックするまで並び替え可能だと気づけない。既定を持たせて
+  // 読み込み時点で現在の並び順とソート可能であることを可視化する。
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: "revenue",
+    direction: "descending",
+  });
   const router = useRouter();
 
-  let rows = products;
-  if (sortDescriptor) {
-    rows = [...products].sort((a, b) => {
-      const cmp = compareProducts(a, b, sortDescriptor.column);
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }
+  const rows = [...products].sort((a, b) => {
+    const cmp = compareProducts(a, b, sortDescriptor.column);
+    return sortDescriptor.direction === "descending" ? -cmp : cmp;
+  });
 
   return (
     <TableView
       aria-label="商品一覧"
       selectionMode="multiple"
-      sortDescriptor={sortDescriptor ?? undefined}
+      sortDescriptor={sortDescriptor}
       onSortChange={setSortDescriptor}
       renderActionBar={() => <ProductsActionBar />}
       styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginTop: 8 })}
