@@ -2,7 +2,6 @@
 
 import { ActionBar, ActionButton, Text } from "@react-spectrum/s2/ActionBar";
 import { AlertDialog, DialogTrigger } from "@react-spectrum/s2/AlertDialog";
-import Duplicate from "@react-spectrum/s2/icons/Duplicate";
 import Publish from "@react-spectrum/s2/icons/Publish";
 import Revert from "@react-spectrum/s2/icons/Revert";
 import Delete from "@react-spectrum/s2/icons/Delete";
@@ -10,16 +9,13 @@ import Delete from "@react-spectrum/s2/icons/Delete";
 /**
  * 選択時の一括操作バー（グリッド/テーブル共用）。
  * 件数表示・選択解除(×)・Escape・読み上げは S2 が Context 経由で自動注入するため
- * ここには書かない。アクションは行メニューと語彙を揃え、安全→状態遷移→破壊的の順に並べる。
- * 破壊的（削除）は色ボタンにせず、確認ダイアログ（destructive）で担保する。
+ * ここには書かない。アクションは行メニューと語彙を揃える（ただし「複製」は単一商品向けの
+ * 操作のため一括バーには含めない）。状態遷移→破壊的の順に並べ、破壊的（削除）は色ボタンに
+ * せず確認ダイアログ（destructive）で担保する。
  */
 export function ProductsActionBar() {
   return (
     <ActionBar isEmphasized>
-      <ActionButton aria-label="複製" onPress={() => {}}>
-        <Duplicate />
-        <Text>複製</Text>
-      </ActionButton>
       <ActionButton aria-label="公開する" onPress={() => {}}>
         <Publish />
         <Text>公開する</Text>

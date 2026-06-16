@@ -1,9 +1,11 @@
 "use client";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useState } from "react";
 import { Brand } from "./components/Brand";
 import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderActions } from "./components/HeaderActions";
+import { HeaderSearchExpanded } from "./components/HeaderSearchExpanded";
 
 const MD = `@container (min-width: ${768 / 16}rem)`;
 
@@ -17,8 +19,7 @@ const toolbar = style({
   alignItems: "center",
   width: "full",
 });
-// 検索が隠れる狭幅（< MD）でアクション群を右端へ押すスペーサー（公式 S2 サンプル準拠）。
-// 検索ラッパー自身が flexGrow:1 で中央余白を埋めるため、表示時はこのスペーサーは不要。
+// 検索が隠れる狭幅（< MD）でアクション群を右端へ押すスペーサー。
 const spacer = style({
   flexGrow: 1,
   display: { default: "block", [MD]: "none" },
@@ -32,12 +33,29 @@ export function Header({
   isDark: boolean;
   onColorSchemeChange: (isDark: boolean) => void;
 }) {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   return (
     <div className={toolbar}>
-      <Brand />
-      <HeaderSearch />
-      <div className={spacer} />
-      <HeaderActions isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
+      {isSearchOpen ? (
+        // モバイル検索展開時: Brand・スペーサー・通常アクションを隠してフルワイド検索バーを表示
+        <HeaderSearchExpanded
+          isDark={isDark}
+          onColorSchemeChange={onColorSchemeChange}
+          onClose={() => setIsSearchOpen(false)}
+        />
+      ) : (
+        <>
+          <Brand />
+          <HeaderSearch />
+          <div className={spacer} />
+          <HeaderActions
+            isDark={isDark}
+            onColorSchemeChange={onColorSchemeChange}
+            onSearchOpen={() => setIsSearchOpen(true)}
+          />
+        </>
+      )}
     </div>
   );
 }
