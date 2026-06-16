@@ -1,17 +1,17 @@
 "use client";
 
 import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
+import { ActionButton, Text } from "@react-spectrum/s2/ActionButton";
 import { DialogTrigger, Dialog, Content } from "@react-spectrum/s2/Dialog";
 import { Button } from "@react-spectrum/s2/Button";
+import { Divider } from "@react-spectrum/s2/Divider";
 import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import Add from "@react-spectrum/s2/icons/Add";
-import { SideNav, SideNavItem } from "../../Sidebar/components/SideNav";
 import { NAV_ENTRIES } from "../../Sidebar/navEntries";
 
 /**
  * SM 未満（サイドバー非表示時）のみヘッダーに出るナビゲーションボタン。
- * タップするとサイドバーと同じ構成（新規作成 + ナビ項目）のコンパクトなダイアログが開く。
+ * タップするとナビ項目のコンパクトなダイアログが開く。
  */
 export function MobileNavButton() {
   return (
@@ -21,7 +21,7 @@ export function MobileNavButton() {
       </ActionButton>
       <Dialog isDismissible size="S" aria-label="ナビゲーション">
         <Content>
-          <div className={style({ display: "flex", flexDirection: "column", gap: 12 })}>
+          <div className={style({ display: "flex", flexDirection: "column", gap: 4 })}>
             <Button
               variant="accent"
               UNSAFE_style={{
@@ -35,19 +35,18 @@ export function MobileNavButton() {
               </span>
               <span>新規作成</span>
             </Button>
-            <SideNav
-              aria-label="メインナビゲーション"
-              orientation="vertical"
-              selectedKeys={["products"]}
-              disallowEmptySelection
-            >
-              {NAV_ENTRIES.map((entry) => (
-                <SideNavItem key={entry.key} id={entry.key}>
-                  <entry.icon />
-                  <span>{entry.label}</span>
-                </SideNavItem>
-              ))}
-            </SideNav>
+            <Divider styles={style({ marginY: 8 })} />
+            {NAV_ENTRIES.map((entry) => (
+              <ActionButton
+                key={entry.key}
+                isQuiet
+                styles={style({ width: "full" })}
+                UNSAFE_style={{ justifyContent: "flex-start" }}
+              >
+                <entry.icon />
+                <Text>{entry.label}</Text>
+              </ActionButton>
+            ))}
           </div>
         </Content>
       </Dialog>
