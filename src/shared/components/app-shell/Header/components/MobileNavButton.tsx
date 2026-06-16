@@ -1,17 +1,39 @@
 "use client";
 
-import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { ActionButton, Text } from "@react-spectrum/s2/ActionButton";
 import { DialogTrigger, Dialog, Content } from "@react-spectrum/s2/Dialog";
 import { Button } from "@react-spectrum/s2/Button";
 import { Divider } from "@react-spectrum/s2/Divider";
 import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import Add from "@react-spectrum/s2/icons/Add";
+import { Button as RACButton } from "react-aria-components";
 import { NAV_ENTRIES } from "../../Sidebar/navEntries";
+
+// S2 スペーシングスケール: 0, 4, 8, 12, 16, 20, 24 ... (4の倍数のみ有効)
+const navItemClass = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+  width: "full",
+  paddingY: 12,
+  paddingX: 16,
+  borderRadius: "default",
+  borderStyle: "none",
+  font: "ui",
+  transition: "default",
+  backgroundColor: {
+    default: "transparent",
+    isHovered: "gray-100",
+    isPressed: "gray-200",
+  },
+});
 
 /**
  * SM 未満（サイドバー非表示時）のみヘッダーに出るナビゲーションボタン。
- * タップするとナビ項目のコンパクトなダイアログが開く。
+ * タップするとナビ項目一覧のコンパクトなダイアログが開く。
+ * デザイン: アイコン + ラベルを中央揃え、新規作成ボタンは最下部。
  */
 export function MobileNavButton() {
   return (
@@ -22,31 +44,21 @@ export function MobileNavButton() {
       <Dialog isDismissible size="S" aria-label="ナビゲーション">
         <Content>
           <div className={style({ display: "flex", flexDirection: "column", gap: 4 })}>
-            <Button
-              variant="accent"
-              UNSAFE_style={{
-                alignItems: "center",
-                justifyContent: "start",
-                overflow: "clip",
-              }}
-            >
-              <span className={style({ marginStart: size(6) })}>
-                <Add />
-              </span>
-              <span>新規作成</span>
-            </Button>
-            <Divider styles={style({ marginY: 8 })} />
             {NAV_ENTRIES.map((entry) => (
-              <ActionButton
-                key={entry.key}
-                isQuiet
-                styles={style({ width: "full" })}
-                UNSAFE_style={{ justifyContent: "flex-start" }}
-              >
+              <RACButton key={entry.key} className={navItemClass}>
                 <entry.icon />
-                <Text>{entry.label}</Text>
-              </ActionButton>
+                <span className={style({ textAlign: "start" })}>
+                  {entry.label}
+                </span>
+              </RACButton>
             ))}
+          </div>
+          <Divider styles={style({ marginY: 16 })} />
+          <div className={style({ display: "flex", justifyContent: "center" })}>
+            <Button variant="accent">
+              <Add />
+              <Text>新規作成</Text>
+            </Button>
           </div>
         </Content>
       </Dialog>
