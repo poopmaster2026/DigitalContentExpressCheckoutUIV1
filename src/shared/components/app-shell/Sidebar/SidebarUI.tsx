@@ -1,12 +1,12 @@
 "use client";
 
-import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Button } from "@react-spectrum/s2/Button";
-import Add from "@react-spectrum/s2/icons/Add";
-import { SideNav, SideNavItem } from "./components/SideNav";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
+import { NewProductButton } from "./components/NewProductButton";
 import { PanelToggleButton } from "./components/PanelToggleButton";
-import { NAV_ENTRIES } from "./navEntries";
+import { SideNav, SideNavItem } from "./components/SideNav";
 import type { NavState } from "./hooks/useSidebarToggle";
+import { NAV_ENTRIES } from "./navEntries";
 
 const SM = `@container (min-width: ${640 / 16}rem)`;
 const LG = `@container (width > ${1024 / 16}rem)`;
@@ -39,12 +39,6 @@ const sidebarText = style({
   whiteSpace: "nowrap",
 });
 
-// 公式サンプルの展開幅は 80（"Create"）。「新規作成」は欧文より幅を要すため 96
-const createButton = style({
-  marginBottom: 8,
-  width: { default: 32, [LG]: 96, state: { expanded: 96, collapsed: 32 } },
-});
-
 /** サイドナビ本体（Presentational）。開閉状態は props で受ける。 */
 export function SidebarUI({
   state,
@@ -55,22 +49,8 @@ export function SidebarUI({
 }) {
   return (
     <div className={sidebar({ state })}>
-      {/* 公式サンプルと同じ: 開閉状態に追従する accent ボタン */}
-      <Button
-        variant="accent"
-        styles={createButton({ state })}
-        UNSAFE_style={{
-          alignItems: "center",
-          justifyContent: "start",
-          overflow: "clip",
-          transition: "all 300ms",
-        }}
-      >
-        <span className={style({ marginStart: size(6) })}>
-          <Add />
-        </span>
-        <span className={sidebarText({ state })}>新規作成</span>
-      </Button>
+      {/* 新規作成ボタン: カテゴリー選択 Dialog を開く */}
+      <NewProductButton state={state} />
       {/* 実ルートは /store/products のみのため、選択状態は商品に固定した静的表示 */}
       <SideNav
         aria-label="メインナビゲーション"
