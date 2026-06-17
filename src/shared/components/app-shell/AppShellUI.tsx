@@ -2,6 +2,7 @@
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { ReactNode } from "react";
+
 import { Header } from "./Header/Header";
 import { Sidebar } from "./Sidebar/Sidebar";
 
@@ -48,7 +49,10 @@ const content = style({
   flexDirection: "column",
   minHeight: 0,
   boxSizing: "border-box",
-  overflow: "auto",
+  // clip で余白をカットしつつスクロールコンテナを生成しない。
+  // auto だとモバイルで仮想キーボード出現時に content 自身がスクロールし、
+  // 内側 scrollArea のスクロールが乗っ取られる。
+  overflow: "clip",
 });
 
 /** アプリフレーム（Presentational）。toolbar(Header) / sidebar(Sidebar) / content を grid で配置。 */

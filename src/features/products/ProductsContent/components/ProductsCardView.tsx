@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { CardView, type Selection } from "@react-spectrum/s2/CardView";
-import { Card, CardPreview, Content, Text, Image } from "@react-spectrum/s2/Card";
 import { ActionMenu, MenuItem } from "@react-spectrum/s2/ActionMenu";
 import { Badge } from "@react-spectrum/s2/Badge";
-import type { Product } from "../../types";
-import { formatPrice } from "../../format";
+import {
+  Card,
+  CardPreview,
+  Content,
+  Text,
+  Image,
+} from "@react-spectrum/s2/Card";
+import { CardView, type Selection } from "@react-spectrum/s2/CardView";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ILLUSTRATION } from "../../display";
+import { formatPrice } from "../../format";
 import { productMenuItems } from "../../productMenu";
+import type { Product } from "../../types";
+
 import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
@@ -52,8 +60,17 @@ export function ProductsCardView({
   const [selected, setSelected] = useState<Selection>(new Set());
   const router = useRouter();
 
+  // サイドバーの CSS トランジション(300ms)完了後に CardView を再マウントし、
+  // 確定後のコンテナサイズで Virtualizer が再計測できるようにする。
+  const [layoutKey, setLayoutKey] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setLayoutKey(1), 350);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <CardView
+      key={layoutKey}
       aria-label="商品一覧"
       layout="grid"
       selectionMode="multiple"
