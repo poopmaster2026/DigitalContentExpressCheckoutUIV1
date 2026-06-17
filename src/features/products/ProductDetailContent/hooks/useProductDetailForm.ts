@@ -1,8 +1,9 @@
 "use client";
 
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 import type { ProductDetail } from "../../types";
 
 /**
@@ -45,6 +46,23 @@ export function useProductDetailForm(detail: ProductDetail) {
   return useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: toFormValues(detail),
+    mode: "onBlur",
+  });
+}
+
+/** 新規作成フォームの初期値（空）。productFormSchema を共用。 */
+export function useNewProductForm() {
+  return useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      isFree: false,
+      price: 0,
+      published: false,
+      coverImage: null,
+      contentFile: null,
+    },
     mode: "onBlur",
   });
 }
