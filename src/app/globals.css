@@ -48,3 +48,15 @@
   border-color: light-dark(rgb(217, 35, 97), rgb(255, 51, 119));
   background-color: light-dark(rgb(255, 245, 248), rgb(59, 0, 22));
 }
+
+/* Indigo アクセントカラーオーバーライド（`_` レイヤー外 → S2 より優先）。
+   値は @adobe/spectrum-tokens indigo スケール実値。
+   indigo-900.light / indigo-1000.dark = default, indigo-1000.light / indigo-900.dark = hover/press */
+.ours-accent-btn:not([data-disabled]) {
+  background-color: light-dark(rgb(113, 85, 250), rgb(139, 141, 254));
+}
+.ours-accent-btn[data-hovered]:not([data-disabled]),
+.ours-accent-btn[data-pressed]:not([data-disabled]),
+.ours-accent-btn[data-focus-visible]:not([data-disabled]) {
+  background-color: light-dark(rgb(99, 56, 238), rgb(128, 119, 254));
+}

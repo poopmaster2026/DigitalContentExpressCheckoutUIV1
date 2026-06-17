@@ -100,7 +100,7 @@ export function ContentSection() {
                   if (file) handleFile(file);
                 }}
               >
-                <Button variant="accent">変更</Button>
+                <Button variant="accent" UNSAFE_className="ours-accent-btn">変更</Button>
               </FileTrigger>
             </ButtonGroup>
           </IllustratedMessage>
@@ -119,7 +119,7 @@ export function ContentSection() {
                   if (file) handleFile(file);
                 }}
               >
-                <Button variant="accent">ファイルを選択</Button>
+                <Button variant="accent" UNSAFE_className="ours-accent-btn">ファイルを選択</Button>
               </FileTrigger>
             </ButtonGroup>
           </IllustratedMessage>

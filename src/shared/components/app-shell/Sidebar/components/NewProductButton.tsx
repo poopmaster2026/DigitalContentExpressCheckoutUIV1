@@ -53,6 +53,7 @@ export function NewProductButton({ state }: { state: NavState }) {
     >
       <Button
         variant="accent"
+        UNSAFE_className="ours-accent-btn"
         styles={buttonStyles({ state })}
         UNSAFE_style={{
           alignItems: "center",
@@ -143,6 +144,7 @@ export function NewProductButton({ state }: { state: NavState }) {
               </Button>
               <Button
                 variant="accent"
+                UNSAFE_className="ours-accent-btn"
                 isDisabled={(selected as Set<string>).size === 0}
                 onPress={() => {
                   const saleType =

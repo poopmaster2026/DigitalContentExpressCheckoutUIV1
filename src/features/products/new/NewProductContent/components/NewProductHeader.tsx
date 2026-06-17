@@ -64,7 +64,7 @@ export function NewProductHeader({
           <Button variant="secondary" fillStyle="outline" onPress={onCancel}>
             キャンセル
           </Button>
-          <Button type="submit" variant="accent">
+          <Button type="submit" variant="accent" UNSAFE_className="ours-accent-btn">
             作成
           </Button>
         </div>

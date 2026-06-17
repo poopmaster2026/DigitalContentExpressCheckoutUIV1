@@ -62,7 +62,7 @@ export function MobileNavButton() {
           </div>
           <Divider styles={style({ marginY: 16 })} />
           <div className={style({ display: "flex", justifyContent: "center" })}>
-            <Button variant="accent">
+            <Button variant="accent" UNSAFE_className="ours-accent-btn">
               <Add />
               <Text>新規作成</Text>
             </Button>

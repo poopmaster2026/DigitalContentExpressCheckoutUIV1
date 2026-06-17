@@ -77,7 +77,7 @@ export function DetailHeader({ detail, onDelete }: DetailHeaderProps) {
           <Button variant="secondary" fillStyle="outline" onPress={() => {}}>
             複製
           </Button>
-          <Button type="submit" variant="accent">
+          <Button type="submit" variant="accent" UNSAFE_className="ours-accent-btn">
             保存
           </Button>
         </div>
