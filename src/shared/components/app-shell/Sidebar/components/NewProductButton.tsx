@@ -21,6 +21,7 @@ import {
 } from "@react-spectrum/s2/SelectBoxGroup";
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useRouter } from "next/navigation";
+import type React from "react";
 import { useState } from "react";
 
 import type { NavState } from "../hooks/useSidebarToggle";
@@ -68,7 +69,9 @@ export function NewProductButton({ state }: { state: NavState }) {
       <Dialog size="M">
         {({ close }) => (
           <>
-            <Heading slot="title">商品カテゴリーを選択</Heading>
+            <Heading slot="title" UNSAFE_style={{ fontWeight: 700 }}>
+              商品カテゴリーを選択
+            </Heading>
             <Content>
               <SelectBoxGroup
                 aria-label="商品カテゴリー"
@@ -78,23 +81,46 @@ export function NewProductButton({ state }: { state: NavState }) {
                 selectedKeys={selected}
                 onSelectionChange={setSelected}
                 styles={style({ width: "full" })}
+                UNSAFE_style={
+                  { "--select-box-group-width": "9999px" } as React.CSSProperties
+                }
               >
-                <SelectBox id="digital" textValue="デジタル" UNSAFE_className="sb-digital">
+                <SelectBox
+                  id="digital"
+                  textValue="デジタル"
+                  UNSAFE_className="sb-digital"
+                  UNSAFE_style={{ width: "100%" }}
+                >
                   <FileTextIllustration />
                   <Text slot="label">デジタル</Text>
                   <Text slot="description">ファイル・PDF・動画</Text>
                 </SelectBox>
-                <SelectBox id="course" textValue="コース" UNSAFE_className="sb-course">
+                <SelectBox
+                  id="course"
+                  textValue="コース"
+                  UNSAFE_className="sb-course"
+                  UNSAFE_style={{ width: "100%" }}
+                >
                   <EducationIllustration />
                   <Text slot="label">コース</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
-                <SelectBox id="booking" textValue="予約" UNSAFE_className="sb-booking">
+                <SelectBox
+                  id="booking"
+                  textValue="予約"
+                  UNSAFE_className="sb-booking"
+                  UNSAFE_style={{ width: "100%" }}
+                >
                   <CalendarIllustration />
                   <Text slot="label">予約</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
-                <SelectBox id="subscription" textValue="サブスク" UNSAFE_className="sb-subscription">
+                <SelectBox
+                  id="subscription"
+                  textValue="サブスク"
+                  UNSAFE_className="sb-subscription"
+                  UNSAFE_style={{ width: "100%" }}
+                >
                   <CardTapPaymentIllustration />
                   <Text slot="label">サブスク</Text>
                   <Text slot="description">近日公開予定</Text>
