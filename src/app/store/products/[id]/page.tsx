@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getProductDetail } from "@/features/products/mock";
+
+import { fetchProductDetail } from "@/features/products/api";
 import { ProductDetailPage } from "@/features/products/ProductDetailPage";
 
 export default async function Page({
@@ -8,7 +9,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const detail = getProductDetail(id);
+  const detail = await fetchProductDetail(id);
   if (!detail) notFound();
   return <ProductDetailPage detail={detail} />;
 }
