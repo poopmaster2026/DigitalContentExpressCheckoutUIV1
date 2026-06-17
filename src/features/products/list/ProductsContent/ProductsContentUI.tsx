@@ -39,7 +39,7 @@ const controlsGroup = style({
 });
 const spacer = style({ flexGrow: 1 });
 
-type Props = {
+type ProductsContentUIProps = {
   products: Product[];
   isFiltered: boolean;
   statusFilter: Key;
@@ -59,7 +59,7 @@ export function ProductsContentUI({
   onSaleTypeChange,
   view,
   onViewChange,
-}: Props) {
+}: ProductsContentUIProps) {
   return (
     <div className={page}>
       <div className={titleRow}>

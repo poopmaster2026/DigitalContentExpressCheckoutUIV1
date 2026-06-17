@@ -22,18 +22,18 @@
 /* SelectBox 選択時のボーダー・背景色をバッジ色に合わせる（S2 `_` レイヤーより優先）。
    light-dark() の値は @adobe/spectrum-tokens から引いた実値（-900 / -100 スケール）。 */
 .sb-digital[data-selected] {
-  border-color:     light-dark(rgb(5, 131, 78),   rgb(9, 157, 89));
+  border-color: light-dark(rgb(5, 131, 78), rgb(9, 157, 89));
   background-color: light-dark(rgb(237, 252, 241), rgb(0, 30, 23));
 }
 .sb-course[data-selected] {
-  border-color:     light-dark(rgb(113, 85, 250), rgb(128, 119, 254));
+  border-color: light-dark(rgb(113, 85, 250), rgb(128, 119, 254));
   background-color: light-dark(rgb(247, 248, 255), rgb(30, 0, 93));
 }
 .sb-booking[data-selected] {
-  border-color:     light-dark(rgb(194, 78, 0),   rgb(224, 100, 0));
+  border-color: light-dark(rgb(194, 78, 0), rgb(224, 100, 0));
   background-color: light-dark(rgb(255, 246, 231), rgb(49, 16, 0));
 }
 .sb-subscription[data-selected] {
-  border-color:     light-dark(rgb(217, 35, 97),  rgb(255, 51, 119));
+  border-color: light-dark(rgb(217, 35, 97), rgb(255, 51, 119));
   background-color: light-dark(rgb(255, 245, 248), rgb(59, 0, 22));
 }

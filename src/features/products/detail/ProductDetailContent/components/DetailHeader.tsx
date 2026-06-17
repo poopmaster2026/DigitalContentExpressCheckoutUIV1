@@ -31,13 +31,12 @@ const spacer = style({ flexGrow: 1 });
 const actions = style({ display: "flex", alignItems: "center", gap: 12 });
 const headerDivider = style({ marginTop: 12 });
 
-export function DetailHeader({
-  detail,
-  onDelete,
-}: {
+type DetailHeaderProps = {
   detail: ProductDetail;
   onDelete: () => void;
-}) {
+};
+
+export function DetailHeader({ detail, onDelete }: DetailHeaderProps) {
   const { control } = useFormContext<ProductFormValues>();
   const name = useWatch({ control, name: "name" });
   const published = useWatch({ control, name: "published" });

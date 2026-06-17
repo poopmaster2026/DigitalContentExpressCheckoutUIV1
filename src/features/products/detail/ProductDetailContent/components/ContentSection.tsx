@@ -87,7 +87,11 @@ export function ContentSection() {
             <Heading>{contentFile.name}</Heading>
             <Content>{formatFileSize(contentFile.size)}</Content>
             <ButtonGroup>
-              <Button variant="secondary" fillStyle="outline" onPress={handleRemove}>
+              <Button
+                variant="secondary"
+                fillStyle="outline"
+                onPress={handleRemove}
+              >
                 削除
               </Button>
               <FileTrigger

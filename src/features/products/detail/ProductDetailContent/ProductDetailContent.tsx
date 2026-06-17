@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 
-import { productDetailQueryOptions } from "../../queries";
+import { productDetailQueryOptions } from "../../api/queries";
 
 import { useProductDetailForm } from "./hooks/useProductDetailForm";
 import { ProductDetailContentUI } from "./ProductDetailContentUI";
@@ -16,7 +16,11 @@ import { ProductDetailContentUI } from "./ProductDetailContentUI";
  * FormProvider で配下のセクションへ供給する。Phase 0 では保存は永続化せず完了表示のみ。
  * サーバーで prefetchQuery 済みのキャッシュを useSuspenseQuery で消費する。
  */
-export function ProductDetailContent({ id }: { id: string }) {
+type ProductDetailContentProps = {
+  id: string;
+};
+
+export function ProductDetailContent({ id }: ProductDetailContentProps) {
   const router = useRouter();
   const { data: detail } = useSuspenseQuery(productDetailQueryOptions(id));
 
@@ -24,14 +28,20 @@ export function ProductDetailContent({ id }: { id: string }) {
 
   const methods = useProductDetailForm(detail);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = methods.handleSubmit(() => setSaved(true));
+  const onSubmit = methods.handleSubmit(() => {
+    // TODO: BE ができたら useMutation に差し替え、onError で setError を呼ぶ
+    setSaved(true);
+    setError(null);
+  });
 
   return (
     <FormProvider {...methods}>
       <ProductDetailContentUI
         detail={detail}
         saved={saved}
+        error={error}
         onSubmit={onSubmit}
         onDismissSaved={() => saved && setSaved(false)}
         onDelete={() => router.push("/store/products")}

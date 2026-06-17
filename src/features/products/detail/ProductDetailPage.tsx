@@ -10,7 +10,11 @@ import { ProductDetailPageSkeleton } from "./ProductDetailPageSkeleton";
  * page.tsx で prefetch + HydrationBoundary 済みのキャッシュがあれば suspend しない。
  * キャッシュが stale / 未取得の場合に Skeleton が機能する。
  */
-export function ProductDetailPage({ id }: { id: string }) {
+type ProductDetailPageProps = {
+  id: string;
+};
+
+export function ProductDetailPage({ id }: ProductDetailPageProps) {
   return (
     <Suspense fallback={<ProductDetailPageSkeleton />}>
       <ProductDetailContent id={id} />

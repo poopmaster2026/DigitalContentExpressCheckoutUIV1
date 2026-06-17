@@ -36,9 +36,10 @@ const formColumn = style({
 });
 const alertStyle = style({ maxWidth: 640 });
 
-type Props = {
+type ProductDetailContentUIProps = {
   detail: ProductDetail;
   saved: boolean;
+  error: string | null;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onDismissSaved: () => void;
   onDelete: () => void;
@@ -47,10 +48,11 @@ type Props = {
 export function ProductDetailContentUI({
   detail,
   saved,
+  error,
   onSubmit,
   onDismissSaved,
   onDelete,
-}: Props) {
+}: ProductDetailContentUIProps) {
   return (
     <form
       className={page}
@@ -65,6 +67,12 @@ export function ProductDetailContentUI({
             <InlineAlert variant="positive" styles={alertStyle}>
               <Heading>保存しました</Heading>
               <Content>変更内容を保存しました（モック）。</Content>
+            </InlineAlert>
+          )}
+          {error && (
+            <InlineAlert variant="negative" styles={alertStyle}>
+              <Heading>保存に失敗しました</Heading>
+              <Content>{error}</Content>
             </InlineAlert>
           )}
           <BasicInfoSection detail={detail} />

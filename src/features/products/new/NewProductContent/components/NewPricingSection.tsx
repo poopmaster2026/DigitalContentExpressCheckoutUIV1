@@ -11,7 +11,11 @@ import { SectionHeading } from "../../../detail/ProductDetailContent/components/
 import type { ProductFormValues } from "../../../types/validation";
 
 const section = style({ display: "flex", flexDirection: "column", gap: 24 });
-const switchGroup = style({ display: "flex", flexDirection: "column", gap: 16 });
+const switchGroup = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 16,
+});
 
 /** 新規作成用の価格・公開セクション。商品 URL（slug 未確定）は表示しない。 */
 export function NewPricingSection() {

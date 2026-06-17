@@ -6,8 +6,9 @@ import type { Key } from "react-aria-components";
 
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
 
-import { productListQueryOptions } from "../../../queries";
-import type { Product, ProductFilters } from "../../../types";
+import { productListQueryOptions } from "../../../api/queries";
+import type { Product } from "../../../types";
+import type { ProductFilters } from "../../types";
 
 /** ステータス・販売形態・検索語で商品を絞り込む。 */
 function filterProducts(

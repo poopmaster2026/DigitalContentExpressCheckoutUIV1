@@ -78,24 +78,22 @@ const productCell = style({ display: "flex", alignItems: "center", gap: 12 });
 // 商品名・価格は一覧での視認性を優先して太字（プロダクト判断。S2 既定より太い）
 const boldText = style({ fontWeight: "bold" });
 
-function KindIcon({
-  kind,
-  styles,
-}: {
+type KindIconProps = {
   kind: ProductKind;
   styles: (typeof thumbIcon)[ProductThumb];
-}) {
+};
+
+function KindIcon({ kind, styles }: KindIconProps) {
   const Icon = KIND_ICON[kind];
   return <Icon styles={styles} />;
 }
 
-export function ProductsTable({
-  products,
-  isFiltered,
-}: {
+type ProductsTableProps = {
   products: Product[];
   isFiltered: boolean;
-}) {
+};
+
+export function ProductsTable({ products, isFiltered }: ProductsTableProps) {
   // 初期ソートを「売上の降順」に固定する。S2 のソート矢印はアクティブ列にしか描画されないため、
   // 初期ソート無し（null）だと一度クリックするまで並び替え可能だと気づけない。既定を持たせて
   // 読み込み時点で現在の並び順とソート可能であることを可視化する。

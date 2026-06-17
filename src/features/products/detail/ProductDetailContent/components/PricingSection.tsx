@@ -19,7 +19,11 @@ const switchGroup = style({
   gap: 16,
 });
 
-export function PricingSection({ detail }: { detail: ProductDetail }) {
+type PricingSectionProps = {
+  detail: ProductDetail;
+};
+
+export function PricingSection({ detail }: PricingSectionProps) {
   const { control } = useFormContext<ProductFormValues>();
   const isFree = useWatch({ control, name: "isFree" });
 

@@ -14,7 +14,11 @@ import type { SaleType } from "../../../types";
 import type { ProductFormValues } from "../../../types/validation";
 
 const backRow = style({ marginBottom: 8 });
-const backLink = style({ display: "inline-flex", alignItems: "center", gap: 4 });
+const backLink = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+});
 const titleRow = style({
   display: "flex",
   alignItems: "center",
@@ -26,13 +30,15 @@ const spacer = style({ flexGrow: 1 });
 const actions = style({ display: "flex", alignItems: "center", gap: 12 });
 const headerDivider = style({ marginTop: 12 });
 
+type NewProductHeaderProps = {
+  saleType: SaleType;
+  onCancel: () => void;
+};
+
 export function NewProductHeader({
   saleType,
   onCancel,
-}: {
-  saleType: SaleType;
-  onCancel: () => void;
-}) {
+}: NewProductHeaderProps) {
   const { control } = useFormContext<ProductFormValues>();
   const name = useWatch({ control, name: "name" });
   const badge = SALE_TYPE_BADGE[saleType];

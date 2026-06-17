@@ -16,16 +16,18 @@ const fieldStyle = style({ width: "full" });
 type StringField = "name" | "description";
 type BoolField = "isFree" | "published";
 
+type TextFieldControlProps = {
+  name: StringField;
+  label: string;
+  isRequired?: boolean;
+};
+
 /** react-hook-form Controller × S2 TextField。 */
 export function TextFieldControl({
   name,
   label,
   isRequired,
-}: {
-  name: StringField;
-  label: string;
-  isRequired?: boolean;
-}) {
+}: TextFieldControlProps) {
   const { control } = useFormContext<ProductFormValues>();
   return (
     <Controller
@@ -48,14 +50,13 @@ export function TextFieldControl({
   );
 }
 
-/** react-hook-form Controller × S2 TextArea。 */
-export function TextAreaControl({
-  name,
-  label,
-}: {
+type TextAreaControlProps = {
   name: StringField;
   label: string;
-}) {
+};
+
+/** react-hook-form Controller × S2 TextArea。 */
+export function TextAreaControl({ name, label }: TextAreaControlProps) {
   const { control } = useFormContext<ProductFormValues>();
   return (
     <Controller
@@ -77,6 +78,15 @@ export function TextAreaControl({
   );
 }
 
+type NumberFieldControlProps = {
+  name: "price";
+  label: string;
+  isRequired?: boolean;
+  isDisabled?: boolean;
+  minValue?: number;
+  formatOptions?: Intl.NumberFormatOptions;
+};
+
 /** react-hook-form Controller × S2 NumberField。 */
 export function NumberFieldControl({
   name,
@@ -85,14 +95,7 @@ export function NumberFieldControl({
   isDisabled,
   minValue,
   formatOptions,
-}: {
-  name: "price";
-  label: string;
-  isRequired?: boolean;
-  isDisabled?: boolean;
-  minValue?: number;
-  formatOptions?: Intl.NumberFormatOptions;
-}) {
+}: NumberFieldControlProps) {
   const { control } = useFormContext<ProductFormValues>();
   return (
     <Controller
@@ -118,14 +121,13 @@ export function NumberFieldControl({
   );
 }
 
-/** react-hook-form Controller × S2 Switch。 */
-export function SwitchControl({
-  name,
-  children,
-}: {
+type SwitchControlProps = {
   name: BoolField;
   children: ReactNode;
-}) {
+};
+
+/** react-hook-form Controller × S2 Switch。 */
+export function SwitchControl({ name, children }: SwitchControlProps) {
   const { control } = useFormContext<ProductFormValues>();
   return (
     <Controller

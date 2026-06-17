@@ -33,9 +33,10 @@ const formColumn = style({
 });
 const alertStyle = style({ maxWidth: 640 });
 
-type Props = {
+type NewProductContentUIProps = {
   saleType: SaleType;
   created: boolean;
+  error: string | null;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onCancel: () => void;
 };
@@ -43,9 +44,10 @@ type Props = {
 export function NewProductContentUI({
   saleType,
   created,
+  error,
   onSubmit,
   onCancel,
-}: Props) {
+}: NewProductContentUIProps) {
   const shellDetail = { thumb: "sage" as const, saleType };
 
   return (
@@ -57,6 +59,12 @@ export function NewProductContentUI({
             <InlineAlert variant="positive" styles={alertStyle}>
               <Heading>商品を作成しました</Heading>
               <Content>新しい商品を作成しました（モック）。</Content>
+            </InlineAlert>
+          )}
+          {error && (
+            <InlineAlert variant="negative" styles={alertStyle}>
+              <Heading>作成に失敗しました</Heading>
+              <Content>{error}</Content>
             </InlineAlert>
           )}
           <BasicInfoSection detail={shellDetail} />

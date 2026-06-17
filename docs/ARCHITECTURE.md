@@ -184,7 +184,7 @@ export default async function Page({
 
 ```ts
 export function getQueryClient() {
-  if (isServer) return makeQueryClient();   // サーバー: 毎回新規（リクエスト間でキャッシュを共有しない）
+  if (isServer) return makeQueryClient(); // サーバー: 毎回新規（リクエスト間でキャッシュを共有しない）
   browserQueryClient ??= makeQueryClient(); // ブラウザ: singleton（re-render で作り直さない）
   return browserQueryClient;
 }
@@ -309,7 +309,7 @@ export function useProductsFilter() {
     () => filterProducts(allProducts, { ...filters, query }),
     [allProducts, filters, query]
   );
-  return { products, filtered: isFiltered({ ...filters, query }), /* ... */ };
+  return { products, filtered: isFiltered({ ...filters, query }) /* ... */ };
 }
 ```
 
@@ -382,21 +382,21 @@ export const productDetailQueryOptions = (id: string) =>
   });
 ```
 
-| ルール | 理由 |
-| --- | --- |
-| `queryOptions()` でラップして export | 型推論が効き、`prefetchQuery` / `useSuspenseQuery` どちらにも渡せる |
-| `queryFn` は `api/index.ts` の関数を呼ぶ | API 差し替えが `api/` だけで完結する |
-| `queryKey` はここで一元管理 | page.tsx と hooks でキーが乖離しない |
+| ルール                                   | 理由                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| `queryOptions()` でラップして export     | 型推論が効き、`prefetchQuery` / `useSuspenseQuery` どちらにも渡せる |
+| `queryFn` は `api/index.ts` の関数を呼ぶ | API 差し替えが `api/` だけで完結する                                |
+| `queryKey` はここで一元管理              | page.tsx と hooks でキーが乖離しない                                |
 
 ### api/ に含めるもの・含めないもの
 
-| 含めるもの | 含めないもの |
-| --- | --- |
-| fetch 関数（非同期）| React コンポーネント |
-| 将来: Mapper 関数（DTO → ViewModel 変換） | UI ロジック（toast / モーダル制御）|
-| 将来: Mutation 関数 | Zod スキーマ（→ `types/`）|
-| | ViewModel 型定義（→ `types/`）|
-| | `queryOptions`（→ `queries.ts`）|
+| 含めるもの                                | 含めないもの                        |
+| ----------------------------------------- | ----------------------------------- |
+| fetch 関数（非同期）                      | React コンポーネント                |
+| 将来: Mapper 関数（DTO → ViewModel 変換） | UI ロジック（toast / モーダル制御） |
+| 将来: Mutation 関数                       | Zod スキーマ（→ `types/`）          |
+|                                           | ViewModel 型定義（→ `types/`）      |
+|                                           | `queryOptions`（→ `queries.ts`）    |
 
 ### Mutation パターン（将来）
 
@@ -408,15 +408,21 @@ export const productDetailQueryOptions = (id: string) =>
 export const useUpdateProductMutation = () =>
   useMutation({
     mutationFn: (input: UpdateProductInput) =>
-      fetch(`/api/products/${input.id}`, { method: "PUT", body: JSON.stringify(input) }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["products"] }),
+      fetch(`/api/products/${input.id}`, {
+        method: "PUT",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
   });
 
 // 呼び出し側（hooks）: UI 処理のみ
 mutation.mutate(values, {
-  onSuccess: () => { form.reset(values); },
-  onError: () => { /* toast */ },
+  onSuccess: () => {
+    form.reset(values);
+  },
+  onError: () => {
+    /* toast */
+  },
 });
 ```
 

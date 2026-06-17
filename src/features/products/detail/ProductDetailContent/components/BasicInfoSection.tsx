@@ -34,11 +34,11 @@ const coverImg = style({ width: "full", height: "full", objectFit: "cover" });
 const metaText = style({ font: "ui", color: "neutral-subdued", marginY: 0 });
 const errorText = style({ font: "ui", color: "negative", marginY: 0 });
 
-export function BasicInfoSection({
-  detail,
-}: {
+type BasicInfoSectionProps = {
   detail: Pick<ProductDetail, "thumb" | "saleType">;
-}) {
+};
+
+export function BasicInfoSection({ detail }: BasicInfoSectionProps) {
   const {
     control,
     setValue,
@@ -50,14 +50,20 @@ export function BasicInfoSection({
   const handleCoverImage = (file: File) => {
     setValue(
       "coverImage",
-      { url: URL.createObjectURL(file), name: file.name, size: file.size, type: file.type },
+      {
+        url: URL.createObjectURL(file),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      },
       { shouldDirty: true }
     );
     trigger("coverImage");
   };
 
-  const coverImageError = (errors.coverImage as { message?: string } | undefined)
-    ?.message;
+  const coverImageError = (
+    errors.coverImage as { message?: string } | undefined
+  )?.message;
 
   return (
     <section className={section}>
@@ -76,7 +82,13 @@ export function BasicInfoSection({
               COVER_ILLUSTRATION[detail.saleType]
             )}
           </div>
-          <div className={style({ display: "flex", flexDirection: "column", gap: 8 })}>
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+            })}
+          >
             <FileTrigger
               acceptedFileTypes={[...COVER_IMAGE_ACCEPTED_TYPES]}
               onSelect={(files) => {
@@ -89,9 +101,7 @@ export function BasicInfoSection({
               </Button>
             </FileTrigger>
             <p className={metaText}>JPEG・PNG・WebP・GIF（最大10MB）</p>
-            {coverImageError && (
-              <p className={errorText}>{coverImageError}</p>
-            )}
+            {coverImageError && <p className={errorText}>{coverImageError}</p>}
           </div>
         </div>
       </div>

@@ -8,8 +8,12 @@ import {
 import FileText from "@react-spectrum/s2/illustrations/gradient/generic1/FileText";
 import NoSearchResults from "@react-spectrum/s2/illustrations/linear/NoSearchResults";
 
+type ProductsEmptyStateProps = {
+  isFiltered: boolean;
+};
+
 /** 検索/フィルタ結果なし・商品ゼロの空状態（CardView / TableView 共用）。 */
-export function ProductsEmptyState({ isFiltered }: { isFiltered: boolean }) {
+export function ProductsEmptyState({ isFiltered }: ProductsEmptyStateProps) {
   if (isFiltered) {
     return (
       <IllustratedMessage size="L">
