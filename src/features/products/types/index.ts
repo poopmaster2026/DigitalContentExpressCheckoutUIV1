@@ -1,5 +1,3 @@
-import type { Key } from "react-aria-components";
-
 /**
  * 商品ドメインの型。products feature 固有のため shared ではなくここで定義する
  * （複数 feature で共有する必要が出たときに shared/types へ引き上げる）。
@@ -74,11 +72,4 @@ export interface ProductDetail extends Product {
   slug: string;
   /** デジタル配信ファイル（saleType === "digital" のとき）。 */
   contentFile?: ProductFile;
-}
-
-/** 商品一覧の絞り込み条件（products-page/utils の filterProducts/isFiltered で使用）。 */
-export interface ProductFilters {
-  status: Key;
-  saleType: Key;
-  query: string;
 }

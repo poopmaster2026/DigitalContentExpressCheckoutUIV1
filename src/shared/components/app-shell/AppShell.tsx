@@ -11,7 +11,7 @@ import { useColorScheme } from "./hooks/useColorScheme";
 import { AppSearchContext } from "./search-context";
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState<string>("");
   const { colorScheme, isDark, setDark } = useColorScheme();
 
   return (

@@ -50,7 +50,7 @@ const content = style({
   minHeight: 0,
   boxSizing: "border-box",
   // clip で余白をカットしつつスクロールコンテナを生成しない。
-  // auto だとモバイルで仮想キーボード出現時に content 自身がスクロールし、
+  // hidden/auto だとモバイルで仮想キーボード出現時に content 自身がスクロールし、
   // 内側 scrollArea のスクロールが乗っ取られる。
   overflow: "clip",
 });

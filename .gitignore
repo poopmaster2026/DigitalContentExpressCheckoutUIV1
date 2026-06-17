@@ -151,3 +151,4 @@ vite.config.ts.timestamp-*
 .playwright-mcp/
 /*.jpeg
 /*.png
+.claude/worktrees/

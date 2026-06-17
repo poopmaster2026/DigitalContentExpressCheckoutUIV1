@@ -1,14 +1,17 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { ProductsPage } from "@/features/products/ProductsPage";
-import { productListQueryOptions } from "@/features/products/queries";
+import { productListQueryOptions } from "@/features/products/api/queries";
+import { ProductsPage } from "@/features/products/list/ProductsPage";
 import { getQueryClient } from "@/lib/query-client";
 
 export default async function Page() {
-  const qc = getQueryClient();
-  await qc.prefetchQuery(productListQueryOptions());
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(productListQueryOptions());
+
+  const dehydratedState = dehydrate(queryClient);
+
   return (
-    <HydrationBoundary state={dehydrate(qc)}>
+    <HydrationBoundary state={dehydratedState}>
       <ProductsPage />
     </HydrationBoundary>
   );

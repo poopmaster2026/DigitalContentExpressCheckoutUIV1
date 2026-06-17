@@ -115,23 +115,93 @@ app → features → shared
 
 ## pages（`src/app/`）
 
-ルーティングの責務だけを持つ。`<html>` を手で描画しない（`provider.tsx` の
-`<Provider elementType="html">` が担う）。
+**`page.tsx` の責務 = fetch（prefetch + dehydrate）のみ。** `<html>` を手で描画しない。
+
+```
+src/app/{route}/page.tsx  →  fetch（Server Component）
+features/{feature}/       →  消費（Client Component, useSuspenseQuery）
+```
+
+### 基本パターン（一覧・詳細共通）
 
 ```tsx
 // src/app/store/products/page.tsx
-import { ProductsPage } from "@/features/products/ProductsPage";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-export default function Page() {
-  return <ProductsPage />;
+import { ProductsPage } from "@/features/products/ProductsPage";
+import { productListQueryOptions } from "@/features/products/queries";
+import { getQueryClient } from "@/lib/query-client";
+
+// async Server Component — サーバーでデータを取得して dehydrate して渡す
+export default async function Page() {
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(productListQueryOptions());
+
+  const dehydratedState = dehydrate(queryClient);
+
+  return (
+    // dehydrate したキャッシュを client に渡す。
+    // feature 側の useSuspenseQuery がここで hydrate されたキャッシュを読む
+    <HydrationBoundary state={dehydratedState}>
+      <ProductsPage />
+    </HydrationBoundary>
+  );
 }
 ```
+
+動的パラメータがある場合（詳細ページ等）:
+
+```tsx
+// src/app/store/products/[id]/page.tsx
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+import { ProductDetailPage } from "@/features/products/ProductDetailPage";
+import { productDetailQueryOptions } from "@/features/products/queries";
+import { getQueryClient } from "@/lib/query-client";
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(productDetailQueryOptions(id));
+
+  const dehydratedState = dehydrate(queryClient);
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <ProductDetailPage id={id} />
+    </HydrationBoundary>
+  );
+}
+```
+
+### `getQueryClient` の役割
+
+`src/lib/query-client.ts` に定義。サーバーはリクエストごとに新規インスタンス、ブラウザはシングルトンを返す:
+
+```ts
+export function getQueryClient() {
+  if (isServer) return makeQueryClient(); // サーバー: 毎回新規（リクエスト間でキャッシュを共有しない）
+  browserQueryClient ??= makeQueryClient(); // ブラウザ: singleton（re-render で作り直さない）
+  return browserQueryClient;
+}
+```
+
+### `page.tsx` がやらないこと
+
+- S2 コンポーネントの import（client-only なので Server Component と共存できない）
+- `"use client"` の宣言
+- UI の描画（全て `features/` 側に委譲）
 
 ## 実装パターン
 
 ### Page コンポーネント（最上位 Container）
 
-ページのトップ。Suspense と Skeleton を配置し、セクション Container を呼ぶ。
+ページのトップ。`<Suspense>` と Skeleton を配置し、セクション Container を呼ぶ。
+`page.tsx` の `<HydrationBoundary>` の内側に置かれ、`useSuspenseQuery` がキャッシュを読む。
 
 ```tsx
 // features/products/ProductsPage.tsx
@@ -143,16 +213,14 @@ import { ProductsPageSkeleton } from "./ProductsPageSkeleton";
 
 export function ProductsPage() {
   return (
+    // page.tsx で prefetch 済みのキャッシュがあれば suspend しない（Skeleton は発火しない）。
+    // 実 API 接続後にキャッシュが stale になれば Skeleton が機能する
     <Suspense fallback={<ProductsPageSkeleton />}>
       <ProductsContent />
     </Suspense>
   );
 }
 ```
-
-> **Phase 0（mock）の注意**: mock は同期読みのため、この `Suspense` は実際には suspend しない
-> （Skeleton も発火しない）。**構造を先に用意**しておき、Phase 1 で `useSuspenseQuery` に差し替えた
-> 瞬間に Skeleton が機能するようにしておく（neymar の Page → Suspense → Content と同じ骨格）。
 
 ### Skeleton コンポーネント
 
@@ -224,38 +292,29 @@ export function ProductsContentUI({
 
 ```tsx
 "use client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { PRODUCTS } from "../../mock"; // Phase 0: feature 内 mock を直読み（Phase 1 で useSuspenseQuery 化）
+
+import { productListQueryOptions } from "../../queries";
 
 export function useProductsFilter() {
-  const [statusFilter, setStatusFilter] = useState<Key>("all");
-  const [saleTypeFilter, setSaleTypeFilter] = useState<Key>("all");
+  const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [view, setView] = useState<Key>("grid");
   const { query } = useAppSearch();
+
+  // page.tsx で prefetch + HydrationBoundary 済みのキャッシュを読む（サーバー fetch と二重にならない）
+  const { data: allProducts } = useSuspenseQuery(productListQueryOptions());
+
   const products = useMemo(
-    () =>
-      filterProducts(PRODUCTS, {
-        status: statusFilter,
-        saleType: saleTypeFilter,
-        query,
-      }),
-    [
-      /* ... */
-    ]
+    () => filterProducts(allProducts, { ...filters, query }),
+    [allProducts, filters, query]
   );
-  return {
-    products,
-    filtered: isFiltered(/* ... */),
-    statusFilter,
-    setStatusFilter,
-    /* ... */ view,
-    setView,
-  };
+  return { products, filtered: isFiltered({ ...filters, query }) /* ... */ };
 }
 ```
 
-> Phase 1 では `useProductsFilter` 内の `PRODUCTS` 直読みを
-> `useSuspenseQuery(productListQueryOptions())` に差し替える。state とフィルタロジックはそのまま残る。
+`useSuspenseQuery` は `page.tsx` の `HydrationBoundary` 内でのみ使う。
+`prefetchQuery` で取得済みのキャッシュがある限り suspend しないため、Skeleton は発火しない。
 
 ### UI 状態の網羅（Default / Empty / Loading / Error）
 
@@ -268,120 +327,104 @@ export function useProductsFilter() {
 
 Presentational 内に `isLoading` / `isError` 分岐を作らない（Empty のみ Presentational の責務）。
 
-## api/ ディレクトリの設計規約（Phase 1 target）
-
-> Phase 0（mock）では `api/` を作らず、hooks が **feature 内の mock**（`features/{feature}/mock.ts`）を直読みする。
-> TanStack Query は結線済みだが意図的に未使用（[CLAUDE.md](../CLAUDE.md) Status）。実 API 接続時に下記へ移行する。
-
-### api/ に含めるもの・含めないもの
-
-| 含めるもの                              | 含めないもの                        |
-| --------------------------------------- | ----------------------------------- |
-| `queryOptions` 定義（Query）            | React コンポーネント                |
-| `useMutation` 定義（Mutation）          | UI ロジック（toast / モーダル制御） |
-| Mapper 関数（DTO → ViewModel 変換）     | Zod スキーマ（→ `types/`）          |
-| `invalidateQueries`（キャッシュ無効化） | ViewModel 型定義（→ `types/`）      |
+## api/ と queries.ts の設計規約
 
 ### ファイル構成
 
 ```
-api/
-├── {pageName}Api.ts        # Query / Mutation 定義（ページ単位で 1 ファイル）
-└── {entityName}Mapper.ts   # DTO → ViewModel 変換（エンティティ単位）
+features/{feature}/
+├── api/
+│   └── index.ts      # fetch 関数（非同期）。実 API 接続時にここだけ差し替える
+└── queries.ts         # queryOptions ファクトリ。page.tsx と hooks の両方から import する
 ```
 
-Api ファイルが Mapper を import する（逆方向の依存は禁止）。
-本リポは hey-api を使わず、**fetch ベースのクライアント**（`src/lib/api/` 等。実装時に用意）を `queryFn` で呼ぶ。
+### api/index.ts — fetch 関数
 
-### Query 定義パターン（fetch + select に Mapper）
+API 呼び出しを非同期関数として export する。現状は mock wrap、実 API 接続時に差し替える唯一の場所:
 
-```tsx
-// api/productsApi.ts
+```ts
+// features/products/api/index.ts
+import { PRODUCTS, getProductDetail } from "../mock";
+import type { Product, ProductDetail } from "../types";
+
+// 実 API 接続時: PRODUCTS 直読みを fetch('/api/products') 等に置き換える
+export async function fetchProducts(): Promise<Product[]> {
+  return PRODUCTS;
+}
+
+export async function fetchProductDetail(
+  id: string
+): Promise<ProductDetail | undefined> {
+  return getProductDetail(id);
+}
+```
+
+### queries.ts — queryOptions ファクトリ
+
+`page.tsx`（prefetchQuery）と hooks（useSuspenseQuery）の両方が import する単一ソース:
+
+```ts
+// features/products/queries.ts
 import { queryOptions } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api/client";
-import { productKeys } from "./productKeys";
-import { toProducts } from "./productMapper";
 
-export const productListQueryOptions = (storeId: string) =>
+import { fetchProductDetail, fetchProducts } from "./api";
+
+export const productListQueryOptions = () =>
   queryOptions({
-    queryKey: productKeys.list(storeId),
-    queryFn: async ({ signal }) =>
-      apiClient.get(`/stores/${storeId}/products`, { signal }),
-    select: toProducts, // キャッシュは生 DTO、消費側で ViewModel に変換
+    queryKey: ["products"],
+    queryFn: fetchProducts,
+  });
+
+export const productDetailQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["products", id],
+    queryFn: () => fetchProductDetail(id),
   });
 ```
 
-| ルール                                           | 理由                                                             |
-| ------------------------------------------------ | ---------------------------------------------------------------- |
-| `queryOptions()` でラップして export             | 型推論が効き、`useSuspenseQuery` にスプレッドできる              |
-| `queryKey` は **ファクトリ**で生成（手書き禁止） | キー管理の一元化・部分一致 invalidate                            |
-| `queryFn` に `signal` を渡す                     | アンマウント時にリクエストをキャンセル                           |
-| 取得失敗時は throw する                          | ErrorBoundary / `error.tsx` でキャッチ                           |
-| `select` に Mapper を渡す                        | 生 DTO をキャッシュし、消費側で ViewModel に変換（差し替え容易） |
+| ルール                                   | 理由                                                                |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| `queryOptions()` でラップして export     | 型推論が効き、`prefetchQuery` / `useSuspenseQuery` どちらにも渡せる |
+| `queryFn` は `api/index.ts` の関数を呼ぶ | API 差し替えが `api/` だけで完結する                                |
+| `queryKey` はここで一元管理              | page.tsx と hooks でキーが乖離しない                                |
 
-queryKey は階層ファクトリで管理する:
+### api/ に含めるもの・含めないもの
 
-```tsx
-// api/productKeys.ts
-export const productKeys = {
-  all: ["products"] as const,
-  list: (storeId: string) => [...productKeys.all, "list", storeId] as const,
-  detail: (productId: string) =>
-    [...productKeys.all, "detail", productId] as const,
-};
-```
+| 含めるもの                                | 含めないもの                        |
+| ----------------------------------------- | ----------------------------------- |
+| fetch 関数（非同期）                      | React コンポーネント                |
+| 将来: Mapper 関数（DTO → ViewModel 変換） | UI ロジック（toast / モーダル制御） |
+| 将来: Mutation 関数                       | Zod スキーマ（→ `types/`）          |
+|                                           | ViewModel 型定義（→ `types/`）      |
+|                                           | `queryOptions`（→ `queries.ts`）    |
 
-### Mapper（DTO → ViewModel）
-
-OpenAPI 由来の snake_case DTO を FE 全体に散りばめず、必ず Mapper で camelCase の ViewModel に変換する。
-
-```tsx
-// api/productMapper.ts
-import type { Product } from "../types";
-export const toProduct = (dto: ProductDto): Product => ({
-  id: dto.id,
-  name: dto.name /* ... */,
-});
-export const toProducts = (dtos: ProductDto[]): Product[] =>
-  dtos.map(toProduct);
-```
-
-| ファイル名          | 関数名       | 一覧用                           | サマリー用          |
-| ------------------- | ------------ | -------------------------------- | ------------------- |
-| `{entity}Mapper.ts` | `to{Entity}` | `to{Entity}s` / `to{Entity}List` | `to{Entity}Summary` |
-
-Mapper に含めるもの: snake→camel 変換、日付文字列→Date、ネスト変換、配列 map。
-含めないもの: 副作用、UI フォーマット、バリデーション（→ Zod / types）、デフォルト補完（→ hooks）。
-
-### Mutation パターン
+### Mutation パターン（将来）
 
 `useMutation` を api 層でカスタムフック化し、`onSuccess` に `invalidateQueries`（キャッシュ操作）を
 置く。toast / form.reset / ナビゲーション等の **UI 処理は呼び出し側の `mutate()` コールバック**に置く。
 
 ```tsx
-// api 層: キャッシュ操作のみ（コンポーネントがアンマウントされても実行される）
-export const useUpdateProductMutation = (storeId: string) =>
+// api 層: キャッシュ操作のみ
+export const useUpdateProductMutation = () =>
   useMutation({
     mutationFn: (input: UpdateProductInput) =>
-      apiClient.put(`/products/${input.id}`, input),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: productKeys.list(storeId) }),
+      fetch(`/api/products/${input.id}`, {
+        method: "PUT",
+        body: JSON.stringify(input),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
   });
 
 // 呼び出し側（hooks）: UI 処理のみ
 mutation.mutate(values, {
   onSuccess: () => {
     form.reset(values);
-    showToast("保存しました");
   },
   onError: () => {
-    showToast("更新に失敗しました", true);
+    /* toast */
   },
 });
 ```
-
-`queryClient` は `useQueryClient` フックではなく `lib` のシングルトンを import する
-（Mutation 定義のスコープでフックは使えないため）。
 
 ### キャッシュ無効化と react-hook-form
 
@@ -434,14 +477,11 @@ features/products/
         └── ProductsEmptyState.tsx    # 空状態（IllustratedMessage、共用）
 ```
 
-実 API 接続フェーズ（Phase 1）で追加:
-
 ```
 features/products/
-└── api/
-    ├── productsApi.ts                # queryOptions（+ 将来 useMutation）
-    ├── productKeys.ts                # queryKey ファクトリ
-    └── productMapper.ts              # DTO → ViewModel 変換
+├── api/
+│   └── index.ts                      # fetch 関数（非同期 mock wrap → 実 API 差し替え口）
+└── queries.ts                        # queryOptions ファクトリ（page.tsx + hooks の共通 import 先）
 ```
 
 ## 検証

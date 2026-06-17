@@ -1,15 +1,23 @@
-import { notFound } from "next/navigation";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import { fetchProductDetail } from "@/features/products/api";
-import { ProductDetailPage } from "@/features/products/ProductDetailPage";
+import { productDetailQueryOptions } from "@/features/products/api/queries";
+import { ProductDetailPage } from "@/features/products/detail/ProductDetailPage";
+import { getQueryClient } from "@/lib/query-client";
 
-export default async function Page({
-  params,
-}: {
+interface Props {
   params: Promise<{ id: string }>;
-}) {
+}
+
+export default async function Page({ params }: Props) {
   const { id } = await params;
-  const detail = await fetchProductDetail(id);
-  if (!detail) notFound();
-  return <ProductDetailPage detail={detail} />;
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery(productDetailQueryOptions(id));
+
+  const dehydratedState = dehydrate(queryClient);
+
+  return (
+    <HydrationBoundary state={dehydratedState}>
+      <ProductDetailPage id={id} />
+    </HydrationBoundary>
+  );
 }
