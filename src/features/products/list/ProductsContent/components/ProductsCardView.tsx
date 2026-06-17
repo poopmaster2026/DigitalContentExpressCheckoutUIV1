@@ -64,17 +64,19 @@ export function ProductsCardView({
   const [selected, setSelected] = useState<Selection>(new Set());
   const router = useRouter();
 
-  // サイドバーの CSS トランジション(300ms)完了後に CardView を再マウントし、
-  // 確定後のコンテナサイズで Virtualizer が再計測できるようにする。
-  const [layoutKey, setLayoutKey] = useState(0);
+  // サイドバーの CSS トランジション(300ms)完了後に resize イベントを発火し、
+  // Virtualizer が確定後のコンテナサイズで再計測できるようにする。
+  // key による再マウントは CSS チャンクのタイミング問題を引き起こすため使わない。
   useEffect(() => {
-    const t = setTimeout(() => setLayoutKey(1), 350);
+    const t = setTimeout(
+      () => window.dispatchEvent(new Event("resize")),
+      350
+    );
     return () => clearTimeout(t);
   }, []);
 
   return (
     <CardView
-      key={layoutKey}
       aria-label="商品一覧"
       layout="grid"
       selectionMode="multiple"
