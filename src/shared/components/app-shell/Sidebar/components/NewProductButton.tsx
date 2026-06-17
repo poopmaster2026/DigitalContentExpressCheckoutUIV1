@@ -65,7 +65,7 @@ export function NewProductButton({ state }: { state: NavState }) {
         </span>
         <span className={textStyles({ state })}>新規作成</span>
       </Button>
-      <Dialog size="M" isDismissible>
+      <Dialog size="M">
         {({ close }) => (
           <>
             <Heading slot="title">商品カテゴリーを選択</Heading>
