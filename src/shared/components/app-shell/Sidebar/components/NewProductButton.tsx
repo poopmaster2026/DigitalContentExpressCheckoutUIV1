@@ -9,10 +9,10 @@ import {
   Heading,
 } from "@react-spectrum/s2/Dialog";
 import Add from "@react-spectrum/s2/icons/Add";
-import CalendarIllustration from "@react-spectrum/s2/illustrations/linear/Calendar";
-import CardTapPaymentIllustration from "@react-spectrum/s2/illustrations/linear/CardTapPayment";
-import EducationIllustration from "@react-spectrum/s2/illustrations/linear/Education";
-import FileTextIllustration from "@react-spectrum/s2/illustrations/linear/FileText";
+import CalendarIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/Calendar";
+import CardTapPaymentIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/CardTapPayment";
+import EducationIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
+import FileTextIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
 import {
   SelectBox,
   SelectBoxGroup,
@@ -73,6 +73,7 @@ export function NewProductButton({ state }: { state: NavState }) {
               <SelectBoxGroup
                 aria-label="商品カテゴリー"
                 selectionMode="single"
+                orientation="horizontal"
                 disabledKeys={["course", "booking", "subscription"]}
                 selectedKeys={selected}
                 onSelectionChange={setSelected}
