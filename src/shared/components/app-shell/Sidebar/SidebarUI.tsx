@@ -1,12 +1,13 @@
 "use client";
 
-import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
 import { Button } from "@react-spectrum/s2/Button";
 import Add from "@react-spectrum/s2/icons/Add";
-import { SideNav, SideNavItem } from "./components/SideNav";
+import { style, size } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { PanelToggleButton } from "./components/PanelToggleButton";
-import { NAV_ENTRIES } from "./navEntries";
+import { SideNav, SideNavItem } from "./components/SideNav";
 import type { NavState } from "./hooks/useSidebarToggle";
+import { NAV_ENTRIES } from "./navEntries";
 
 const SM = `@container (min-width: ${640 / 16}rem)`;
 const LG = `@container (width > ${1024 / 16}rem)`;

@@ -1,20 +1,25 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Link } from "@react-spectrum/s2/Link";
-import { Button } from "@react-spectrum/s2/Button";
-import { Badge } from "@react-spectrum/s2/Badge";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import { Divider } from "@react-spectrum/s2/Divider";
 import { AlertDialog, DialogTrigger } from "@react-spectrum/s2/AlertDialog";
+import { Badge } from "@react-spectrum/s2/Badge";
+import { Button } from "@react-spectrum/s2/Button";
+import { Divider } from "@react-spectrum/s2/Divider";
 import ChevronLeft from "@react-spectrum/s2/icons/ChevronLeft";
-import type { ProductDetail } from "../../types";
+import { Link } from "@react-spectrum/s2/Link";
+import { StatusLight } from "@react-spectrum/s2/StatusLight";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useFormContext, useWatch } from "react-hook-form";
+
 import { SALE_TYPE_BADGE } from "../../display";
+import type { ProductDetail } from "../../types";
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
 
 const backRow = style({ marginBottom: 8 });
-const backLink = style({ display: "inline-flex", alignItems: "center", gap: 4 });
+const backLink = style({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+});
 const titleRow = style({
   display: "flex",
   alignItems: "center",

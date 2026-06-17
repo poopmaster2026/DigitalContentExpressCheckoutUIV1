@@ -1,17 +1,23 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { LabeledValue } from "@react-spectrum/s2/LabeledValue";
 import { Link } from "@react-spectrum/s2/Link";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useFormContext, useWatch } from "react-hook-form";
+
 import type { ProductDetail } from "../../types";
-import { SectionHeading } from "./SectionHeading";
-import { NumberFieldControl, SwitchControl } from "./FormFields";
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
+
+import { NumberFieldControl, SwitchControl } from "./FormFields";
+import { SectionHeading } from "./SectionHeading";
 
 const section = style({ display: "flex", flexDirection: "column", gap: 24 });
 // 2つのトグルは1つのグループとして揃える（バラバラに並べない）
-const switchGroup = style({ display: "flex", flexDirection: "column", gap: 16 });
+const switchGroup = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 16,
+});
 
 export function PricingSection({ detail }: { detail: ProductDetail }) {
   const { control } = useFormContext<ProductFormValues>();

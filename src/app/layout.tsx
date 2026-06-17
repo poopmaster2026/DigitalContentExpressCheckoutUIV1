@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { headers } from "next/headers";
-import { ClientProvider } from "./provider";
+import type { ReactNode } from "react";
+
 import { QueryProvider } from "@/shared/providers/query-provider";
+
+import { ClientProvider } from "./provider";
 // Global base styles only. Design comes from React Spectrum S2 (style() macro
 // + Spectrum tokens) — see docs/DESIGN.md. No custom token layer here.
 import "./globals.css";

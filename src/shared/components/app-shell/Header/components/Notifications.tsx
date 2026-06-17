@@ -1,13 +1,17 @@
 "use client";
 
+import {
+  ActionButton,
+  NotificationBadge,
+} from "@react-spectrum/s2/ActionButton";
+import { Avatar } from "@react-spectrum/s2/Avatar";
+import { DialogTrigger } from "@react-spectrum/s2/Dialog";
+import Bell from "@react-spectrum/s2/icons/Bell";
+import { Popover } from "@react-spectrum/s2/Popover";
 // 通知（公式サンプル app/Notifications.tsx の移植）。各行は公式 Comment
 // （Typography.tsx）と同じ avatar / name(title-sm) / date(detail-sm) / body の構成。
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { ActionButton, NotificationBadge } from "@react-spectrum/s2/ActionButton";
-import { Avatar } from "@react-spectrum/s2/Avatar";
-import { DialogTrigger } from "@react-spectrum/s2/Dialog";
-import { Popover } from "@react-spectrum/s2/Popover";
-import Bell from "@react-spectrum/s2/icons/Bell";
+
 import { NOTIFICATIONS } from "@/shared/mock/notifications";
 
 const list = style({

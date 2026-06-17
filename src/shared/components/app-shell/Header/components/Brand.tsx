@@ -1,12 +1,18 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { Image } from "@react-spectrum/s2/Image";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { StoreSwitcher } from "./StoreSwitcher";
 
 const SM = `@container (min-width: ${640 / 16}rem)`;
 
-const brand = style({ display: "flex", alignItems: "center", gap: 20, flexShrink: 0 });
+const brand = style({
+  display: "flex",
+  alignItems: "center",
+  gap: 20,
+  flexShrink: 0,
+});
 // S2 Image はスケルトン用に gray の wrapper 背景を持つため、透過ロゴでは明示的に打ち消す
 const logoImage = style({
   height: 24,
@@ -39,7 +45,11 @@ export function Brand({ isDark }: { isDark: boolean }) {
         alt="Ours"
         styles={logoImage}
       />
-      <div className={brandDivider} role="separator" aria-orientation="vertical" />
+      <div
+        className={brandDivider}
+        role="separator"
+        aria-orientation="vertical"
+      />
       <div className={storeSwitcherWrap}>
         <StoreSwitcher />
       </div>

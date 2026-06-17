@@ -1,15 +1,17 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Image } from "@react-spectrum/s2/Image";
 import { Button } from "@react-spectrum/s2/Button";
 import { FileTrigger } from "@react-spectrum/s2/FileTrigger";
-import type { ProductDetail } from "../../types";
+import { Image } from "@react-spectrum/s2/Image";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useFormContext, useWatch } from "react-hook-form";
+
 import { THUMB_HUE, COVER_ILLUSTRATION } from "../../display";
-import { SectionHeading } from "./SectionHeading";
-import { TextFieldControl, TextAreaControl } from "./FormFields";
+import type { ProductDetail } from "../../types";
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
+
+import { TextFieldControl, TextAreaControl } from "./FormFields";
+import { SectionHeading } from "./SectionHeading";
 
 const section = style({ display: "flex", flexDirection: "column", gap: 24 });
 const field = style({ display: "flex", flexDirection: "column", gap: 8 });
@@ -40,7 +42,9 @@ export function BasicInfoSection({ detail }: { detail: ProductDetail }) {
         <span className={fieldLabel}>カバー画像</span>
         <div className={coverRow}>
           {/* 未設定時は販売形態で固定の generic2 イラストを表示（COVER_ILLUSTRATION） */}
-          <div className={`${coverThumb} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}>
+          <div
+            className={`${coverThumb} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}
+          >
             {coverImage ? (
               <Image src={coverImage} alt="" styles={coverImg} />
             ) : (

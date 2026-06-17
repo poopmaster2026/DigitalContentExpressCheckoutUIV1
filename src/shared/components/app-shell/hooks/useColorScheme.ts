@@ -21,7 +21,7 @@ export function useColorScheme() {
   const prefersDark = useSyncExternalStore(
     subscribePrefersDark,
     () => matchMedia("(prefers-color-scheme: dark)").matches,
-    () => false,
+    () => false
   );
   const isDark = colorScheme == null ? prefersDark : colorScheme === "dark";
 

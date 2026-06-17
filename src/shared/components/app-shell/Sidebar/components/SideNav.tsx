@@ -1,16 +1,19 @@
 "use client";
 
+import { pressScale } from "@react-spectrum/s2/pressScale";
+import {
+  style,
+  focusRing,
+} from "@react-spectrum/s2/style" with { type: "macro" };
 // SideNav / SideNavItem は S2 未提供のため、公式サンプル app/Sidebar.tsx と同じ
 // RAC ToggleButtonGroup + style macro で組む。
 import { useRef, type ReactNode } from "react";
-import { style, focusRing } from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   ToggleButtonGroup as RACToggleButtonGroup,
   ToggleButton as RACToggleButton,
   type ToggleButtonGroupProps,
   type ToggleButtonProps,
 } from "react-aria-components";
-import { pressScale } from "@react-spectrum/s2/pressScale";
 
 const sideNavGroup = style({
   marginStart: -4,
@@ -52,11 +55,15 @@ const sideNavIndicator = style({
   },
 });
 
-export function SideNav(props: ToggleButtonGroupProps & { "aria-label": string; children: ReactNode }) {
+export function SideNav(
+  props: ToggleButtonGroupProps & { "aria-label": string; children: ReactNode }
+) {
   return <RACToggleButtonGroup {...props} className={sideNavGroup} />;
 }
 
-export function SideNavItem(props: ToggleButtonProps & { children: ReactNode }) {
+export function SideNavItem(
+  props: ToggleButtonProps & { children: ReactNode }
+) {
   const ref = useRef(null);
   return (
     <RACToggleButton

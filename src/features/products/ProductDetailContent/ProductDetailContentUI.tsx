@@ -1,12 +1,14 @@
 "use client";
 
-import type { FormEventHandler } from "react";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { InlineAlert, Heading, Content } from "@react-spectrum/s2/InlineAlert";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import type { FormEventHandler } from "react";
+
 import type { ProductDetail } from "../types";
-import { DetailHeader } from "./components/DetailHeader";
+
 import { BasicInfoSection } from "./components/BasicInfoSection";
 import { ContentSection } from "./components/ContentSection";
+import { DetailHeader } from "./components/DetailHeader";
 import { PricingSection } from "./components/PricingSection";
 import { ProductPreview } from "./components/ProductPreview";
 
@@ -27,7 +29,10 @@ const scrollArea = style({
 // 左フォーム / 右プレビューの2カラム。狭幅(lg未満)では縦積み。スクロール軸は scrollArea の1本
 const grid = style({
   display: "grid",
-  gridTemplateColumns: { default: "minmax(0, 1fr)", lg: "minmax(0, 1fr) 340px" },
+  gridTemplateColumns: {
+    default: "minmax(0, 1fr)",
+    lg: "minmax(0, 1fr) 340px",
+  },
   columnGap: 32,
   rowGap: 32,
   alignItems: "start",
@@ -62,7 +67,12 @@ export function ProductDetailContentUI({
   onDelete,
 }: Props) {
   return (
-    <form className={page} onSubmit={onSubmit} onChange={onDismissSaved} noValidate>
+    <form
+      className={page}
+      onSubmit={onSubmit}
+      onChange={onDismissSaved}
+      noValidate
+    >
       <DetailHeader detail={detail} onDelete={onDelete} />
       <div className={scrollArea}>
         <div className={grid}>

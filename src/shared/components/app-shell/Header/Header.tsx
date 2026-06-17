@@ -1,9 +1,10 @@
 "use client";
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { Brand } from "./components/Brand";
-import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderActions } from "./components/HeaderActions";
+import { HeaderSearch } from "./components/HeaderSearch";
 
 const MD = `@container (min-width: ${768 / 16}rem)`;
 
@@ -37,7 +38,10 @@ export function Header({
       <Brand isDark={isDark} />
       <HeaderSearch />
       <div className={spacer} />
-      <HeaderActions isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
+      <HeaderActions
+        isDark={isDark}
+        onColorSchemeChange={onColorSchemeChange}
+      />
     </div>
   );
 }

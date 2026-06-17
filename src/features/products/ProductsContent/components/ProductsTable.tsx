@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { style, iconStyle } from "@react-spectrum/s2/style" with { type: "macro" };
+import { ActionButton } from "@react-spectrum/s2/ActionButton";
+import { Badge } from "@react-spectrum/s2/Badge";
+import More from "@react-spectrum/s2/icons/More";
+import { Image } from "@react-spectrum/s2/Image";
+import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
+import { StatusLight } from "@react-spectrum/s2/StatusLight";
+import {
+  style,
+  iconStyle,
+} from "@react-spectrum/s2/style" with { type: "macro" };
 import {
   TableView,
   TableHeader,
@@ -12,21 +19,23 @@ import {
   Cell,
   type SortDescriptor,
 } from "@react-spectrum/s2/TableView";
-import { Badge } from "@react-spectrum/s2/Badge";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
-import { Image } from "@react-spectrum/s2/Image";
-import More from "@react-spectrum/s2/icons/More";
-import type { Product, ProductKind, ProductThumb } from "../../types";
-import { formatPrice, formatRevenue } from "../../format";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../display";
+import { formatPrice, formatRevenue } from "../../format";
 import { productMenuItems } from "../../productMenu";
+import type { Product, ProductKind, ProductThumb } from "../../types";
+
 import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
 /** テーブルのソート比較（列ごと）。ソート state はこの Presentational の UI 表示制御に閉じる。 */
-function compareProducts(a: Product, b: Product, column: SortDescriptor["column"]): number {
+function compareProducts(
+  a: Product,
+  b: Product,
+  column: SortDescriptor["column"]
+): number {
   switch (column) {
     case "name":
       return a.name.localeCompare(b.name, "ja");
@@ -87,7 +96,9 @@ export function ProductsTable({
   products: Product[];
   isFiltered: boolean;
 }) {
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(null);
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor | null>(
+    null
+  );
   const router = useRouter();
 
   let rows = products;
@@ -163,7 +174,10 @@ export function ProductsTable({
             <Cell>
               {/* 状態は塗りチップではなく StatusLight（ドット+ラベル）。
                   S2 公式 Card 例の Published 表現・AEM の公開ステータスと同じ */}
-              <StatusLight size="S" variant={p.status === "published" ? "positive" : "neutral"}>
+              <StatusLight
+                size="S"
+                variant={p.status === "published" ? "positive" : "neutral"}
+              >
                 {p.status === "published" ? "公開中" : "下書き"}
               </StatusLight>
             </Cell>

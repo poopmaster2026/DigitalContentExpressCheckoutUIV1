@@ -12,13 +12,39 @@ const page = style({
   minHeight: 0,
 });
 const titleRow = style({ display: "flex", alignItems: "center", gap: 12 });
-const titleBlock = style({ width: 96, height: 28, backgroundColor: "gray-200", borderRadius: "sm" });
+const titleBlock = style({
+  width: 96,
+  height: 28,
+  backgroundColor: "gray-200",
+  borderRadius: "sm",
+});
 const spacer = style({ flexGrow: 1 });
-const control = style({ width: 160, height: 32, backgroundColor: "gray-100", borderRadius: "sm" });
-const list = style({ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 });
+const control = style({
+  width: 160,
+  height: 32,
+  backgroundColor: "gray-100",
+  borderRadius: "sm",
+});
+const list = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 12,
+  marginTop: 8,
+});
 const row = style({ display: "flex", alignItems: "center", gap: 12 });
-const thumb = style({ width: 36, height: 36, backgroundColor: "gray-100", borderRadius: "sm", flexShrink: 0 });
-const line = style({ height: 16, backgroundColor: "gray-100", borderRadius: "sm", flexGrow: 1 });
+const thumb = style({
+  width: 36,
+  height: 36,
+  backgroundColor: "gray-100",
+  borderRadius: "sm",
+  flexShrink: 0,
+});
+const line = style({
+  height: 16,
+  backgroundColor: "gray-100",
+  borderRadius: "sm",
+  flexGrow: 1,
+});
 
 const ROWS = Array.from({ length: 8 }, (_, i) => i);
 

@@ -1,8 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { Divider } from "@react-spectrum/s2/Divider";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import type { ReactNode } from "react";
 
 const wrap = style({ display: "flex", flexDirection: "column", gap: 8 });
 const heading = style({ font: "heading-sm", marginY: 0 });

@@ -1,24 +1,25 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import FileTextIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/FileText";
-import VideoIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Video";
-import ImageStackIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/ImageStack";
-import ImageIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Image";
+import EducationIcon from "@react-spectrum/s2/icons/Education";
+import FileIcon from "@react-spectrum/s2/icons/File";
+import FileTextIcon from "@react-spectrum/s2/icons/FileText";
+import ImageIcon from "@react-spectrum/s2/icons/Image";
+import ImagesIcon from "@react-spectrum/s2/icons/Images";
+import VideoIcon from "@react-spectrum/s2/icons/Video";
 import DocumentIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Document";
 import EducationIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Education";
-import FileTextIcon from "@react-spectrum/s2/icons/FileText";
-import VideoIcon from "@react-spectrum/s2/icons/Video";
-import ImagesIcon from "@react-spectrum/s2/icons/Images";
-import ImageIcon from "@react-spectrum/s2/icons/Image";
-import FileIcon from "@react-spectrum/s2/icons/File";
-import EducationIcon from "@react-spectrum/s2/icons/Education";
-// カバー画像プレースホルダ用は generic2（一覧タイルの generic1 とレイヤを分ける）
-import FileTextG2 from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
-import EducationG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
+import FileTextIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/FileText";
+import ImageIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Image";
+import ImageStackIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/ImageStack";
+import VideoIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Video";
 import CalendarG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Calendar";
 import CardTapPaymentG2 from "@react-spectrum/s2/illustrations/gradient/generic2/CardTapPayment";
+import EducationG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
+// カバー画像プレースホルダ用は generic2（一覧タイルの generic1 とレイヤを分ける）
+import FileTextG2 from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import type { ReactNode } from "react";
+
 import type { ProductKind, ProductThumb, SaleType } from "./types";
 
 /**

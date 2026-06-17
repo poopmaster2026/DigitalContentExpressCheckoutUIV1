@@ -3,10 +3,7 @@
     "react-spectrum-s2": {
       "type": "stdio",
       "command": "npx",
-      "args": [
-        "-y",
-        "@react-spectrum/mcp@latest"
-      ],
+      "args": ["-y", "@react-spectrum/mcp@latest"],
       "env": {}
     }
   }

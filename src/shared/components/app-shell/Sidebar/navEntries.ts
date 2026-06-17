@@ -1,9 +1,9 @@
-import type { ComponentType } from "react";
+import ChartBarVert from "@react-spectrum/s2/icons/ChartBarVert";
 import Home from "@react-spectrum/s2/icons/Home";
 import Images from "@react-spectrum/s2/icons/Images";
 import ListBulleted from "@react-spectrum/s2/icons/ListBulleted";
 import UserGroup from "@react-spectrum/s2/icons/UserGroup";
-import ChartBarVert from "@react-spectrum/s2/icons/ChartBarVert";
+import type { ComponentType } from "react";
 
 export interface NavEntry {
   key: string;

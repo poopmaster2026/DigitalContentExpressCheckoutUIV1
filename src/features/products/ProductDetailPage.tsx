@@ -1,5 +1,5 @@
-import type { ProductDetail } from "./types";
 import { ProductDetailContent } from "./ProductDetailContent/ProductDetailContent";
+import type { ProductDetail } from "./types";
 
 /**
  * 商品 詳細/編集ページの最上位エントリ（route から呼ばれる）。
