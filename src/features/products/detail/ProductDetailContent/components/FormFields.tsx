@@ -8,7 +8,7 @@ import { TextField } from "@react-spectrum/s2/TextField";
 import type { ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-import type { ProductFormValues } from "../hooks/useProductDetailForm";
+import type { ProductFormValues } from "../../../types/validation";
 
 // フォーム幅（maxWidth 640）の中で各フィールドを全幅に伸ばす
 const fieldStyle = style({ width: "full" });

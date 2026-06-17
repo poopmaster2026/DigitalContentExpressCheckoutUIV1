@@ -4,9 +4,9 @@ import { InlineAlert, Heading, Content } from "@react-spectrum/s2/InlineAlert";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { FormEventHandler } from "react";
 
-import { BasicInfoSection } from "../ProductDetailContent/components/BasicInfoSection";
-import { ContentSection } from "../ProductDetailContent/components/ContentSection";
-import type { SaleType } from "../types";
+import { BasicInfoSection } from "../../detail/ProductDetailContent/components/BasicInfoSection";
+import { ContentSection } from "../../detail/ProductDetailContent/components/ContentSection";
+import type { SaleType } from "../../types";
 
 import { NewPricingSection } from "./components/NewPricingSection";
 import { NewProductHeader } from "./components/NewProductHeader";

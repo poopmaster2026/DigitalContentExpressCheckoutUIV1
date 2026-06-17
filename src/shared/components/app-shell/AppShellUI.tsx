@@ -49,7 +49,7 @@ const content = style({
   flexDirection: "column",
   minHeight: 0,
   boxSizing: "border-box",
-  overflow: "auto",
+  overflow: "hidden",
 });
 
 /** アプリフレーム（Presentational）。toolbar(Header) / sidebar(Sidebar) / content を grid で配置。 */

@@ -10,9 +10,9 @@ import { StatusLight } from "@react-spectrum/s2/StatusLight";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { SALE_TYPE_BADGE } from "../../display";
-import type { ProductDetail } from "../../types";
-import type { ProductFormValues } from "../hooks/useProductDetailForm";
+import { SALE_TYPE_BADGE } from "../../../display";
+import type { ProductDetail } from "../../../types";
+import type { ProductFormValues } from "../../../types/validation";
 
 const backRow = style({ marginBottom: 8 });
 const backLink = style({

@@ -5,8 +5,8 @@ import { Link } from "@react-spectrum/s2/Link";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useFormContext, useWatch } from "react-hook-form";
 
-import type { ProductDetail } from "../../types";
-import type { ProductFormValues } from "../hooks/useProductDetailForm";
+import type { ProductDetail } from "../../../types";
+import type { ProductFormValues } from "../../../types/validation";
 
 import { NumberFieldControl, SwitchControl } from "./FormFields";
 import { SectionHeading } from "./SectionHeading";

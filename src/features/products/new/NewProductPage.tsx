@@ -1,5 +1,6 @@
+import type { SaleType } from "../types";
+
 import { NewProductContent } from "./NewProductContent/NewProductContent";
-import type { SaleType } from "./types";
 
 const VALID_SALE_TYPES: readonly string[] = [
   "digital",

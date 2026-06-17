@@ -14,10 +14,10 @@ import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ILLUSTRATION } from "../../display";
-import { formatPrice } from "../../format";
-import { productMenuItems } from "../../productMenu";
-import type { Product } from "../../types";
+import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ILLUSTRATION } from "../../../display";
+import { formatPrice } from "../../../format";
+import { productMenuItems } from "../../../productMenu";
+import type { Product } from "../../../types";
 
 import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";

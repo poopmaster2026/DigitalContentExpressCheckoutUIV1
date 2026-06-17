@@ -22,10 +22,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../display";
-import { formatPrice, formatRevenue } from "../../format";
-import { productMenuItems } from "../../productMenu";
-import type { Product, ProductKind, ProductThumb } from "../../types";
+import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../../display";
+import { formatPrice, formatRevenue } from "../../../format";
+import { productMenuItems } from "../../../productMenu";
+import type { Product, ProductKind, ProductThumb } from "../../../types";
 
 import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";

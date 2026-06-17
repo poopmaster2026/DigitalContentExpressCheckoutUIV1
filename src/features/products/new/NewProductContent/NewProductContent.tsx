@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 
-import { useNewProductForm } from "../ProductDetailContent/hooks/useProductDetailForm";
-import type { SaleType } from "../types";
+import { useNewProductForm } from "../../detail/ProductDetailContent/hooks/useProductDetailForm";
+import type { SaleType } from "../../types";
 
 import { NewProductContentUI } from "./NewProductContentUI";
 
@@ -13,7 +13,7 @@ import { NewProductContentUI } from "./NewProductContentUI";
 export function NewProductContent({ saleType }: { saleType: SaleType }) {
   const router = useRouter();
   const methods = useNewProductForm();
-  const [created, setCreated] = useState(false);
+  const [created, setCreated] = useState<boolean>(false);
 
   const onSubmit = methods.handleSubmit(() => {
     setCreated(true);
