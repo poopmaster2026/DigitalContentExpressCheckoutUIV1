@@ -78,22 +78,22 @@ export function NewProductButton({ state }: { state: NavState }) {
                 onSelectionChange={setSelected}
                 styles={style({ width: "full" })}
               >
-                <SelectBox id="digital" textValue="デジタル">
+                <SelectBox id="digital" textValue="デジタル" UNSAFE_className="sb-digital">
                   <FileTextIllustration />
                   <Text slot="label">デジタル</Text>
                   <Text slot="description">ファイル・PDF・動画</Text>
                 </SelectBox>
-                <SelectBox id="course" textValue="コース">
+                <SelectBox id="course" textValue="コース" UNSAFE_className="sb-course">
                   <EducationIllustration />
                   <Text slot="label">コース</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
-                <SelectBox id="booking" textValue="予約">
+                <SelectBox id="booking" textValue="予約" UNSAFE_className="sb-booking">
                   <CalendarIllustration />
                   <Text slot="label">予約</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
-                <SelectBox id="subscription" textValue="サブスク">
+                <SelectBox id="subscription" textValue="サブスク" UNSAFE_className="sb-subscription">
                   <CardTapPaymentIllustration />
                   <Text slot="label">サブスク</Text>
                   <Text slot="description">近日公開予定</Text>
