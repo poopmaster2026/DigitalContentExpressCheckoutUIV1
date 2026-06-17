@@ -1,13 +1,14 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
 import HelpCircle from "@react-spectrum/s2/icons/HelpCircle";
 import SearchIcon from "@react-spectrum/s2/icons/Search";
-import { Notifications } from "./Notifications";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { AccountMenu } from "./AccountMenu";
 import { MobileNavButton } from "./MobileNavButton";
+import { Notifications } from "./Notifications";
 
 const XS = `@container (min-width: ${480 / 16}rem)`;
 const SM = `@container (min-width: ${640 / 16}rem)`;
@@ -30,18 +31,24 @@ export function HeaderActions({
 }) {
   return (
     <ActionButtonGroup>
-      <div className={style({ display: { default: "contents", [MD]: "none" } })}>
+      <div
+        className={style({ display: { default: "contents", [MD]: "none" } })}
+      >
         <ActionButton isQuiet aria-label="検索" onPress={onSearchOpen}>
           <SearchIcon />
         </ActionButton>
       </div>
-      <div className={style({ display: { default: "none", [XS]: "contents" } })}>
+      <div
+        className={style({ display: { default: "none", [XS]: "contents" } })}
+      >
         <ActionButton isQuiet aria-label="ヘルプ">
           <HelpCircle />
         </ActionButton>
         <Notifications />
       </div>
-      <div className={style({ display: { default: "contents", [SM]: "none" } })}>
+      <div
+        className={style({ display: { default: "contents", [SM]: "none" } })}
+      >
         <MobileNavButton />
       </div>
       <AccountMenu isDark={isDark} onColorSchemeChange={onColorSchemeChange} />

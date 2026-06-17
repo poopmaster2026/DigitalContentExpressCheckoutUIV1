@@ -1,8 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import { Provider } from "@react-spectrum/s2/Provider";
+import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 
 // Wire React Spectrum's client-side navigation (used by links, etc.)
 // into the Next.js App Router.
@@ -24,7 +24,11 @@ export function ClientProvider({
   const router = useRouter();
 
   return (
-    <Provider elementType="html" locale={lang} router={{ navigate: router.push }}>
+    <Provider
+      elementType="html"
+      locale={lang}
+      router={{ navigate: router.push }}
+    >
       {children}
     </Provider>
   );

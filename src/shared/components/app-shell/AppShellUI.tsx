@@ -2,6 +2,7 @@
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { ReactNode } from "react";
+
 import { Header } from "./Header/Header";
 import { Sidebar } from "./Sidebar/Sidebar";
 

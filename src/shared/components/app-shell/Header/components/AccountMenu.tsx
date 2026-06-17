@@ -1,16 +1,23 @@
 "use client";
 
-// アカウントメニュー（公式サンプル app/AccountMenu.tsx の移植）。
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { Avatar } from "@react-spectrum/s2/Avatar";
-import { Popover } from "@react-spectrum/s2/Popover";
-import { MenuTrigger, Menu, MenuSection, MenuItem, SubmenuTrigger } from "@react-spectrum/s2/Menu";
-import { Switch } from "@react-spectrum/s2/Switch";
 import { Divider } from "@react-spectrum/s2/Divider";
-import { Text } from "@react-spectrum/s2/Text";
-import Settings from "@react-spectrum/s2/icons/Settings";
 import Buildings from "@react-spectrum/s2/icons/Buildings";
+import Settings from "@react-spectrum/s2/icons/Settings";
+import {
+  MenuTrigger,
+  Menu,
+  MenuSection,
+  MenuItem,
+  SubmenuTrigger,
+} from "@react-spectrum/s2/Menu";
+import { Popover } from "@react-spectrum/s2/Popover";
+// アカウントメニュー（公式サンプル app/AccountMenu.tsx の移植）。
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Switch } from "@react-spectrum/s2/Switch";
+import { Text } from "@react-spectrum/s2/Text";
+
 import { STORES, DEFAULT_STORE_ID, DEFAULT_STORE } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
@@ -37,8 +44,22 @@ export function AccountMenu({
         <Avatar alt="花子" src={AVATAR_SRC} />
       </ActionButton>
       <Popover hideArrow placement="bottom end">
-        <div className={style({ paddingTop: 4, display: "flex", flexDirection: "column", gap: 12 })}>
-          <div className={style({ display: "flex", gap: 12, alignItems: "center", marginX: 12 })}>
+        <div
+          className={style({
+            paddingTop: 4,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          })}
+        >
+          <div
+            className={style({
+              display: "flex",
+              gap: 12,
+              alignItems: "center",
+              marginX: 12,
+            })}
+          >
             <Avatar alt="花子" src={AVATAR_SRC} size={56} />
             <div>
               <div className={accountName}>花子</div>

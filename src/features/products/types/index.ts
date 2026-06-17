@@ -9,15 +9,34 @@ import type { Key } from "react-aria-components";
 export const PRODUCT_STATUSES = ["published", "draft"] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
-export const PRODUCT_THUMBS = ["sage", "sky", "sand", "rose", "lilac", "mint"] as const;
+export const PRODUCT_THUMBS = [
+  "sage",
+  "sky",
+  "sand",
+  "rose",
+  "lilac",
+  "mint",
+] as const;
 export type ProductThumb = (typeof PRODUCT_THUMBS)[number];
 
 /** コンテンツ種別。カードプレビューのイラスト選択に使う。 */
-export const PRODUCT_KINDS = ["book", "video", "collection", "photo", "template", "guide"] as const;
+export const PRODUCT_KINDS = [
+  "book",
+  "video",
+  "collection",
+  "photo",
+  "template",
+  "guide",
+] as const;
 export type ProductKind = (typeof PRODUCT_KINDS)[number];
 
 /** 販売形態。カードのチップ表示と色分けに使う。 */
-export const SALE_TYPES = ["digital", "course", "booking", "subscription"] as const;
+export const SALE_TYPES = [
+  "digital",
+  "course",
+  "booking",
+  "subscription",
+] as const;
 export type SaleType = (typeof SALE_TYPES)[number];
 
 export interface Product {

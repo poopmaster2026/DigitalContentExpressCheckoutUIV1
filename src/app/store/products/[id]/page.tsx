@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+
 import { getProductDetail } from "@/features/products/mock";
 import { ProductDetailPage } from "@/features/products/ProductDetailPage";
 

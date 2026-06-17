@@ -14,7 +14,9 @@ export function useSidebarToggle() {
   const toggle = (containerEl: HTMLElement | null) => {
     setState((prev) => {
       if (prev == null) {
-        return containerEl != null && containerEl.offsetWidth > 1024 ? "collapsed" : "expanded";
+        return containerEl != null && containerEl.offsetWidth > 1024
+          ? "collapsed"
+          : "expanded";
       }
       return prev === "expanded" ? "collapsed" : "expanded";
     });

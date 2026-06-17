@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { PanelIcon } from "./PanelIcon";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useState } from "react";
+
 import type { NavState } from "../hooks/useSidebarToggle";
+
+import { PanelIcon } from "./PanelIcon";
 
 /** サイドバー開閉トグル。hover は icon アニメ用のローカル UI 状態。 */
 export function PanelToggleButton({
@@ -23,7 +25,9 @@ export function PanelToggleButton({
       // @ts-expect-error -- ActionButton は onHoverChange を型公開していないが実装は受け付ける（公式サンプルと同じ）
       onHoverChange={setHovered}
       onPress={(e) => {
-        const containerEl = (e.target as HTMLElement).closest("[data-container]");
+        const containerEl = (e.target as HTMLElement).closest(
+          "[data-container]"
+        );
         onToggle(containerEl instanceof HTMLElement ? containerEl : null);
         setHovered(false);
       }}

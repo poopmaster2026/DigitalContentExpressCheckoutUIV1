@@ -1,13 +1,14 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { ActionButton, Text } from "@react-spectrum/s2/ActionButton";
-import { DialogTrigger, Dialog, Content } from "@react-spectrum/s2/Dialog";
 import { Button } from "@react-spectrum/s2/Button";
+import { DialogTrigger, Dialog, Content } from "@react-spectrum/s2/Dialog";
 import { Divider } from "@react-spectrum/s2/Divider";
-import AppsAll from "@react-spectrum/s2/icons/AppsAll";
 import Add from "@react-spectrum/s2/icons/Add";
+import AppsAll from "@react-spectrum/s2/icons/AppsAll";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { Button as RACButton } from "react-aria-components";
+
 import { NAV_ENTRIES } from "../../Sidebar/navEntries";
 
 // S2 スペーシングスケール: 0, 4, 8, 12, 16, 20, 24 ... (4の倍数のみ有効)
@@ -43,7 +44,13 @@ export function MobileNavButton() {
       </ActionButton>
       <Dialog isDismissible size="S" aria-label="ナビゲーション">
         <Content>
-          <div className={style({ display: "flex", flexDirection: "column", gap: 4 })}>
+          <div
+            className={style({
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            })}
+          >
             {NAV_ENTRIES.map((entry) => (
               <RACButton key={entry.key} className={navItemClass}>
                 <entry.icon />

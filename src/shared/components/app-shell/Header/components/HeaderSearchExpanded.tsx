@@ -1,11 +1,13 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { SearchField } from "@react-spectrum/s2/SearchField";
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
 import Cancel from "@react-spectrum/s2/icons/Cancel";
+import { SearchField } from "@react-spectrum/s2/SearchField";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { useAppSearch } from "../../search-context";
+
 import { AccountMenu } from "./AccountMenu";
 
 /** モバイル幅（< MD）で検索アイコンを押した時に展開するフルワイド検索バー。 */
@@ -34,7 +36,10 @@ export function HeaderSearchExpanded({
         <ActionButton isQuiet aria-label="検索を閉じる" onPress={onClose}>
           <Cancel />
         </ActionButton>
-        <AccountMenu isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
+        <AccountMenu
+          isDark={isDark}
+          onColorSchemeChange={onColorSchemeChange}
+        />
       </ActionButtonGroup>
     </>
   );

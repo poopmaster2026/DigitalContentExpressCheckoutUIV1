@@ -2,9 +2,9 @@
 
 import { ActionBar, ActionButton, Text } from "@react-spectrum/s2/ActionBar";
 import { AlertDialog, DialogTrigger } from "@react-spectrum/s2/AlertDialog";
+import Delete from "@react-spectrum/s2/icons/Delete";
 import Publish from "@react-spectrum/s2/icons/Publish";
 import Revert from "@react-spectrum/s2/icons/Revert";
-import Delete from "@react-spectrum/s2/icons/Delete";
 
 /**
  * 選択時の一括操作バー（グリッド/テーブル共用）。

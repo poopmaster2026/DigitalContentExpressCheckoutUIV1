@@ -1,18 +1,11 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Divider } from "@react-spectrum/s2/Divider";
+import type { ReactNode } from "react";
 
-const wrap = style({ display: "flex", flexDirection: "column", gap: 8 });
 const heading = style({ font: "heading-sm", marginY: 0 });
 
-/** フォームのセクション見出し（見出し直下に細い Divider）。 */
+/** フォームのセクション見出し。節の区切りは罫線でなく余白で表現する（Spectrum: 面の区別は色・余白、線/影は例外）。 */
 export function SectionHeading({ children }: { children: ReactNode }) {
-  return (
-    <div className={wrap}>
-      <h2 className={heading}>{children}</h2>
-      <Divider size="S" />
-    </div>
-  );
+  return <h2 className={heading}>{children}</h2>;
 }

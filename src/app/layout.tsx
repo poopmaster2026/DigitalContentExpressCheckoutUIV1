@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { headers } from "next/headers";
-import { ClientProvider } from "./provider";
+import type { ReactNode } from "react";
+
 import { QueryProvider } from "@/shared/providers/query-provider";
+
+import { ClientProvider } from "./provider";
 // グローバルなベースリセットのみ。デザインは React Spectrum S2（style() macro
 // + Spectrum トークン）由来 — docs/DESIGN.md 参照。独自トークン層はここに持たない。
 import "./globals.css";

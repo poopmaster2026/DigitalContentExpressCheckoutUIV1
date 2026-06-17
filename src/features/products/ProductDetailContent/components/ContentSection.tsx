@@ -1,18 +1,20 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { ButtonGroup, Button } from "@react-spectrum/s2/ButtonGroup";
 import {
   DropZone,
   IllustratedMessage,
   Heading,
   Content,
 } from "@react-spectrum/s2/DropZone";
-import { ButtonGroup, Button } from "@react-spectrum/s2/ButtonGroup";
 import { FileTrigger } from "@react-spectrum/s2/FileTrigger";
 import CloudUpload from "@react-spectrum/s2/illustrations/gradient/generic2/CloudUpload";
-import { SectionHeading } from "./SectionHeading";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useFormContext, useWatch } from "react-hook-form";
+
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
+
+import { SectionHeading } from "./SectionHeading";
 
 const section = style({ display: "flex", flexDirection: "column", gap: 12 });
 const dropZone = style({ width: "full", maxWidth: 480 });
@@ -65,7 +67,8 @@ export function ContentSection() {
       </DropZone>
       {contentFile && (
         <p className={fileInfo}>
-          現在のファイル: {contentFile.name}（{formatFileSize(contentFile.size)}）
+          現在のファイル: {contentFile.name}（{formatFileSize(contentFile.size)}
+          ）
         </p>
       )}
     </section>

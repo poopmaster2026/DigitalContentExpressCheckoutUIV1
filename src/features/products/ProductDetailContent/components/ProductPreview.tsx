@@ -1,16 +1,22 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Image } from "@react-spectrum/s2/Image";
 import { Badge } from "@react-spectrum/s2/Badge";
+import { Image } from "@react-spectrum/s2/Image";
 import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import type { ProductDetail } from "../../types";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { useFormContext, useWatch } from "react-hook-form";
+
 import { SALE_TYPE_BADGE, THUMB_HUE, COVER_ILLUSTRATION } from "../../display";
 import { formatPrice } from "../../format";
+import type { ProductDetail } from "../../types";
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
 
-const caption = style({ font: "ui", color: "neutral-subdued", marginBottom: 8, display: "block" });
+const caption = style({
+  font: "ui",
+  color: "neutral-subdued",
+  marginBottom: 8,
+  display: "block",
+});
 // プレビューは「コンテンツのカード」の再現なので一覧カードと同様にソフト影を許容
 const card = style({
   backgroundColor: "base",
@@ -29,7 +35,12 @@ const previewBox = style({
   overflow: "hidden",
 });
 const previewImg = style({ width: "full", height: "full", objectFit: "cover" });
-const body = style({ display: "flex", flexDirection: "column", gap: 8, padding: 16 });
+const body = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+  padding: 16,
+});
 const titleText = style({ font: "heading-sm", marginY: 0 });
 const metaRow = style({
   display: "flex",
@@ -38,7 +49,11 @@ const metaRow = style({
   gap: 8,
 });
 const priceText = style({ fontWeight: "bold" });
-const descText = style({ font: "body-sm", color: "neutral-subdued", marginY: 0 });
+const descText = style({
+  font: "body-sm",
+  color: "neutral-subdued",
+  marginY: 0,
+});
 
 export function ProductPreview({ detail }: { detail: ProductDetail }) {
   const { control } = useFormContext<ProductFormValues>();
@@ -56,7 +71,9 @@ export function ProductPreview({ detail }: { detail: ProductDetail }) {
     <div>
       <span className={caption}>プレビュー（ストアでの見え方）</span>
       <div className={card}>
-        <div className={`${previewBox} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}>
+        <div
+          className={`${previewBox} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}
+        >
           {coverImage ? (
             <Image src={coverImage} alt="" styles={previewImg} />
           ) : (
@@ -67,7 +84,9 @@ export function ProductPreview({ detail }: { detail: ProductDetail }) {
           <h3 className={titleText}>{name || "(無題の商品)"}</h3>
           <div className={metaRow}>
             <Badge variant={badge.variant}>{badge.label}</Badge>
-            <span className={priceText}>{formatPrice(isFree ? null : price)}</span>
+            <span className={priceText}>
+              {formatPrice(isFree ? null : price)}
+            </span>
           </div>
           <StatusLight size="S" variant={published ? "positive" : "neutral"}>
             {published ? "公開中" : "下書き"}

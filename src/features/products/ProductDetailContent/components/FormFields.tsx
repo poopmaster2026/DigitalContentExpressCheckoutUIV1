@@ -1,12 +1,13 @@
 "use client";
 
+import { NumberField } from "@react-spectrum/s2/NumberField";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Switch } from "@react-spectrum/s2/Switch";
+import { TextArea } from "@react-spectrum/s2/TextArea";
+import { TextField } from "@react-spectrum/s2/TextField";
 import type { ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { TextField } from "@react-spectrum/s2/TextField";
-import { TextArea } from "@react-spectrum/s2/TextArea";
-import { NumberField } from "@react-spectrum/s2/NumberField";
-import { Switch } from "@react-spectrum/s2/Switch";
+
 import type { ProductFormValues } from "../hooks/useProductDetailForm";
 
 // フォーム幅（maxWidth 640）の中で各フィールドを全幅に伸ばす

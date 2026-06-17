@@ -1,7 +1,8 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { SearchField } from "@react-spectrum/s2/SearchField";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+
 import { useAppSearch } from "../../search-context";
 
 const MD = `@container (min-width: ${768 / 16}rem)`;

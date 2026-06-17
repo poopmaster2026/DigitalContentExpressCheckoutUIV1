@@ -1,16 +1,18 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
+import ViewList from "@react-spectrum/s2/icons/ViewList";
+import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
 import {
   SegmentedControl,
   SegmentedControlItem,
 } from "@react-spectrum/s2/SegmentedControl";
-import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
-import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
-import ViewList from "@react-spectrum/s2/icons/ViewList";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { Key } from "react-aria-components";
-import type { Product } from "../types";
+
 import { SALE_TYPE_BADGE } from "../display";
+import type { Product } from "../types";
+
 import { ProductsCardView } from "./components/ProductsCardView";
 import { ProductsTable } from "./components/ProductsTable";
 

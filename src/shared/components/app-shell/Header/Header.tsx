@@ -2,9 +2,10 @@
 
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
+
 import { Brand } from "./components/Brand";
-import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderActions } from "./components/HeaderActions";
+import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderSearchExpanded } from "./components/HeaderSearchExpanded";
 
 const MD = `@container (min-width: ${768 / 16}rem)`;

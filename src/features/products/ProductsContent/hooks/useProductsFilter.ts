@@ -2,12 +2,17 @@
 
 import { useMemo, useState } from "react";
 import type { Key } from "react-aria-components";
+
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
+
 import { PRODUCTS } from "../../mock";
 import type { Product, ProductFilters } from "../../types";
 
 /** ステータス・販売形態・検索語で商品を絞り込む。 */
-function filterProducts(products: Product[], { status, saleType, query }: ProductFilters): Product[] {
+function filterProducts(
+  products: Product[],
+  { status, saleType, query }: ProductFilters
+): Product[] {
   const q = query.trim();
   return products.filter((p) => {
     const okStatus = status === "all" || p.status === status;
@@ -41,7 +46,7 @@ export function useProductsFilter() {
 
   const products = useMemo(
     () => filterProducts(PRODUCTS, { ...filters, query }),
-    [filters, query],
+    [filters, query]
   );
 
   const filtered = isFiltered({ ...filters, query });
@@ -54,7 +59,8 @@ export function useProductsFilter() {
     status: filters.status,
     saleType: filters.saleType,
     onStatusChange: (status: Key) => setFilters((f) => ({ ...f, status })),
-    onSaleTypeChange: (saleType: Key) => setFilters((f) => ({ ...f, saleType })),
+    onSaleTypeChange: (saleType: Key) =>
+      setFilters((f) => ({ ...f, saleType })),
     view,
     setView,
   };
