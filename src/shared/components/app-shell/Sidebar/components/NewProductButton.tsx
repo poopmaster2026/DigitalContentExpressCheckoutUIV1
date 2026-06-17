@@ -92,7 +92,7 @@ export function NewProductButton({ state }: { state: NavState }) {
                   UNSAFE_style={{ width: "100%" }}
                 >
                   <FileTextIllustration />
-                  <Text slot="label">デジタル</Text>
+                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>デジタル</Text>
                   <Text slot="description">ファイル・PDF・動画</Text>
                 </SelectBox>
                 <SelectBox
@@ -102,7 +102,7 @@ export function NewProductButton({ state }: { state: NavState }) {
                   UNSAFE_style={{ width: "100%" }}
                 >
                   <EducationIllustration />
-                  <Text slot="label">コース</Text>
+                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>コース</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
                 <SelectBox
@@ -112,7 +112,7 @@ export function NewProductButton({ state }: { state: NavState }) {
                   UNSAFE_style={{ width: "100%" }}
                 >
                   <CalendarIllustration />
-                  <Text slot="label">予約</Text>
+                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>予約</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
                 <SelectBox
@@ -122,7 +122,7 @@ export function NewProductButton({ state }: { state: NavState }) {
                   UNSAFE_style={{ width: "100%" }}
                 >
                   <CardTapPaymentIllustration />
-                  <Text slot="label">サブスク</Text>
+                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>サブスク</Text>
                   <Text slot="description">近日公開予定</Text>
                 </SelectBox>
               </SelectBoxGroup>
