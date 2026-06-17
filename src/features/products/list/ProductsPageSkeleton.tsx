@@ -1,5 +1,3 @@
-"use client";
-
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 
 // ローディング表示。実レイアウト（タイトル行 + 一覧）に合わせた箱を S2 トークンで並べる。

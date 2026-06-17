@@ -1,5 +1,3 @@
-"use client";
-
 import { InlineAlert, Heading, Content } from "@react-spectrum/s2/InlineAlert";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { FormEventHandler } from "react";

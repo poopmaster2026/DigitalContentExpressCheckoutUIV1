@@ -1,5 +1,3 @@
-"use client";
-
 import { ActionButton } from "@react-spectrum/s2/ActionButton";
 import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
 import HelpCircle from "@react-spectrum/s2/icons/HelpCircle";

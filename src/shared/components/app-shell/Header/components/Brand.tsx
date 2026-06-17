@@ -1,5 +1,3 @@
-"use client";
-
 import { Image } from "@react-spectrum/s2/Image";
 import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
 

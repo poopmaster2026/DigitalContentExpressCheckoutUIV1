@@ -1,5 +1,3 @@
-"use client";
-
 import EducationIcon from "@react-spectrum/s2/icons/Education";
 import FileIcon from "@react-spectrum/s2/icons/File";
 import FileTextIcon from "@react-spectrum/s2/icons/FileText";

@@ -1,5 +1,3 @@
-"use client";
-
 import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
 import ViewList from "@react-spectrum/s2/icons/ViewList";
 import { Picker, PickerItem } from "@react-spectrum/s2/Picker";

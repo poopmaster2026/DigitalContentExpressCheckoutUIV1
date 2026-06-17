@@ -1,5 +1,3 @@
-"use client";
-
 import { createIcon } from "@react-spectrum/s2/Icon";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 // 公式サンプルの PanelIcon（createIcon + 開閉状態でアニメーションする rect）。
