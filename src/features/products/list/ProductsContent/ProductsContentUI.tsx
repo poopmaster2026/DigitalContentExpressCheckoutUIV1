@@ -10,8 +10,8 @@ import {
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { Key } from "react-aria-components";
 
-import { SALE_TYPE_BADGE } from "../display";
-import type { Product } from "../types";
+import { SALE_TYPE_BADGE } from "../../display";
+import type { Product } from "../../types";
 
 import { ProductsCardView } from "./components/ProductsCardView";
 import { ProductsTable } from "./components/ProductsTable";

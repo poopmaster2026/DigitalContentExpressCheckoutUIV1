@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
+import { isServer, QueryClient } from "@tanstack/react-query";
 
 export function makeQueryClient() {
   return new QueryClient({
@@ -10,4 +10,14 @@ export function makeQueryClient() {
       },
     },
   });
+}
+
+let browserQueryClient: QueryClient | undefined;
+
+// サーバーは毎リクエスト新規インスタンス、ブラウザはシングルトン。
+// QueryProvider の useState と共存できるよう export しておく。
+export function getQueryClient() {
+  if (isServer) return makeQueryClient();
+  browserQueryClient ??= makeQueryClient();
+  return browserQueryClient;
 }

@@ -1,10 +1,12 @@
 "use client";
 
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { notFound } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider } from "react-hook-form";
 
-import type { ProductDetail } from "../types";
+import { productDetailQueryOptions } from "../../queries";
 
 import { useProductDetailForm } from "./hooks/useProductDetailForm";
 import { ProductDetailContentUI } from "./ProductDetailContentUI";
@@ -12,9 +14,14 @@ import { ProductDetailContentUI } from "./ProductDetailContentUI";
 /**
  * 詳細/編集フォームの Container。状態は react-hook-form に集約し（useProductDetailForm）、
  * FormProvider で配下のセクションへ供給する。Phase 0 では保存は永続化せず完了表示のみ。
+ * サーバーで prefetchQuery 済みのキャッシュを useSuspenseQuery で消費する。
  */
-export function ProductDetailContent({ detail }: { detail: ProductDetail }) {
+export function ProductDetailContent({ id }: { id: string }) {
   const router = useRouter();
+  const { data: detail } = useSuspenseQuery(productDetailQueryOptions(id));
+
+  if (!detail) notFound();
+
   const methods = useProductDetailForm(detail);
   const [saved, setSaved] = useState(false);
 

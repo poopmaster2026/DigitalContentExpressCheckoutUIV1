@@ -6,9 +6,9 @@ import { useFormContext, useWatch } from "react-hook-form";
 import {
   NumberFieldControl,
   SwitchControl,
-} from "../../ProductDetailContent/components/FormFields";
-import { SectionHeading } from "../../ProductDetailContent/components/SectionHeading";
-import type { ProductFormValues } from "../../ProductDetailContent/hooks/useProductDetailForm";
+} from "../../../detail/ProductDetailContent/components/FormFields";
+import { SectionHeading } from "../../../detail/ProductDetailContent/components/SectionHeading";
+import type { ProductFormValues } from "../../../types/validation";
 
 const section = style({ display: "flex", flexDirection: "column", gap: 24 });
 const switchGroup = style({ display: "flex", flexDirection: "column", gap: 16 });
