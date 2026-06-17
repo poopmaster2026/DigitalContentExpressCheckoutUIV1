@@ -12,7 +12,7 @@ import {
 import { CardView, type Selection } from "@react-spectrum/s2/CardView";
 import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   SALE_TYPE_BADGE,
@@ -64,8 +64,17 @@ export function ProductsCardView({
   const [selected, setSelected] = useState<Selection>(new Set());
   const router = useRouter();
 
+  // サイドバーの CSS トランジション(300ms)完了後に CardView を再マウントし、
+  // 確定後のコンテナサイズで Virtualizer が再計測できるようにする。
+  const [layoutKey, setLayoutKey] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setLayoutKey(1), 350);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <CardView
+      key={layoutKey}
       aria-label="商品一覧"
       layout="grid"
       selectionMode="multiple"

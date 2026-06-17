@@ -49,7 +49,10 @@ const content = style({
   flexDirection: "column",
   minHeight: 0,
   boxSizing: "border-box",
-  overflow: "hidden",
+  // clip で余白をカットしつつスクロールコンテナを生成しない。
+  // hidden/auto だとモバイルで仮想キーボード出現時に content 自身がスクロールし、
+  // 内側 scrollArea のスクロールが乗っ取られる。
+  overflow: "clip",
 });
 
 /** アプリフレーム（Presentational）。toolbar(Header) / sidebar(Sidebar) / content を grid で配置。 */
