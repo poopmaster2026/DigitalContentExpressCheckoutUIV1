@@ -79,7 +79,7 @@ export function ProductPreview({ detail }: { detail: ProductDetail }) {
           className={`${previewBox} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}
         >
           {coverImage ? (
-            <Image src={coverImage} alt="" styles={previewImg} />
+            <Image src={coverImage.url} alt="" styles={previewImg} />
           ) : (
             COVER_ILLUSTRATION[detail.saleType]
           )}
