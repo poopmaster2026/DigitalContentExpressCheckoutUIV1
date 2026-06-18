@@ -10,7 +10,7 @@ export function AppShellUI({ children }: { children: ReactNode }) {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         {/* content: sm以上で左上角丸・影でコンテンツパネル感を演出 */}
-        <main className="flex flex-1 flex-col overflow-auto bg-background sm:rounded-tl-xl sm:shadow-lg">
+        <main className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden bg-background sm:rounded-tl-xl sm:shadow-lg [scrollbar-gutter:stable]">
           {children}
         </main>
       </div>

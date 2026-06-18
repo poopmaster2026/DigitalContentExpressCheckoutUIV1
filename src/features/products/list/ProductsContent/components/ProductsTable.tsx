@@ -101,7 +101,7 @@ export function ProductsTable({
   );
 
   return (
-    <div className="relative flex-1 overflow-auto">
+    <div className="relative w-full">
       <Table>
         <TableHeader className="sticky top-0 z-10">
           <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-2">

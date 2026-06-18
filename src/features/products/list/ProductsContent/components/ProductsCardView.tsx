@@ -45,8 +45,8 @@ export function ProductsCardView({
   }
 
   return (
-    <div className="relative flex-1">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="relative">
+      <div className="grid grid-cols-2 gap-4 pb-20 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {products.map((p) => {
           const badge = SALE_TYPE_BADGE[p.saleType];
           const isSelected = selected.has(p.id);
