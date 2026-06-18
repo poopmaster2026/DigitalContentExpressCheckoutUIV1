@@ -119,9 +119,9 @@ export function ProductsCardView({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="icon"
-                    className="absolute right-1 top-1 z-10 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                    className="absolute right-1.5 top-1.5 z-10 h-7 w-7 rounded-full bg-white/80 text-gray-700 shadow-sm backdrop-blur opacity-0 transition-opacity group-hover:opacity-100 hover:bg-white"
                     aria-label="操作"
                   >
                     <MoreHorizontal className="h-3.5 w-3.5" />

@@ -88,22 +88,23 @@ export function ProductsTable({
   }
 
   const SortButton = ({ label, col }: { label: string; col: SortKey }) => (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="-ml-2 h-8 gap-1 font-medium"
+    <button
+      className={cn(
+        "-ml-1 inline-flex items-center gap-1 rounded px-1 py-0.5 text-xs font-semibold uppercase tracking-wide transition-colors hover:text-foreground",
+        sortKey === col ? "text-foreground" : "text-foreground/60"
+      )}
       onClick={() => handleSort(col)}
     >
       {label}
-      <ArrowUpDown className={cn("h-3.5 w-3.5", sortKey === col ? "opacity-100" : "opacity-40")} />
-    </Button>
+      <ArrowUpDown className={cn("h-3 w-3", sortKey === col ? "opacity-100 text-primary" : "opacity-30")} />
+    </button>
   );
 
   return (
     <div className="relative flex-1 overflow-auto">
       <Table>
-        <TableHeader>
-          <TableRow>
+        <TableHeader className="sticky top-0 z-10">
+          <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-2">
             <TableHead className="w-10">
               <Checkbox
                 checked={selected.size === products.length && products.length > 0}
@@ -112,11 +113,15 @@ export function ProductsTable({
               />
             </TableHead>
             <TableHead><SortButton label="商品" col="name" /></TableHead>
-            <TableHead className="text-center">販売形態</TableHead>
+            <TableHead className="text-center text-xs font-semibold uppercase tracking-wide text-foreground/60">
+              販売形態
+            </TableHead>
             <TableHead className="text-right"><SortButton label="価格" col="price" /></TableHead>
             <TableHead className="text-right"><SortButton label="販売数" col="sales" /></TableHead>
             <TableHead className="text-right"><SortButton label="売上" col="revenue" /></TableHead>
-            <TableHead>状態</TableHead>
+            <TableHead className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
+              状態
+            </TableHead>
             <TableHead className="w-10 text-right" />
           </TableRow>
         </TableHeader>
