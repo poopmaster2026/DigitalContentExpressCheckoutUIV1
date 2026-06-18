@@ -1,80 +1,75 @@
 # Project conventions
 
-UI layer:
+## デザインシステム
 
-- **React Spectrum S2 (`@react-spectrum/s2`)** が唯一のデザインシステム。画面は S2
-  コンポーネントで組む。コンポーネント / トークン / アイコン / イラストは
-  **`react-spectrum-s2` Agent Skill と S2 MCP で特定する**（記憶で API を書かない）。
-- スタイルは **`style()` macro + S2 トークン名のみ**（raw hex のベタ書き禁止）。
-  自前のカラー / デザイントークン層は作らない。`src/app/globals.css` は
-  デザイントークンを持たない最小スタブ（base reset のみ）。
-- S2 に無い部品がどうしても必要なときだけ、S2 公式の手法（`style()` macro +
-  React Aria Components を S2 の基盤プリミティブとして）で作る。Express 寄せの見た目や
-  独自カラーパレットは作らない。
-- shadcn / Radix / Tailwind / lucide は不使用（追加禁止）。S2 のアイコンを使う。
+**新規コードは shadcn/ui + Tailwind CSS v4** を使う。既存の React Spectrum S2 コンポーネントは
+移行フェーズ中のため共存しているが、新しい画面・コンポーネントは必ず shadcn/ui で書く。
 
-Directory structure follows the old repo's
-`../DigitalContentExpressCheckoutUI/docs/ARCHITECTURE.md`:
+### shadcn/ui（新規コード）
+
+- **shadcn/ui（new-york スタイル）** が唯一のデザインシステム。`src/shared/components/ui/` に展開。
+- スタイルは **Tailwind CSS v4 utility classes + `cn()` helper のみ**（raw hex 禁止）。
+- デザイントークンは **`src/app/globals.css`** の CSS 変数で管理（`--background`, `--primary` 等）。
+- カラーは **semantic token 経由のみ**（`bg-background`, `text-foreground`, `bg-primary` 等）。`bg-[#xxx]` 形式は禁止。
+- アイコンは **`lucide-react`** を使う。
+- コンポーネント追加: `npx shadcn@latest add <name>`。生成ファイルは直接編集しない（CLIで再生成される）。
+- shadcn にない部品が必要な場合: shadcn MCP → `vercel-plugin:shadcn` Skill → `npx shadcn@latest list` の順で確認してからエスカレーション。
+
+### React Spectrum S2（移行中・既存コードのみ）
+
+- 既存の S2 コンポーネントはそのまま動作し続ける。新規で S2 コードを書かない。
+- **Build = webpack, not Turbopack.** S2 マクロ（`unplugin-parcel-macros`）は Turbopack 非対応。
+  `next.config.ts` の webpack プラグイン・splitChunks 設定は削除しない。
+- S2 コンポーネントは client-only。使用するファイルには `"use client"` が必要。
+
+## Directory structure
+
 `src/app`（ルーティングのみ）/ `src/features/{feature}`（api / types / queries / actions /
 hooks / {page}/{section} の Container+Presentational）/ `src/shared`（components,
 providers, types, mock）/ `src/lib`（query-client 等）。依存方向: app → features → shared / lib。
 
+詳細は [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) を参照。
+
 ## Where to look things up
 
-- Component APIs / examples / icons / illustrations: use the **`react-spectrum-s2`
-  Agent Skill** (`.claude/skills/react-spectrum-s2/`, official Adobe docs) and the
-  **`react-spectrum-s2` MCP server** (`.mcp.json` → `@react-spectrum/mcp`).
-  Don't guess S2 APIs from memory.
-- **Actual react-spectrum source = ground truth**: `/Users/ryoheiokuma/work/Ours/react-spectrum`
-  is a full local checkout of the real `adobe/react-spectrum` monorepo (not a copy/summary —
-  the library's own code). Verify component internals, tokens, and default props against it
-  directly. Key paths: S2 components `packages/@react-spectrum/s2/src/*.tsx`; style tokens /
-  theme `packages/@react-spectrum/s2/style/` (`spectrum-theme.ts`, `index.ts`); the official
-  sample app the app-shell / products page were ported from lives at
-  `packages/dev/s2-docs/pages/s2/home/` (`ExampleApp.tsx`, `app/Sidebar.tsx`, `app/Photos.tsx`,
-  `app/Notifications.tsx`, `app/AccountMenu.tsx`). When skill/MCP/memory disagree, the source
-  wins. **Read-only** — it lives outside this repo; never modify it.
-- Design policy（S2 一本・スタイリング規約・色の決め方）: **`docs/DESIGN.md`**。
-- デザインの考え方 / UX パターン / グリッド・トークン思想（`spectrum.adobe.com` 要点）:
-  **`docs/SPECTRUM-GUIDELINES.md`**（application frame・side nav 3 階層ルール・button 階層・responsive grid 等）。
-- `spectrum.adobe.com` の**全ページ網羅リファレンス**: **`docs/spectrum/`**
-  （`README.md` 索引 + `foundations.md` / `components.md` / `patterns.md` / `content-writing.md`）。
-- Figma を起点にする場合も `react-spectrum-s2` skill の「Figma → S2 実装」ガイドに従う
-  （Figma = 構成のイメージ把握のみ。寸法 / フォント / 色は S2 スケール + トークンが正）。
+- **shadcn/ui** コンポーネント・API: **`shadcn` MCP**（`.mcp.json` 登録済み）または `vercel-plugin:shadcn` Skill。記憶で書かない。
+- **TanStack Query** API: **`tanstack` MCP**（`.mcp.json` 登録済み）または `tanstack-query` Skill。
+- **デザイントークン・コンポーネント仕様**: [`docs/DESIGN-SYSTEM.md`](./docs/DESIGN-SYSTEM.md)（実体は `src/app/globals.css`）。
+- **構造規約・実装パターン**: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)。
+- **Figma を起点にする場合**: `figma-shadcn-design` / `figma-shadcn-implement` スキルに従う（`.claude/skills/` に配置済み）。
+- **React Spectrum S2**（移行中既存コードのみ）: `react-spectrum-s2` MCP と `/Users/ryoheiokuma/work/Ours/react-spectrum` ローカルソース。
 
-## Hard constraints (project-specific — not in the generic skill)
+## Hard constraints
 
-- **Build = webpack, not Turbopack.** S2 styles compile via build-time macros
-  (`unplugin-parcel-macros`), which don't support Turbopack. `dev`/`build` therefore
-  run with `--webpack` (see `package.json`). `next.config.ts` holds the macro webpack
-  plugin + the `s2-styles` splitChunks group — don't remove them.
-- **S2 components are client-only.** Every S2 component module (both the barrel
-  `@react-spectrum/s2` and subpaths like `@react-spectrum/s2/CardView`) imports
-  `client-only`, so any file using one needs `"use client";` at the top.
-- **Import from subpaths, not the barrel** (`@react-spectrum/s2/CardView`,
-  `@react-spectrum/s2/Button`, …) — better tree-shaking; the skill docs match this.
-- **Styling** — `style()` macro（`with { type: "macro" }`）のみ。S2 トークン名だけを使い、
-  raw hex は禁止。layout-only は `styles={style(...)}`。`globals.css` 等に自前の
-  デザイントークン（CSS 変数）層を作らない。
-- **Provider/layout are already wired** in `src/app/provider.tsx` (`<Provider
-elementType="html">` + App Router navigation) and `src/app/layout.tsx` (locale
-  resolved server-side from `accept-language`). Don't render `<html>` manually.
+- **新規コードに S2 は使わない。** shadcn/ui + Tailwind CSS v4 で書く。
+- **Turbopack は使わない。** `dev`/`build` は `--webpack` フラグで実行する（`package.json` 参照）。
+- **任意値 className 禁止。** `bg-[#xxx]`, `gap-[10px]` 等の形式は使わない。token 経由のみ。
+- **Provider/layout は `src/app/provider.tsx` + `src/app/layout.tsx` で結線済み**。`<html>` を手動でレンダリングしない。
 
 ## Dependencies
 
-- Keep (non-design): `react-hook-form`, `@hookform/resolvers`, `@tanstack/react-query`, `zod`.
-- `react-aria-components` は S2 の基盤パッケージとして残す（S2 公式のカスタム
-  コンポーネント手法で使用）。独立した「React Aria デザイン層」としては使わない。
-- Don't add design libs (shadcn, Radix, Tailwind, lucide-react, sonner, next-themes).
-  Use S2's own icons.
-- **Storybook / Vitest は導入しない**。検証は `npm run build` + `npm run lint`。
+- **Keep**: `react-hook-form`, `@hookform/resolvers`, `@tanstack/react-query`, `zod`
+- **Keep (shadcn/ui stack)**: `tailwindcss`, `@tailwindcss/postcss`, `tw-animate-css`, `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`, `radix-ui`, `@radix-ui/react-slot`, `next-themes`
+- **Keep (transitional)**: `@react-spectrum/s2`, `react-aria-components`, `unplugin-parcel-macros`（S2 移行完了後に削除）
+- **Don't add**: Storybook / Vitest。検証は `npm run build` + `npm run lint`。
 
 ## Status
 
-- デザインシステムは **React Spectrum S2 一本**。色・トークンは S2（`style()` macro）由来で、
-  Spectrum 既定パレットから選ぶ（accent は Spectrum 標準。ブランド色への再定義はしない）。
-- `src/app/globals.css` はデザイントークンを持たない最小スタブ。
-- TanStack Query wired: `src/lib/query-client.ts` + `src/shared/providers/query-provider.tsx`（layout 結線済み）。
-  ただし Phase 0 のモック段階では **意図的に未使用**。各 Container（`ProductsPage` 等）は
-  `@/shared/mock/*` を直接読む。実 API 接続時に `features/{feature}/api` + `queries`
-  （`queryOptions` + `useQuery`）へ差し替える前提の結線であり、未使用は見落としではない。
+- デザインシステム移行中: **既存コードは S2、新規コードは shadcn/ui + Tailwind CSS v4**。
+- `src/app/globals.css` に Tailwind v4 + shadcn デザイントークン（CSS 変数）を設定済み。
+- `src/lib/utils.ts` に `cn()` ヘルパー追加済み。
+- `src/shared/components/ui/` — shadcn コンポーネントの追加先（まだ空）。
+- TanStack Query: `src/lib/query-client.ts` + `src/shared/providers/query-provider.tsx` で結線済み。
+  Phase 0 のモック段階では意図的に未使用（`@/shared/mock/*` を直接読む）。実 API 接続時に差し替え。
+
+## MCP サーバー（`.mcp.json`）
+
+- **shadcn** (`npx shadcn@latest mcp`): shadcn registry の検索・コンポーネント情報取得。
+- **tanstack** (`npx -y @gihan92/tanstack-mcp`): TanStack エコシステムのドキュメント検索・scaffolding。
+- **react-spectrum-s2** (`@react-spectrum/mcp`): S2 コンポーネント参照（移行中既存コード用）。
+
+## スキル（`.claude/skills/`）
+
+- **figma-shadcn-design** (`/figma-shadcn-design <意図>`): shadcn/ui Figma kit を使って Figma にデザインを起こす。
+- **figma-shadcn-implement** (`/figma-shadcn-implement <Figma URL>`): Figma から React + shadcn/ui を実装する。
+- いずれも `DigitalContentExpressCheckoutUI` から移植・調整済み。**操作対象 Figma の fileKey は未設定** — 初回利用時にユーザーから受領してスキル内のプレースホルダを差し替える。

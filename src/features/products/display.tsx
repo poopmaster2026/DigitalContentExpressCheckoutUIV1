@@ -1,87 +1,98 @@
-import EducationIcon from "@react-spectrum/s2/icons/Education";
-import FileIcon from "@react-spectrum/s2/icons/File";
-import FileTextIcon from "@react-spectrum/s2/icons/FileText";
-import ImageIcon from "@react-spectrum/s2/icons/Image";
-import ImagesIcon from "@react-spectrum/s2/icons/Images";
-import VideoIcon from "@react-spectrum/s2/icons/Video";
-import DocumentIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Document";
-import EducationIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Education";
-import FileTextIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/FileText";
-import ImageIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Image";
-import ImageStackIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/ImageStack";
-import VideoIllustration from "@react-spectrum/s2/illustrations/gradient/generic1/Video";
-import CalendarG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Calendar";
-import CardTapPaymentG2 from "@react-spectrum/s2/illustrations/gradient/generic2/CardTapPayment";
-import EducationG2 from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
-// カバー画像プレースホルダ用は generic2（一覧タイルの generic1 とレイヤを分ける）
-import FileTextG2 from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import {
+  BookOpen,
+  Calendar,
+  CreditCard,
+  File,
+  FileText,
+  GraduationCap,
+  ImageIcon,
+  LayoutGrid,
+  Play,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { ProductKind, ProductThumb, SaleType } from "./types";
 
-/**
- * 商品の表示トークンの単一定義（カード / テーブル共用）。
- * 販売形態チップ・サムネイル背景 hue・コンテンツ種別の visual をここに集約し、
- * カード枝・テーブル枝の両方から参照して表現のブレを防ぐ。
- */
-
-/**
- * 販売形態チップの表示定義。表示は bold（既定）。
- * 配色は他サービスの業界連想に合わせた K 案:
- * デジタル=green（Shopify Active / Teachable）、コース=indigo（Kajabi の教育青を
- * accent 衝突回避で indigo に）、予約=orange（Polaris の「期限のある対応」）、
- * サブスク=magenta（Patreon / Gumroad のメンバーシップ・ピンク連想）。
- * blue は accent と紛らわしいため不使用 / yellow は割引専用 / red は negative 専用。
- * ステータスは StatusLight（ドット）なので形でも区別される。
- */
+/** 販売形態チップの表示定義。className はカード・テーブル・詳細・プレビューで共用。 */
 export const SALE_TYPE_BADGE: Record<
   SaleType,
-  { label: string; variant: "green" | "indigo" | "orange" | "magenta" }
+  { label: string; className: string }
 > = {
-  digital: { label: "デジタル", variant: "green" },
-  course: { label: "コース", variant: "indigo" },
-  booking: { label: "予約", variant: "orange" },
-  subscription: { label: "サブスク", variant: "magenta" },
+  digital: {
+    label: "デジタル",
+    className:
+      "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800",
+  },
+  course: {
+    label: "コース",
+    className:
+      "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800",
+  },
+  booking: {
+    label: "予約",
+    className:
+      "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800",
+  },
+  subscription: {
+    label: "サブスク",
+    className:
+      "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800",
+  },
 };
 
-/** 画像が無い商品のプレースホルダー背景（同一 hue の 100 スケール）。 */
+/** 画像なし商品のプレースホルダー背景色。 */
 export const THUMB_HUE: Record<ProductThumb, string> = {
-  sage: style({ backgroundColor: "celery-100" }),
-  sky: style({ backgroundColor: "blue-100" }),
-  sand: style({ backgroundColor: "orange-100" }),
-  rose: style({ backgroundColor: "pink-100" }),
-  lilac: style({ backgroundColor: "purple-100" }),
-  mint: style({ backgroundColor: "seafoam-100" }),
+  sage: "bg-green-100 dark:bg-green-900/40",
+  sky: "bg-sky-100 dark:bg-sky-900/40",
+  sand: "bg-amber-100 dark:bg-amber-900/40",
+  rose: "bg-rose-100 dark:bg-rose-900/40",
+  lilac: "bg-violet-100 dark:bg-violet-900/40",
+  mint: "bg-teal-100 dark:bg-teal-900/40",
 };
 
-/** カードプレビュー用イラスト（gradient illustration）。 */
+/** カードプレビュー用アイコン（種別ごと）。 */
 export const KIND_ILLUSTRATION: Record<ProductKind, ReactNode> = {
-  book: <FileTextIllustration />,
-  video: <VideoIllustration />,
-  collection: <ImageStackIllustration />,
-  photo: <ImageIllustration />,
-  template: <DocumentIllustration />,
-  guide: <EducationIllustration />,
+  book: <BookOpen className="h-12 w-12 text-gray-400 dark:text-gray-500" />,
+  video: <Play className="h-12 w-12 text-gray-400 dark:text-gray-500" />,
+  collection: (
+    <LayoutGrid className="h-12 w-12 text-gray-400 dark:text-gray-500" />
+  ),
+  photo: (
+    <ImageIcon className="h-12 w-12 text-gray-400 dark:text-gray-500" />
+  ),
+  template: <File className="h-12 w-12 text-gray-400 dark:text-gray-500" />,
+  guide: (
+    <GraduationCap className="h-12 w-12 text-gray-400 dark:text-gray-500" />
+  ),
 };
 
-/**
- * カバー画像が未設定のときのプレースホルダ・イラスト（generic2）。
- * ランダムにせず販売形態で固定する（詳細/編集のカバー欄・プレビューで共用）。
- */
+/** カバー画像未設定時のプレースホルダー（詳細・プレビュー用）。販売形態で固定。 */
 export const COVER_ILLUSTRATION: Record<SaleType, ReactNode> = {
-  digital: <FileTextG2 />,
-  course: <EducationG2 />,
-  booking: <CalendarG2 />,
-  subscription: <CardTapPaymentG2 />,
+  digital: (
+    <FileText className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+  ),
+  course: (
+    <GraduationCap className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+  ),
+  booking: (
+    <Calendar className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+  ),
+  subscription: (
+    <CreditCard className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+  ),
 };
 
-/** テーブルサムネイル用アイコン（line icon）。色は呼び出し側が styles で渡す。 */
-export const KIND_ICON: Record<ProductKind, typeof FileTextIcon> = {
-  book: FileTextIcon,
-  video: VideoIcon,
-  collection: ImagesIcon,
+/** テーブルサムネイル用アイコン（lucide-react）。 */
+export const KIND_ICON: Record<
+  ProductKind,
+  ComponentType<{ className?: string }>
+> = {
+  book: BookOpen,
+  video: Play,
+  collection: LayoutGrid,
   photo: ImageIcon,
-  template: FileIcon,
-  guide: EducationIcon,
+  template: File,
+  guide: GraduationCap,
 };
+
+type ComponentType<P> = (props: P) => ReactNode;

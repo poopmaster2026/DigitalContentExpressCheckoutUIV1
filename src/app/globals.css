@@ -1,17 +1,162 @@
-/*
- * Global base styles.
- *
- * Design tokens intentionally removed — React Spectrum S2 is the only design
- * system. Color / spacing / typography come from the S2 `style()` macro and
- * Spectrum tokens (see docs/DESIGN.md). Do NOT add a custom color/token layer
- * here. Keep this file minimal — base resets only.
- *
- * S2 uses CSS cascade layers, and unlayered global CSS would override S2's
- * styles. So this reset lives in a `reset` layer declared BEFORE S2's `_`
- * layer. See docs/DESIGN.md → "CSS リセット".
- */
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer reset, _;
+@custom-variant dark (&:is(.dark *));
+
+@layer reset;
+
+:root {
+  --radius: 0.625rem;
+
+  --background: #ffffff;
+  --surface: #f5f5f7;
+  --foreground: #0d0d0d;
+  --card: #ffffff;
+  --card-foreground: #0d0d0d;
+  --popover: #ffffff;
+  --popover-foreground: #0d0d0d;
+
+  --primary: #0d0d0d;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #0d0d0d;
+  --muted: #f3f4f6;
+  --muted-foreground: #615d59;
+  --accent: #e5e7eb;
+  --accent-foreground: #0d0d0d;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --warning: #ef4444;
+  --warning-foreground: #ffffff;
+
+  --success: #2a9d99;
+  --success-foreground: #ffffff;
+  --info: #007aff;
+  --info-foreground: #ffffff;
+
+  --brand-blue: #007aff;
+  --brand-blue-hover: #0062cc;
+  --brand-tint: #f2f9ff;
+  --selected: #007aff;
+
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #0d0d0d;
+
+  --sidebar: #f3f4f6;
+  --sidebar-foreground: #0d0d0d;
+  --sidebar-primary: #0d0d0d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e5e7eb;
+  --sidebar-accent-foreground: #0d0d0d;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #0d0d0d;
+}
+
+.dark {
+  --background: #0d0d0d;
+  --surface: #0d0d0d;
+  --foreground: #f6f5f4;
+  --card: #1a1a1a;
+  --card-foreground: #f6f5f4;
+  --popover: #1a1a1a;
+  --popover-foreground: #f6f5f4;
+  --primary: #f6f5f4;
+  --primary-foreground: #0d0d0d;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #f6f5f4;
+  --muted: #1a1a1a;
+  --muted-foreground: #a39e98;
+  --accent: #2a2a2a;
+  --accent-foreground: #f6f5f4;
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --warning: #fca5a5;
+  --warning-foreground: #0d0d0d;
+  --success: #2a9d99;
+  --success-foreground: #ffffff;
+  --info: #0a84ff;
+  --info-foreground: #ffffff;
+  --brand-blue: #0a84ff;
+  --brand-blue-hover: #409cff;
+  --brand-tint: rgba(10, 132, 255, 0.12);
+  --selected: #0a84ff;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #f6f5f4;
+  --sidebar: #1a1a1a;
+  --sidebar-foreground: #f6f5f4;
+  --sidebar-primary: #f6f5f4;
+  --sidebar-primary-foreground: #0d0d0d;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #f6f5f4;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #f6f5f4;
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-hover: var(--brand-blue-hover);
+  --color-brand-tint: var(--brand-tint);
+  --color-selected: var(--selected);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label[for] {
+    cursor: pointer;
+  }
+}
 
 @layer reset {
   body {
@@ -19,32 +164,3 @@
   }
 }
 
-/*
- * アプリコンテナの高さを 100dvh で上書き（S2 `_` レイヤーより優先するため unlayered）。
- * `height: "screen"` = 100vh はモバイルで「URL バー非表示時の最大高」を使うため、
- * 仮想キーボード出現時や URL バー表示時に実際の可視領域がコンテナ下部に潜り込み、
- * コンテンツが隠れて「スクロールできない・隙間がある」ように見える。
- * 100dvh は実際の可視高さに追従するため、この問題を防ぐ。
- */
-[data-container] {
-  height: 100dvh;
-}
-
-/* SelectBox 選択時のボーダー・背景色をバッジ色に合わせる（S2 `_` レイヤーより優先）。
-   light-dark() の値は @adobe/spectrum-tokens から引いた実値（-900 / -100 スケール）。 */
-.sb-digital[data-selected] {
-  border-color: light-dark(rgb(5, 131, 78), rgb(9, 157, 89));
-  background-color: light-dark(rgb(237, 252, 241), rgb(0, 30, 23));
-}
-.sb-course[data-selected] {
-  border-color: light-dark(rgb(113, 85, 250), rgb(128, 119, 254));
-  background-color: light-dark(rgb(247, 248, 255), rgb(30, 0, 93));
-}
-.sb-booking[data-selected] {
-  border-color: light-dark(rgb(194, 78, 0), rgb(224, 100, 0));
-  background-color: light-dark(rgb(255, 246, 231), rgb(49, 16, 0));
-}
-.sb-subscription[data-selected] {
-  border-color: light-dark(rgb(217, 35, 97), rgb(255, 51, 119));
-  background-color: light-dark(rgb(255, 245, 248), rgb(59, 0, 22));
-}

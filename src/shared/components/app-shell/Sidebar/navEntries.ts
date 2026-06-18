@@ -1,21 +1,22 @@
-import ChartBarVert from "@react-spectrum/s2/icons/ChartBarVert";
-import Home from "@react-spectrum/s2/icons/Home";
-import Images from "@react-spectrum/s2/icons/Images";
-import ListBulleted from "@react-spectrum/s2/icons/ListBulleted";
-import UserGroup from "@react-spectrum/s2/icons/UserGroup";
+import {
+  BarChart2,
+  Home,
+  Images,
+  ListOrdered,
+  Users,
+} from "lucide-react";
 import type { ComponentType } from "react";
 
 export interface NavEntry {
   key: string;
   label: string;
-  icon: ComponentType;
+  icon: ComponentType<{ className?: string }>;
 }
 
-/** サイドナビの項目（順序込み）。 */
 export const NAV_ENTRIES: NavEntry[] = [
   { key: "home", label: "ホーム", icon: Home },
   { key: "products", label: "商品", icon: Images },
-  { key: "orders", label: "注文", icon: ListBulleted },
-  { key: "customers", label: "顧客", icon: UserGroup },
-  { key: "analytics", label: "分析", icon: ChartBarVert },
+  { key: "orders", label: "注文", icon: ListOrdered },
+  { key: "customers", label: "顧客", icon: Users },
+  { key: "analytics", label: "分析", icon: BarChart2 },
 ];

@@ -1,55 +1,38 @@
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
-import HelpCircle from "@react-spectrum/s2/icons/HelpCircle";
-import SearchIcon from "@react-spectrum/s2/icons/Search";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+"use client";
+
+import { HelpCircle, Search } from "lucide-react";
+
+import { Button } from "@/shared/components/ui/button";
 
 import { AccountMenu } from "./AccountMenu";
 import { MobileNavButton } from "./MobileNavButton";
 import { Notifications } from "./Notifications";
 
-const XS = `@container (min-width: ${480 / 16}rem)`;
-const SM = `@container (min-width: ${640 / 16}rem)`;
-const MD = `@container (min-width: ${768 / 16}rem)`;
-
-/**
- * ヘッダー右側のアクション群。
- * - 検索アイコン: < MD (768px) でのみ表示。押すと検索バー展開。
- * - ヘルプ・通知: XS (480px) 以上で表示。
- * - モバイルナビ (AppsAll): サイドバーが消える < SM (640px) でのみ表示。押すとナビポップオーバー。
- */
-export function HeaderActions({
-  isDark,
-  onColorSchemeChange,
-  onSearchOpen,
-}: {
-  isDark: boolean;
-  onColorSchemeChange: (isDark: boolean) => void;
-  onSearchOpen: () => void;
-}) {
+export function HeaderActions({ onSearchOpen }: { onSearchOpen: () => void }) {
   return (
-    <ActionButtonGroup>
-      <div
-        className={style({ display: { default: "contents", [MD]: "none" } })}
+    <div className="flex items-center gap-1">
+      {/* 検索アイコン: md未満でのみ表示 */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="検索"
+        className="h-9 w-9 md:hidden"
+        onClick={onSearchOpen}
       >
-        <ActionButton isQuiet aria-label="検索" onPress={onSearchOpen}>
-          <SearchIcon />
-        </ActionButton>
-      </div>
-      <div
-        className={style({ display: { default: "none", [XS]: "contents" } })}
-      >
-        <ActionButton isQuiet aria-label="ヘルプ">
-          <HelpCircle />
-        </ActionButton>
+        <Search className="h-4 w-4" />
+      </Button>
+      {/* ヘルプ・通知: xs以上で表示 */}
+      <div className="hidden xs:flex items-center gap-1">
+        <Button variant="ghost" size="icon" aria-label="ヘルプ" className="h-9 w-9">
+          <HelpCircle className="h-4 w-4" />
+        </Button>
         <Notifications />
       </div>
-      <div
-        className={style({ display: { default: "contents", [SM]: "none" } })}
-      >
+      {/* モバイルナビ: sm未満でのみ表示 */}
+      <div className="sm:hidden">
         <MobileNavButton />
       </div>
-      <AccountMenu isDark={isDark} onColorSchemeChange={onColorSchemeChange} />
-    </ActionButtonGroup>
+      <AccountMenu />
+    </div>
   );
 }

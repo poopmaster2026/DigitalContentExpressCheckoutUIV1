@@ -1,139 +1,39 @@
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-
-// ヘッダー
-const page = style({
-  display: "flex",
-  flexDirection: "column",
-  flexGrow: 1,
-  minHeight: 0,
-});
-const backRow = style({ marginBottom: 8 });
-const backBlock = style({
-  width: 80,
-  height: 16,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const titleRow = style({
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap",
-});
-const titleBlock = style({
-  width: 200,
-  height: 28,
-  backgroundColor: "gray-200",
-  borderRadius: "sm",
-});
-const badgeBlock = style({
-  width: 56,
-  height: 20,
-  backgroundColor: "gray-100",
-  borderRadius: "pill",
-});
-const statusBlock = style({
-  width: 48,
-  height: 16,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const spacer = style({ flexGrow: 1 });
-const actionsRow = style({ display: "flex", gap: 12 });
-const btn = style({
-  width: 56,
-  height: 32,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const divider = style({
-  height: 2,
-  backgroundColor: "gray-200",
-  marginTop: 12,
-  marginBottom: 24,
-});
-
-// フォームカラム
-const scrollArea = style({
-  flexGrow: 1,
-  minHeight: 0,
-  overflow: "auto",
-  paddingTop: 24,
-  paddingBottom: 24,
-});
-const formColumn = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 40,
-  maxWidth: 640,
-});
-const section = style({ display: "flex", flexDirection: "column", gap: 16 });
-const sectionLabel = style({
-  width: 80,
-  height: 12,
-  backgroundColor: "gray-200",
-  borderRadius: "sm",
-});
-const field = style({ display: "flex", flexDirection: "column", gap: 4 });
-const fieldLabel = style({
-  width: 60,
-  height: 12,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const fieldInput = style({
-  height: 36,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const fieldInputTall = style({
-  height: 80,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function ProductDetailPageSkeleton() {
   return (
-    <div className={page}>
+    <div className="flex flex-col gap-4 p-5 pt-4">
       {/* ヘッダー */}
-      <div className={backRow}>
-        <div className={backBlock} />
+      <Skeleton className="h-4 w-20" />
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-5 w-16 rounded-full" />
+        <Skeleton className="h-4 w-12" />
+        <div className="flex-1" />
+        <Skeleton className="h-8 w-14" />
+        <Skeleton className="h-8 w-14" />
+        <Skeleton className="h-8 w-14" />
       </div>
-      <div className={titleRow}>
-        <div className={titleBlock} />
-        <div className={badgeBlock} />
-        <div className={statusBlock} />
-        <div className={spacer} />
-        <div className={actionsRow}>
-          <div className={btn} />
-          <div className={btn} />
-          <div className={btn} />
-        </div>
-      </div>
-      <div className={divider} />
+      <Skeleton className="h-px w-full" />
 
-      {/* フォーム本体 */}
-      <div className={scrollArea}>
-        <div className={formColumn}>
-          {/* BasicInfoSection */}
-          <div className={section}>
-            <div className={sectionLabel} />
-            <div className={field}>
-              <div className={fieldLabel} />
-              <div className={fieldInput} />
-            </div>
-            <div className={field}>
-              <div className={fieldLabel} />
-              <div className={fieldInputTall} />
-            </div>
+      {/* フォーム */}
+      <div className="mt-4 flex flex-col gap-8 max-w-xl">
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-4 w-20" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-10 w-full" />
           </div>
-          {/* PricingSection */}
-          <div className={section}>
-            <div className={sectionLabel} />
-            <div className={field}>
-              <div className={fieldLabel} />
-              <div className={fieldInput} />
-            </div>
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-4 w-20" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-10 w-full" />
           </div>
         </div>
       </div>

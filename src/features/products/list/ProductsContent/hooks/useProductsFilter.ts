@@ -2,7 +2,6 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import type { Key } from "react-aria-components";
 
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
 
@@ -43,7 +42,7 @@ const INITIAL_FILTERS: FilterState = { status: "all", saleType: "all" };
  */
 export function useProductsFilter() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
-  const [view, setView] = useState<Key>("grid");
+  const [view, setView] = useState<string>("grid");
   const { query } = useAppSearch();
 
   const { data: allProducts } = useSuspenseQuery(productListQueryOptions());
@@ -62,8 +61,8 @@ export function useProductsFilter() {
     filtered,
     status: filters.status,
     saleType: filters.saleType,
-    onStatusChange: (status: Key) => setFilters((f) => ({ ...f, status })),
-    onSaleTypeChange: (saleType: Key) =>
+    onStatusChange: (status: string) => setFilters((f) => ({ ...f, status })),
+    onSaleTypeChange: (saleType: string) =>
       setFilters((f) => ({ ...f, saleType })),
     view,
     setView,

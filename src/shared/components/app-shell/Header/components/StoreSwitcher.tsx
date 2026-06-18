@@ -1,22 +1,28 @@
 "use client";
 
-import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
 
 import { STORES, DEFAULT_STORE_ID } from "../../stores";
 
-/** ヘッダーのストア切替 Picker。一覧は stores.ts の単一定義を使う。 */
 export function StoreSwitcher() {
   return (
-    <Picker
-      isQuiet
-      aria-label="ストアを切り替え"
-      defaultSelectedKey={DEFAULT_STORE_ID}
-    >
-      {STORES.map((s) => (
-        <PickerItem key={s.id} id={s.id}>
-          {s.name}
-        </PickerItem>
-      ))}
-    </Picker>
+    <Select defaultValue={DEFAULT_STORE_ID}>
+      <SelectTrigger className="h-8 w-36 border-none bg-transparent text-sm font-medium shadow-none focus:ring-0">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {STORES.map((s) => (
+          <SelectItem key={s.id} value={s.id}>
+            {s.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

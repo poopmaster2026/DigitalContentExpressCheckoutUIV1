@@ -1,51 +1,30 @@
-import ViewGrid from "@react-spectrum/s2/icons/ViewGrid";
-import ViewList from "@react-spectrum/s2/icons/ViewList";
-import { Picker, PickerItem } from "@react-spectrum/s2/Picker";
-import {
-  SegmentedControl,
-  SegmentedControlItem,
-} from "@react-spectrum/s2/SegmentedControl";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import type { Key } from "react-aria-components";
+"use client";
 
+import { LayoutGrid, List } from "lucide-react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/shared/components/ui/toggle-group";
 import { SALE_TYPE_BADGE } from "../../display";
 import type { Product } from "../../types";
 
 import { ProductsCardView } from "./components/ProductsCardView";
 import { ProductsTable } from "./components/ProductsTable";
 
-const page = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  flexGrow: 1,
-  minHeight: 0,
-});
-const pageTitle = style({ font: "heading", marginY: 0, flexShrink: 0 });
-const titleRow = style({
-  display: "flex",
-  alignItems: "center",
-  flexWrap: "wrap",
-  gap: 12,
-  rowGap: 8,
-});
-// Picker + SegmentedControl をひとまとめにして、狭幅時に h1 の下へ折り返す
-const controlsGroup = style({
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-});
-const spacer = style({ flexGrow: 1 });
-
 type ProductsContentUIProps = {
   products: Product[];
   isFiltered: boolean;
-  statusFilter: Key;
-  onStatusChange: (key: Key) => void;
-  saleTypeFilter: Key;
-  onSaleTypeChange: (key: Key) => void;
-  view: Key;
-  onViewChange: (key: Key) => void;
+  statusFilter: string;
+  onStatusChange: (key: string) => void;
+  saleTypeFilter: string;
+  onSaleTypeChange: (key: string) => void;
+  view: string;
+  onViewChange: (key: string) => void;
 };
 
 export function ProductsContentUI({
@@ -59,45 +38,50 @@ export function ProductsContentUI({
   onViewChange,
 }: ProductsContentUIProps) {
   return (
-    <div className={page}>
-      <div className={titleRow}>
-        <h1 className={pageTitle}>商品</h1>
-        <div className={spacer} />
-        <div className={controlsGroup}>
-          <Picker
-            aria-label="販売形態で絞り込み"
-            selectedKey={saleTypeFilter}
-            onSelectionChange={(key) => key !== null && onSaleTypeChange(key)}
-          >
-            <PickerItem id="all">すべての形態</PickerItem>
+    <div className="flex flex-1 flex-col gap-4 overflow-hidden p-5">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-bold">商品</h1>
+        <div className="flex-1" />
+        <Select
+          value={String(saleTypeFilter)}
+          onValueChange={(v) => onSaleTypeChange(v)}
+        >
+          <SelectTrigger className="h-9 w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">すべての形態</SelectItem>
             {Object.entries(SALE_TYPE_BADGE).map(([id, { label }]) => (
-              <PickerItem key={id} id={id}>
-                {label}
-              </PickerItem>
+              <SelectItem key={id} value={id}>{label}</SelectItem>
             ))}
-          </Picker>
-          <Picker
-            aria-label="ステータスで絞り込み"
-            selectedKey={statusFilter}
-            onSelectionChange={(key) => key !== null && onStatusChange(key)}
-          >
-            <PickerItem id="all">すべての商品</PickerItem>
-            <PickerItem id="published">公開中</PickerItem>
-            <PickerItem id="draft">下書き</PickerItem>
-          </Picker>
-          <SegmentedControl
-            aria-label="表示形式"
-            selectedKey={view}
-            onSelectionChange={onViewChange}
-          >
-            <SegmentedControlItem id="grid" aria-label="グリッド表示">
-              <ViewGrid />
-            </SegmentedControlItem>
-            <SegmentedControlItem id="list" aria-label="リスト表示">
-              <ViewList />
-            </SegmentedControlItem>
-          </SegmentedControl>
-        </div>
+          </SelectContent>
+        </Select>
+        <Select
+          value={String(statusFilter)}
+          onValueChange={(v) => onStatusChange(v)}
+        >
+          <SelectTrigger className="h-9 w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">すべての商品</SelectItem>
+            <SelectItem value="published">公開中</SelectItem>
+            <SelectItem value="draft">下書き</SelectItem>
+          </SelectContent>
+        </Select>
+        <ToggleGroup
+          type="single"
+          value={String(view)}
+          onValueChange={(v) => v && onViewChange(v)}
+          aria-label="表示形式"
+        >
+          <ToggleGroupItem value="grid" aria-label="グリッド表示" className="h-9 w-9">
+            <LayoutGrid className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="list" aria-label="リスト表示" className="h-9 w-9">
+            <List className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {view === "grid" ? (

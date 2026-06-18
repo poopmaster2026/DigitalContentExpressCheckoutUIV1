@@ -1,37 +1,14 @@
 "use client";
 
-import { InlineAlert, Heading, Content } from "@react-spectrum/s2/InlineAlert";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import type { FormEventHandler } from "react";
 
+import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
 import { BasicInfoSection } from "../../detail/ProductDetailContent/components/BasicInfoSection";
 import { ContentSection } from "../../detail/ProductDetailContent/components/ContentSection";
 import type { SaleType } from "../../types";
 
 import { NewPricingSection } from "./components/NewPricingSection";
 import { NewProductHeader } from "./components/NewProductHeader";
-
-const page = style({
-  display: "flex",
-  flexDirection: "column",
-  flexGrow: 1,
-  minHeight: 0,
-});
-const scrollArea = style({
-  flexGrow: 1,
-  minHeight: 0,
-  overflow: "auto",
-  paddingTop: 24,
-  paddingBottom: 24,
-});
-const formColumn = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 40,
-  maxWidth: 640,
-  minWidth: 0,
-});
-const alertStyle = style({ maxWidth: 640 });
 
 type NewProductContentUIProps = {
   saleType: SaleType;
@@ -51,21 +28,26 @@ export function NewProductContentUI({
   const shellDetail = { thumb: "sage" as const, saleType };
 
   return (
-    <form className={page} onSubmit={onSubmit} noValidate>
+    <form
+      className="flex flex-1 flex-col overflow-hidden p-5 pt-4"
+      onSubmit={onSubmit}
+      noValidate
+    >
       <NewProductHeader saleType={saleType} onCancel={onCancel} />
-      <div className={scrollArea}>
-        <div className={formColumn}>
+
+      <div className="mt-6 flex-1 overflow-auto">
+        <div className="flex w-full max-w-xl flex-col gap-10 pb-10">
           {created && (
-            <InlineAlert variant="positive" styles={alertStyle}>
-              <Heading>商品を作成しました</Heading>
-              <Content>新しい商品を作成しました（モック）。</Content>
-            </InlineAlert>
+            <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
+              <AlertTitle>商品を作成しました</AlertTitle>
+              <AlertDescription>新しい商品を作成しました（モック）。</AlertDescription>
+            </Alert>
           )}
           {error && (
-            <InlineAlert variant="negative" styles={alertStyle}>
-              <Heading>作成に失敗しました</Heading>
-              <Content>{error}</Content>
-            </InlineAlert>
+            <Alert variant="destructive">
+              <AlertTitle>作成に失敗しました</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
           <BasicInfoSection detail={shellDetail} />
           {saleType === "digital" && <ContentSection />}

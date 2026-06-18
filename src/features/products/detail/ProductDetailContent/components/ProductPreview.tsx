@@ -1,63 +1,13 @@
 "use client";
 
-import { Badge } from "@react-spectrum/s2/Badge";
-import { Image } from "@react-spectrum/s2/Image";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import {
-  SALE_TYPE_BADGE,
-  THUMB_HUE,
-  COVER_ILLUSTRATION,
-} from "../../../display";
+import { cn } from "@/lib/utils";
+import { SALE_TYPE_BADGE, THUMB_HUE, COVER_ILLUSTRATION } from "../../../display";
 import { formatPrice } from "../../../format";
 import type { ProductDetail } from "../../../types";
 import type { ProductFormValues } from "../../../types/validation";
-
-const caption = style({
-  font: "ui",
-  color: "neutral-subdued",
-  marginBottom: 8,
-  display: "block",
-});
-// プレビューは「コンテンツのカード」の再現なので一覧カードと同様にソフト影を許容
-const card = style({
-  backgroundColor: "base",
-  borderRadius: "xl",
-  boxShadow: "elevated",
-  overflow: "hidden",
-  width: "full",
-  maxWidth: 320,
-});
-const previewBox = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "full",
-  aspectRatio: "square",
-  overflow: "hidden",
-});
-const previewImg = style({ width: "full", height: "full", objectFit: "cover" });
-const body = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  padding: 16,
-});
-const titleText = style({ font: "heading-sm", marginY: 0 });
-const metaRow = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 8,
-});
-const priceText = style({ fontWeight: "bold" });
-const descText = style({
-  font: "body-sm",
-  color: "neutral-subdued",
-  marginY: 0,
-});
 
 export function ProductPreview({ detail }: { detail: ProductDetail }) {
   const { control } = useFormContext<ProductFormValues>();
@@ -67,35 +17,59 @@ export function ProductPreview({ detail }: { detail: ProductDetail }) {
   const isFree = useWatch({ control, name: "isFree" });
   const published = useWatch({ control, name: "published" });
   const coverImage = useWatch({ control, name: "coverImage" });
+
   const badge = SALE_TYPE_BADGE[detail.saleType];
-  const excerpt =
-    description.length > 90 ? `${description.slice(0, 90)}…` : description;
+  const excerpt = description.length > 90 ? `${description.slice(0, 90)}…` : description;
 
   return (
-    <div>
-      <span className={caption}>プレビュー（ストアでの見え方）</span>
-      <div className={card}>
+    <div className="flex flex-col gap-2">
+      <span className="text-xs text-muted-foreground">プレビュー（ストアでの見え方）</span>
+      <div className="w-full max-w-xs overflow-hidden rounded-xl border bg-card shadow-md">
+        {/* カバー */}
         <div
-          className={`${previewBox} ${coverImage ? "" : THUMB_HUE[detail.thumb]}`}
+          className={cn(
+            "relative flex aspect-square w-full items-center justify-center overflow-hidden",
+            !coverImage && THUMB_HUE[detail.thumb]
+          )}
         >
           {coverImage ? (
-            <Image src={coverImage.url} alt="" styles={previewImg} />
+            <Image
+              src={coverImage.url}
+              alt=""
+              fill
+              className="object-cover"
+            />
           ) : (
             COVER_ILLUSTRATION[detail.saleType]
           )}
         </div>
-        <div className={body}>
-          <h3 className={titleText}>{name || "(無題の商品)"}</h3>
-          <div className={metaRow}>
-            <Badge variant={badge.variant}>{badge.label}</Badge>
-            <span className={priceText}>
-              {formatPrice(isFree ? null : price)}
+
+        {/* 情報 */}
+        <div className="flex flex-col gap-2 p-3">
+          <h3 className="truncate text-sm font-semibold">{name || "(無題の商品)"}</h3>
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
+                badge.className
+              )}
+            >
+              {badge.label}
+            </span>
+            <span className="text-sm font-bold">{formatPrice(isFree ? null : price)}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span
+              className={cn(
+                "inline-block h-2 w-2 rounded-full",
+                published ? "bg-green-500" : "bg-gray-400"
+              )}
+            />
+            <span className="text-xs text-muted-foreground">
+              {published ? "公開中" : "下書き"}
             </span>
           </div>
-          <StatusLight size="S" variant={published ? "positive" : "neutral"}>
-            {published ? "公開中" : "下書き"}
-          </StatusLight>
-          {excerpt && <p className={descText}>{excerpt}</p>}
+          {excerpt && <p className="text-xs text-muted-foreground">{excerpt}</p>}
         </div>
       </div>
     </div>

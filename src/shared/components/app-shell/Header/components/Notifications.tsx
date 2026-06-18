@@ -1,77 +1,54 @@
 "use client";
 
+import { Bell } from "lucide-react";
+
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/components/ui/avatar";
+import { Button } from "@/shared/components/ui/button";
 import {
-  ActionButton,
-  NotificationBadge,
-} from "@react-spectrum/s2/ActionButton";
-import { Avatar } from "@react-spectrum/s2/Avatar";
-import { DialogTrigger } from "@react-spectrum/s2/Dialog";
-import Bell from "@react-spectrum/s2/icons/Bell";
-import { Popover } from "@react-spectrum/s2/Popover";
-// 通知（公式サンプル app/Notifications.tsx の移植）。各行は公式 Comment
-// （Typography.tsx）と同じ avatar / name(title-sm) / date(detail-sm) / body の構成。
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { NOTIFICATIONS } from "@/shared/mock/notifications";
-
-const list = style({
-  display: "flex",
-  flexDirection: "column",
-  rowGap: 20,
-  overflow: "auto",
-  flexGrow: 1,
-  minHeight: 0,
-});
-const heading = style({
-  font: "title-lg",
-  color: { default: "title", forcedColors: "ButtonText" },
-  marginY: 0,
-});
-const comment = style({
-  display: "grid",
-  gridTemplateAreas: ["avatar name", "avatar date", ". .", "body body"],
-  gridTemplateColumns: ["auto", "1fr"],
-  gridTemplateRows: ["auto", "auto", 8, "auto"],
-  columnGap: 8,
-  alignItems: "center",
-});
-const commentAvatar = style({ gridArea: "avatar" });
-const commentName = style({
-  gridArea: "name",
-  font: "title-sm",
-  color: { default: "title", forcedColors: "ButtonText" },
-});
-const commentDate = style({
-  gridArea: "date",
-  font: "detail-sm",
-  color: { default: "detail", forcedColors: "ButtonText" },
-});
-const commentBody = style({
-  gridArea: "body",
-  font: "body",
-  color: { default: "body", forcedColors: "ButtonText" },
-});
 
 export function Notifications() {
   return (
-    <DialogTrigger>
-      <ActionButton isQuiet aria-label={`${NOTIFICATIONS.length}件の通知`}>
-        <Bell />
-        <NotificationBadge value={NOTIFICATIONS.length} />
-      </ActionButton>
-      <Popover styles={style({ maxWidth: 300 })}>
-        <div className={list}>
-          <h3 className={heading}>通知</h3>
-          {NOTIFICATIONS.map((n, i) => (
-            <div key={i} className={comment}>
-              <Avatar alt="" src={n.avatar} size={32} styles={commentAvatar} />
-              <span className={commentName}>{n.author}</span>
-              <span className={commentDate}>{n.date}</span>
-              <span className={commentBody}>{n.body}</span>
-            </div>
-          ))}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" className="relative h-9 w-9" aria-label={`${NOTIFICATIONS.length}件の通知`}>
+          <Bell className="h-4 w-4" />
+          {NOTIFICATIONS.length > 0 && (
+            <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              {NOTIFICATIONS.length}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0" align="end">
+        <div className="border-b px-4 py-3">
+          <h3 className="font-semibold">通知</h3>
         </div>
-      </Popover>
-    </DialogTrigger>
+        <ScrollArea className="max-h-80">
+          <div className="divide-y">
+            {NOTIFICATIONS.map((n, i) => (
+              <div key={i} className="flex gap-3 px-4 py-3">
+                <Avatar className="h-8 w-8 shrink-0">
+                  <AvatarImage src={n.avatar} alt="" />
+                  <AvatarFallback>{n.author[0]}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-medium">{n.author}</span>
+                    <span className="text-xs text-muted-foreground">{n.date}</span>
+                  </div>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{n.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </PopoverContent>
+    </Popover>
   );
 }

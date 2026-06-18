@@ -1,6 +1,5 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
 import { useState } from "react";
 
 import { Brand } from "./components/Brand";
@@ -8,55 +7,21 @@ import { HeaderActions } from "./components/HeaderActions";
 import { HeaderSearch } from "./components/HeaderSearch";
 import { HeaderSearchExpanded } from "./components/HeaderSearchExpanded";
 
-const MD = `@container (min-width: ${768 / 16}rem)`;
-
-const toolbar = style({
-  gridArea: "toolbar",
-  display: "flex",
-  padding: 16,
-  paddingStart: 20,
-  boxSizing: "border-box",
-  gap: 20,
-  alignItems: "center",
-  width: "full",
-});
-// 検索が隠れる狭幅（< MD）でアクション群を右端へ押すスペーサー。
-const spacer = style({
-  flexGrow: 1,
-  display: { default: "block", [MD]: "none" },
-});
-
-/** アプリ上部のツールバー。Brand / 検索 / アクション群を配置する Presentational。 */
-export function Header({
-  isDark,
-  onColorSchemeChange,
-}: {
-  isDark: boolean;
-  onColorSchemeChange: (isDark: boolean) => void;
-}) {
+export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <div className={toolbar}>
+    <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-sidebar px-4 sm:px-5">
       {isSearchOpen ? (
-        // モバイル検索展開時: Brand・スペーサー・通常アクションを隠してフルワイド検索バーを表示
-        <HeaderSearchExpanded
-          isDark={isDark}
-          onColorSchemeChange={onColorSchemeChange}
-          onClose={() => setIsSearchOpen(false)}
-        />
+        <HeaderSearchExpanded onClose={() => setIsSearchOpen(false)} />
       ) : (
         <>
           <Brand />
           <HeaderSearch />
-          <div className={spacer} />
-          <HeaderActions
-            isDark={isDark}
-            onColorSchemeChange={onColorSchemeChange}
-            onSearchOpen={() => setIsSearchOpen(true)}
-          />
+          <div className="flex-1 md:hidden" />
+          <HeaderActions onSearchOpen={() => setIsSearchOpen(true)} />
         </>
       )}
-    </div>
+    </header>
   );
 }

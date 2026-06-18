@@ -1,107 +1,89 @@
 "use client";
 
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { Avatar } from "@react-spectrum/s2/Avatar";
-import { Divider } from "@react-spectrum/s2/Divider";
-import Buildings from "@react-spectrum/s2/icons/Buildings";
-import Settings from "@react-spectrum/s2/icons/Settings";
-import {
-  MenuTrigger,
-  Menu,
-  MenuSection,
-  MenuItem,
-  SubmenuTrigger,
-} from "@react-spectrum/s2/Menu";
-import { Popover } from "@react-spectrum/s2/Popover";
-// アカウントメニュー（公式サンプル app/AccountMenu.tsx の移植）。
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { Switch } from "@react-spectrum/s2/Switch";
-import { Text } from "@react-spectrum/s2/Text";
+import { Building2, LogOut, Moon, Settings, Sun } from "lucide-react";
 
-import { STORES, DEFAULT_STORE_ID, DEFAULT_STORE } from "../../stores";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import { Switch } from "@/shared/components/ui/switch";
+
+import { useColorScheme } from "../../hooks/useColorScheme";
+import { STORES, DEFAULT_STORE_ID } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
 
-const accountName = style({
-  font: "title",
-  color: { default: "title", forcedColors: "ButtonText" },
-});
-const accountEmail = style({
-  font: "ui",
-  color: { default: "body", forcedColors: "ButtonText" },
-});
+export function AccountMenu() {
+  const { isDark, setDark } = useColorScheme();
 
-export function AccountMenu({
-  isDark,
-  onColorSchemeChange,
-}: {
-  isDark: boolean;
-  onColorSchemeChange: (isDark: boolean) => void;
-}) {
   return (
-    <MenuTrigger>
-      <ActionButton isQuiet aria-label="アカウント">
-        <Avatar alt="花子" src={AVATAR_SRC} />
-      </ActionButton>
-      <Popover hideArrow placement="bottom end">
-        <div
-          className={style({
-            paddingTop: 4,
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          })}
-        >
-          <div
-            className={style({
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              marginX: 12,
-            })}
-          >
-            <Avatar alt="花子" src={AVATAR_SRC} size={56} />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label="アカウント">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={AVATAR_SRC} alt="花子" />
+            <AvatarFallback>花</AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={AVATAR_SRC} alt="花子" />
+              <AvatarFallback>花</AvatarFallback>
+            </Avatar>
             <div>
-              <div className={accountName}>花子</div>
-              <div className={accountEmail}>hanako@ours.jp</div>
-              <Switch
-                isSelected={isDark}
-                onChange={onColorSchemeChange}
-                styles={style({ marginTop: 4 })}
-              >
-                ダークテーマ
-              </Switch>
+              <p className="font-semibold">花子</p>
+              <p className="text-xs text-muted-foreground">hanako@ours.jp</p>
             </div>
           </div>
-          <Divider styles={style({ marginX: 12 })} />
-          <Menu aria-label="アカウント">
-            <MenuSection>
-              <SubmenuTrigger>
-                <MenuItem>
-                  <Buildings />
-                  <Text slot="label">ストア</Text>
-                  <Text slot="value">{DEFAULT_STORE?.name}</Text>
-                </MenuItem>
-                <Menu selectionMode="single" selectedKeys={[DEFAULT_STORE_ID]}>
-                  {STORES.map((s) => (
-                    <MenuItem key={s.id} id={s.id}>
-                      {s.name}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </SubmenuTrigger>
-              <MenuItem>
-                <Settings />
-                <Text slot="label">設定</Text>
-              </MenuItem>
-            </MenuSection>
-            <MenuSection>
-              <MenuItem>利用規約</MenuItem>
-              <MenuItem>ログアウト</MenuItem>
-            </MenuSection>
-          </Menu>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <div className="flex items-center justify-between px-2 py-1.5">
+          <div className="flex items-center gap-2 text-sm">
+            {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            <span>ダークモード</span>
+          </div>
+          <Switch checked={isDark} onCheckedChange={setDark} />
         </div>
-      </Popover>
-    </MenuTrigger>
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <Building2 className="mr-2 h-4 w-4" />
+            ストア
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={DEFAULT_STORE_ID}>
+              {STORES.map((s) => (
+                <DropdownMenuRadioItem key={s.id} value={s.id}>
+                  {s.name}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuItem>
+          <Settings className="mr-2 h-4 w-4" />
+          設定
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>利用規約</DropdownMenuItem>
+        <DropdownMenuItem>
+          <LogOut className="mr-2 h-4 w-4" />
+          ログアウト
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

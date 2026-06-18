@@ -1,84 +1,43 @@
 "use client";
 
-import { pressScale } from "@react-spectrum/s2/pressScale";
-import {
-  style,
-  focusRing,
-} from "@react-spectrum/s2/style" with { type: "macro" };
-// SideNav / SideNavItem は S2 未提供のため、公式サンプル app/Sidebar.tsx と同じ
-// RAC ToggleButtonGroup + style macro で組む。
-import { useRef, type ReactNode } from "react";
-import {
-  ToggleButtonGroup as RACToggleButtonGroup,
-  ToggleButton as RACToggleButton,
-  type ToggleButtonGroupProps,
-  type ToggleButtonProps,
-} from "react-aria-components";
+import { cn } from "@/lib/utils";
 
-const sideNavGroup = style({
-  marginStart: -4,
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  boxSizing: "border-box",
-  width: "full",
-});
+import type { NavEntry } from "../navEntries";
 
-const sideNavItem = style({
-  ...focusRing(),
-  backgroundColor: "transparent",
-  borderStyle: "none",
-  width: "full",
-  minHeight: 32,
-  boxSizing: "border-box",
-  padding: 0,
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  font: "ui",
-  fontWeight: { default: "normal", isSelected: "bold" },
-  textDecoration: "none",
-  borderRadius: "default",
-  transition: "default",
-});
+type SideNavProps = {
+  entries: NavEntry[];
+  selectedKey: string;
+  isExpanded: boolean;
+};
 
-const sideNavIndicator = style({
-  flexShrink: 0,
-  width: 2,
-  height: "[1lh]",
-  borderRadius: "full",
-  transition: "default",
-  backgroundColor: {
-    default: "transparent",
-    isHovered: "gray-400",
-    isSelected: "gray-800",
-  },
-});
-
-export function SideNav(
-  props: ToggleButtonGroupProps & { "aria-label": string; children: ReactNode }
-) {
-  return <RACToggleButtonGroup {...props} className={sideNavGroup} />;
-}
-
-export function SideNavItem(
-  props: ToggleButtonProps & { children: ReactNode }
-) {
-  const ref = useRef(null);
+export function SideNav({ entries, selectedKey, isExpanded }: SideNavProps) {
   return (
-    <RACToggleButton
-      {...props}
-      ref={ref}
-      // eslint-disable-next-line react-hooks/refs -- pressScale は press イベント時に ref を遅延参照する S2 公式ユーティリティ
-      style={pressScale(ref)}
-      className={sideNavItem}
-    >
-      {(renderProps) => (
-        <>
-          <span className={sideNavIndicator(renderProps)} />
-          {props.children}
-        </>
-      )}
-    </RACToggleButton>
+    <nav aria-label="メインナビゲーション" className="flex flex-col gap-1">
+      {entries.map((entry) => {
+        const isSelected = entry.key === selectedKey;
+        return (
+          <button
+            key={entry.key}
+            aria-current={isSelected ? "page" : undefined}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
+              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              isSelected
+                ? "bg-sidebar-accent text-sidebar-primary font-semibold"
+                : "text-sidebar-foreground/70"
+            )}
+          >
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+              <entry.icon className="h-4 w-4" />
+            </span>
+            {isExpanded && (
+              <span className="truncate transition-opacity duration-200">
+                {entry.label}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </nav>
   );
 }

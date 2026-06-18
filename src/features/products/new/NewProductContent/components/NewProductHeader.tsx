@@ -1,75 +1,63 @@
 "use client";
 
-import { Badge } from "@react-spectrum/s2/Badge";
-import { Button } from "@react-spectrum/s2/Button";
-import { Divider } from "@react-spectrum/s2/Divider";
-import ChevronLeft from "@react-spectrum/s2/icons/ChevronLeft";
-import { Link } from "@react-spectrum/s2/Link";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { Button } from "@/shared/components/ui/button";
+import { Separator } from "@/shared/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { SALE_TYPE_BADGE } from "../../../display";
 import type { SaleType } from "../../../types";
 import type { ProductFormValues } from "../../../types/validation";
 
-const backRow = style({ marginBottom: 8 });
-const backLink = style({
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 4,
-});
-const titleRow = style({
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap",
-});
-const titleText = style({ font: "heading", marginY: 0 });
-const spacer = style({ flexGrow: 1 });
-const actions = style({ display: "flex", alignItems: "center", gap: 12 });
-const headerDivider = style({ marginTop: 12 });
-
-type NewProductHeaderProps = {
-  saleType: SaleType;
-  onCancel: () => void;
-};
-
 export function NewProductHeader({
   saleType,
   onCancel,
-}: NewProductHeaderProps) {
+}: {
+  saleType: SaleType;
+  onCancel: () => void;
+}) {
   const { control } = useFormContext<ProductFormValues>();
   const name = useWatch({ control, name: "name" });
   const badge = SALE_TYPE_BADGE[saleType];
 
   return (
-    <div>
-      <div className={backRow}>
-        <Link href="/store/products" variant="secondary">
-          <span className={backLink}>
-            <ChevronLeft />
-            商品一覧
-          </span>
+    <div className="shrink-0">
+      <div className="mb-2">
+        <Link
+          href="/store/products"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          商品一覧
         </Link>
       </div>
-      <div className={titleRow}>
-        <h1 className={titleText}>{name || "(無題の商品)"}</h1>
-        <Badge variant={badge.variant}>{badge.label}</Badge>
-        <StatusLight size="S" variant="neutral">
-          下書き
-        </StatusLight>
-        <div className={spacer} />
-        <div className={actions}>
-          <Button variant="secondary" fillStyle="outline" onPress={onCancel}>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-bold">{name || "(無題の商品)"}</h1>
+        <span
+          className={cn(
+            "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+            badge.className
+          )}
+        >
+          {badge.label}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+          <span className="text-sm text-muted-foreground">下書き</span>
+        </div>
+        <div className="flex-1" />
+        <div className="flex items-center gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={onCancel}>
             キャンセル
           </Button>
-          <Button type="submit" variant="accent">
+          <Button type="submit" size="sm">
             作成
           </Button>
         </div>
       </div>
-      <Divider styles={headerDivider} />
+      <Separator className="mt-4" />
     </div>
   );
 }
