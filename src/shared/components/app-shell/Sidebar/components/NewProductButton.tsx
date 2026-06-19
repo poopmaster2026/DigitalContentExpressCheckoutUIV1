@@ -44,13 +44,20 @@ export function NewProductButton({ isExpanded }: { isExpanded: boolean }) {
       <Button
         onClick={() => setOpen(true)}
         className={cn(
-          "gap-2 justify-start transition-all duration-300",
-          isExpanded ? "w-full" : "w-9 px-0 justify-center"
+          "w-full gap-2 justify-start overflow-hidden",
+          isExpanded ? "" : "px-0 justify-center"
         )}
         aria-label="新規作成"
       >
         <Plus className="h-4 w-4 shrink-0" />
-        {isExpanded && <span className="truncate">新規作成</span>}
+        <span
+          className={cn(
+            "truncate transition-[opacity,max-width] duration-200 ease-in-out",
+            isExpanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
+          )}
+        >
+          新規作成
+        </span>
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpen}>

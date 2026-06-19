@@ -30,11 +30,15 @@ export function SideNav({ entries, selectedKey, isExpanded }: SideNavProps) {
             <span className="flex h-5 w-5 shrink-0 items-center justify-center">
               <entry.icon className="h-4 w-4" />
             </span>
-            {isExpanded && (
-              <span className="truncate transition-opacity duration-200">
-                {entry.label}
-              </span>
-            )}
+            {/* DOM に常時置き opacity で表示切替 → アイコン位置の突発ジャンプを防ぐ */}
+            <span
+              className={cn(
+                "overflow-hidden truncate transition-[opacity,max-width] duration-200 ease-in-out",
+                isExpanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
+              )}
+            >
+              {entry.label}
+            </span>
           </button>
         );
       })}

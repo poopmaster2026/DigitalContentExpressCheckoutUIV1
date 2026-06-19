@@ -1,15 +1,9 @@
 "use client";
 
-import { useState } from "react";
-
+import { useSidebarContext } from "../sidebar-context";
 import { SidebarUI } from "./SidebarUI";
 
 export function Sidebar() {
-  const [isExpanded, setIsExpanded] = useState(true);
-  return (
-    <SidebarUI
-      isExpanded={isExpanded}
-      onToggle={() => setIsExpanded((v) => !v)}
-    />
-  );
+  const { isExpanded, toggle } = useSidebarContext();
+  return <SidebarUI isExpanded={isExpanded} onToggle={toggle} />;
 }

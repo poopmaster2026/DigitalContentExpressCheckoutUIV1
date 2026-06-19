@@ -16,13 +16,15 @@ export function SidebarUI({ isExpanded, onToggle }: SidebarUIProps) {
   return (
     <aside
       className={cn(
-        // padding を両状態で揃えて width だけをトランジション → ガタつき防止
-        "hidden sm:flex flex-col shrink-0 gap-2 overflow-hidden bg-sidebar px-2 py-4 transition-[width] duration-200",
+        // absolute 配置: フレックスフローから切り離してコンテンツ幅を固定
+        "absolute top-0 left-0 bottom-0 z-10",
+        "hidden sm:flex flex-col gap-2 overflow-hidden bg-sidebar px-2 py-4",
+        "transition-[width] duration-200 ease-in-out",
         isExpanded ? "w-44" : "w-14"
       )}
     >
       <NewProductButton isExpanded={isExpanded} />
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <SideNav entries={NAV_ENTRIES} selectedKey="products" isExpanded={isExpanded} />
       </div>
       <PanelToggleButton onToggle={onToggle} />
