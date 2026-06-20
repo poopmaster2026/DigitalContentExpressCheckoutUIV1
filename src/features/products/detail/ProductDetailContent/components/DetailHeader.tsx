@@ -35,7 +35,7 @@ export function DetailHeader({
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
-  const { formState: { isDirty } } = useFormContext();
+  const { formState: { isDirty, isValid, isSubmitted } } = useFormContext();
   const badge = SALE_TYPE_BADGE[detail.saleType];
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -107,7 +107,7 @@ export function DetailHeader({
           <Button
             type="submit"
             size="sm"
-            disabled={pending || !isDirty}
+            disabled={pending || !isDirty || (isSubmitted && !isValid)}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
             {isSaving && <Loader2 className="absolute h-4 w-4 animate-spin" />}

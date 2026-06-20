@@ -50,7 +50,7 @@ export function ProductDetailContentUI({
 
       <div className="mx-auto w-full max-w-3xl px-6 py-8">
         <div className="flex flex-col gap-6">
-          <BasicInfoSection detail={detail} />
+          <BasicInfoSection detail={detail} isDescriptionRequired />
           <ContentSection saleType={detail.saleType} />
           <PricingSection detail={detail} />
         </div>

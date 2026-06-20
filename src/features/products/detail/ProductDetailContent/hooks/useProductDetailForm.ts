@@ -17,7 +17,7 @@ export function useProductDetailForm(detail: ProductDetail) {
   return useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: toFormValues(detail),
-    mode: "onBlur",
+    mode: "onTouched",
   });
 }
 
