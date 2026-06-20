@@ -68,10 +68,10 @@ export function AppHeader() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className={cn(
-              "h-9 w-full rounded-md border border-sidebar-border bg-sidebar-accent/60",
+              "h-9 w-full rounded-md border border-white/15 bg-white/10",
               "pl-9 pr-14 text-sm text-sidebar-foreground",
               "placeholder:text-sidebar-foreground/40",
-              "focus:outline-none focus:ring-1 focus:ring-sidebar-ring"
+              "focus:outline-none focus:ring-1 focus:ring-white/30"
             )}
           />
           <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 hidden items-center gap-0.5 rounded border border-sidebar-border bg-sidebar-accent px-1.5 py-0.5 text-[10px] text-sidebar-foreground/40 sm:flex">
