@@ -1,10 +1,11 @@
 "use client";
 
-import { Button } from "@react-spectrum/s2/Button";
-import { FileTrigger } from "@react-spectrum/s2/FileTrigger";
-import { Image } from "@react-spectrum/s2/Image";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+import { Label } from "@/shared/components/ui/label";
 
 import { THUMB_HUE, COVER_ILLUSTRATION } from "../../../display";
 import type { ProductDetail } from "../../../types";
@@ -14,35 +15,18 @@ import {
 } from "../../../types/validation";
 
 import { TextAreaControl, TextFieldControl } from "./FormFields";
-import { SectionHeading } from "./SectionHeading";
+import { SectionCard } from "./SectionCard";
 
-const section = style({ display: "flex", flexDirection: "column", gap: 24 });
-const field = style({ display: "flex", flexDirection: "column", gap: 8 });
-const fieldLabel = style({ font: "ui", color: "neutral-subdued" });
-const coverRow = style({ display: "flex", alignItems: "center", gap: 16 });
-const coverThumb = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 96,
-  height: 96,
-  borderRadius: "default",
-  overflow: "hidden",
-  flexShrink: 0,
-});
-const coverImg = style({ width: "full", height: "full", objectFit: "cover" });
-const metaText = style({ font: "ui", color: "neutral-subdued", marginY: 0 });
-const errorText = style({ font: "ui", color: "negative", marginY: 0 });
-
-type BasicInfoSectionProps = {
+interface BasicInfoSectionProps {
   detail: Pick<ProductDetail, "thumb" | "saleType">;
-};
+  isDescriptionRequired?: boolean;
+}
 
-export function BasicInfoSection({ detail }: BasicInfoSectionProps) {
+export function BasicInfoSection({ detail, isDescriptionRequired = false }: BasicInfoSectionProps) {
   const {
-    control,
     setValue,
     trigger,
+    control,
     formState: { errors },
   } = useFormContext<ProductFormValues>();
   const coverImage = useWatch({ control, name: "coverImage" });
@@ -50,61 +34,68 @@ export function BasicInfoSection({ detail }: BasicInfoSectionProps) {
   const handleCoverImage = (file: File) => {
     setValue(
       "coverImage",
-      {
-        url: URL.createObjectURL(file),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      },
+      { url: URL.createObjectURL(file), name: file.name, size: file.size, type: file.type },
       { shouldDirty: true }
     );
     trigger("coverImage");
   };
 
-  const coverImageError = (
-    errors.coverImage as { message?: string } | undefined
-  )?.message;
+  const coverImageError = (errors.coverImage as { message?: string } | undefined)?.message;
 
   return (
-    <section className={section}>
-      <SectionHeading>基本情報</SectionHeading>
-      <TextFieldControl name="name" label="商品名" isRequired />
-      <TextAreaControl name="description" label="説明" />
-      <div className={field}>
-        <span className={fieldLabel}>カバー画像</span>
-        <div className={coverRow}>
-          <div
-            className={`${coverThumb} ${coverImage?.url ? "" : THUMB_HUE[detail.thumb]}`}
-          >
-            {coverImage?.url ? (
-              <Image src={coverImage.url} alt="" styles={coverImg} />
-            ) : (
-              COVER_ILLUSTRATION[detail.saleType]
-            )}
-          </div>
-          <div
-            className={style({
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-            })}
-          >
-            <FileTrigger
-              acceptedFileTypes={[...COVER_IMAGE_ACCEPTED_TYPES]}
-              onSelect={(files) => {
-                const file = files?.[0];
-                if (file) handleCoverImage(file);
-              }}
+    <SectionCard title="基本情報">
+      <div className="flex flex-col gap-5">
+        <TextFieldControl name="name" label="商品名" isRequired />
+        <TextAreaControl name="description" label="説明" isRequired={isDescriptionRequired} />
+
+        <div className="flex flex-col gap-2">
+          <Label>カバー画像</Label>
+          <div className="flex items-center gap-4">
+            <div
+              className={cn(
+                "flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border",
+                !coverImage?.url && THUMB_HUE[detail.thumb]
+              )}
             >
-              <Button variant="secondary" fillStyle="outline">
-                画像を変更
-              </Button>
-            </FileTrigger>
-            <p className={metaText}>JPEG・PNG・WebP・GIF（最大10MB）</p>
-            {coverImageError && <p className={errorText}>{coverImageError}</p>}
+              {coverImage?.url ? (
+                <Image
+                  src={coverImage.url}
+                  alt=""
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                COVER_ILLUSTRATION[detail.saleType]
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label>
+                <Button variant="outline" size="sm" asChild>
+                  <span className="cursor-pointer">
+                    画像を変更
+                    <input
+                      type="file"
+                      accept={COVER_IMAGE_ACCEPTED_TYPES.join(",")}
+                      className="sr-only"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleCoverImage(file);
+                      }}
+                    />
+                  </span>
+                </Button>
+              </label>
+              <p className="text-xs text-muted-foreground">
+                JPEG・PNG・WebP・GIF（最大10MB）
+              </p>
+              {coverImageError && (
+                <p className="text-xs text-destructive">{coverImageError}</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </section>
+    </SectionCard>
   );
 }

@@ -1,17 +1,150 @@
-/*
- * Global base styles.
- *
- * Design tokens intentionally removed — React Spectrum S2 is the only design
- * system. Color / spacing / typography come from the S2 `style()` macro and
- * Spectrum tokens (see docs/DESIGN.md). Do NOT add a custom color/token layer
- * here. Keep this file minimal — base resets only.
- *
- * S2 uses CSS cascade layers, and unlayered global CSS would override S2's
- * styles. So this reset lives in a `reset` layer declared BEFORE S2's `_`
- * layer. See docs/DESIGN.md → "CSS リセット".
- */
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer reset, _;
+@source not "../../.claude/**";
+
+@layer reset;
+
+:root {
+  --radius: 0.625rem;
+
+  /* surfaces — warm ramp */
+  --background: #F2F1EF;
+  --surface: #f6f5f4;
+  --surface-muted: #eeedeb;
+  --card: #ffffff;
+  --card-foreground: #1c1a19;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a19;
+
+  /* text — warm-tinted near-black */
+  --foreground: #1c1a19;
+  --muted-foreground: #6e6864;
+
+  /* primary = black CTA + 状態色 */
+  --primary: #0d0d0d;
+  --primary-hover: #262626;
+  --primary-active: #000000;
+  --primary-foreground: #ffffff;
+
+  /* secondary / muted surfaces */
+  --secondary: #eeedeb;
+  --secondary-foreground: #1c1a19;
+  --muted: #f6f5f4;
+
+  /* accent — shadcn ホバー背景（subtle warm hover） */
+  --accent: #eeedeb;
+  --accent-foreground: #1c1a19;
+
+  /* link — 人柄の1色。リンク・選択状態など"ここぞ"だけ */
+  --link: #b5450f;
+  --link-foreground: #ffffff;
+
+  /* cta — 新規作成など行動喚起ボタン */
+  --cta: #2563eb;
+  --cta-hover: #1d4ed8;
+  --cta-foreground: #ffffff;
+
+  /* semantic */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+
+  /* lines — warm-tinted */
+  --border: rgba(28, 25, 23, 0.12);
+  --border-strong: rgba(28, 25, 23, 0.20);
+  --input: rgba(28, 25, 23, 0.18);
+  --ring: rgba(28, 25, 23, 0.35);
+
+  /* shadows — warm, restrained（主に xs / sm を使う） */
+  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.05);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(28, 25, 23, 0.08), 0 2px 4px -2px rgba(28, 25, 23, 0.05);
+  --shadow-lg: 0 12px 20px -4px rgba(28, 25, 23, 0.10), 0 4px 8px -4px rgba(28, 25, 23, 0.06);
+  --shadow-xl: 0 24px 40px -8px rgba(28, 25, 23, 0.12);
+
+  /* sidebar — warm dark chrome */
+  --sidebar: #1c1a19;
+  --sidebar-foreground: rgba(255, 255, 255, 0.72);
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #1c1a19;
+  --sidebar-accent: #2e2b29;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: rgba(255, 255, 255, 0.20);
+}
+
+@theme inline {
+  --font-sans: "Inter", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-cta: var(--cta);
+  --color-cta-hover: var(--cta-hover);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-link: var(--link);
+  --color-link-foreground: var(--link-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-shadow-xs: var(--shadow-xs);
+  --color-shadow-sm: var(--shadow-sm);
+  --color-shadow-md: var(--shadow-md);
+  --color-shadow-lg: var(--shadow-lg);
+  --color-shadow-xl: var(--shadow-xl);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label[for] {
+    cursor: pointer;
+  }
+}
 
 @layer reset {
   body {
@@ -19,32 +152,9 @@
   }
 }
 
-/*
- * アプリコンテナの高さを 100dvh で上書き（S2 `_` レイヤーより優先するため unlayered）。
- * `height: "screen"` = 100vh はモバイルで「URL バー非表示時の最大高」を使うため、
- * 仮想キーボード出現時や URL バー表示時に実際の可視領域がコンテナ下部に潜り込み、
- * コンテンツが隠れて「スクロールできない・隙間がある」ように見える。
- * 100dvh は実際の可視高さに追従するため、この問題を防ぐ。
- */
-[data-container] {
-  height: 100dvh;
-}
-
-/* SelectBox 選択時のボーダー・背景色をバッジ色に合わせる（S2 `_` レイヤーより優先）。
-   light-dark() の値は @adobe/spectrum-tokens から引いた実値（-900 / -100 スケール）。 */
-.sb-digital[data-selected] {
-  border-color: light-dark(rgb(5, 131, 78), rgb(9, 157, 89));
-  background-color: light-dark(rgb(237, 252, 241), rgb(0, 30, 23));
-}
-.sb-course[data-selected] {
-  border-color: light-dark(rgb(113, 85, 250), rgb(128, 119, 254));
-  background-color: light-dark(rgb(247, 248, 255), rgb(30, 0, 93));
-}
-.sb-booking[data-selected] {
-  border-color: light-dark(rgb(194, 78, 0), rgb(224, 100, 0));
-  background-color: light-dark(rgb(255, 246, 231), rgb(49, 16, 0));
-}
-.sb-subscription[data-selected] {
-  border-color: light-dark(rgb(217, 35, 97), rgb(255, 51, 119));
-  background-color: light-dark(rgb(255, 245, 248), rgb(59, 0, 22));
+/* sonner: success toast を --success トークンで塗る */
+[data-sonner-toast][data-type="success"] {
+  --normal-bg: var(--success);
+  --normal-text: var(--success-foreground);
+  --normal-border: var(--success);
 }

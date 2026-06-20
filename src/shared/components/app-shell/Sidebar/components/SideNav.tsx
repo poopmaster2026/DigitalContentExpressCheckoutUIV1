@@ -1,84 +1,74 @@
 "use client";
 
-import { pressScale } from "@react-spectrum/s2/pressScale";
-import {
-  style,
-  focusRing,
-} from "@react-spectrum/s2/style" with { type: "macro" };
-// SideNav / SideNavItem は S2 未提供のため、公式サンプル app/Sidebar.tsx と同じ
-// RAC ToggleButtonGroup + style macro で組む。
-import { useRef, type ReactNode } from "react";
-import {
-  ToggleButtonGroup as RACToggleButtonGroup,
-  ToggleButton as RACToggleButton,
-  type ToggleButtonGroupProps,
-  type ToggleButtonProps,
-} from "react-aria-components";
+import { useRouter } from "next/navigation";
 
-const sideNavGroup = style({
-  marginStart: -4,
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  boxSizing: "border-box",
-  width: "full",
-});
+import { cn } from "@/lib/utils";
 
-const sideNavItem = style({
-  ...focusRing(),
-  backgroundColor: "transparent",
-  borderStyle: "none",
-  width: "full",
-  minHeight: 32,
-  boxSizing: "border-box",
-  padding: 0,
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  font: "ui",
-  fontWeight: { default: "normal", isSelected: "bold" },
-  textDecoration: "none",
-  borderRadius: "default",
-  transition: "default",
-});
+import type { NavSection } from "../navEntries";
 
-const sideNavIndicator = style({
-  flexShrink: 0,
-  width: 2,
-  height: "[1lh]",
-  borderRadius: "full",
-  transition: "default",
-  backgroundColor: {
-    default: "transparent",
-    isHovered: "gray-400",
-    isSelected: "gray-800",
-  },
-});
+const NAV_PATHS: Record<string, string> = {
+  home: "/store",
+  products: "/store/products",
+  orders: "/store/orders",
+  customers: "/store/customers",
+  analytics: "/store/analytics",
+};
 
-export function SideNav(
-  props: ToggleButtonGroupProps & { "aria-label": string; children: ReactNode }
-) {
-  return <RACToggleButtonGroup {...props} className={sideNavGroup} />;
-}
+type SideNavProps = {
+  sections: NavSection[];
+  selectedKey: string;
+};
 
-export function SideNavItem(
-  props: ToggleButtonProps & { children: ReactNode }
-) {
-  const ref = useRef(null);
+export function SideNav({ sections, selectedKey }: SideNavProps) {
+  const router = useRouter();
+  const entries = sections.flatMap((s) => s.entries);
+
   return (
-    <RACToggleButton
-      {...props}
-      ref={ref}
-      // eslint-disable-next-line react-hooks/refs -- pressScale は press イベント時に ref を遅延参照する S2 公式ユーティリティ
-      style={pressScale(ref)}
-      className={sideNavItem}
-    >
-      {(renderProps) => (
-        <>
-          <span className={sideNavIndicator(renderProps)} />
-          {props.children}
-        </>
-      )}
-    </RACToggleButton>
+    <nav aria-label="メインナビゲーション" className="flex flex-col gap-0.5 px-1.5 py-1">
+      {entries.map((entry) => {
+        const isSelected = entry.key === selectedKey;
+        const isDisabled = entry.disabled === true;
+        return (
+          <button
+            key={entry.key}
+            aria-current={isSelected ? "page" : undefined}
+            aria-disabled={isDisabled}
+            title={entry.label}
+            onClick={isDisabled ? undefined : () => router.push(NAV_PATHS[entry.key] ?? "/")}
+            className={cn(
+              "flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors",
+              isDisabled
+                ? "cursor-not-allowed opacity-40"
+                : "hover:bg-sidebar-accent",
+              isSelected && "bg-sidebar-accent"
+            )}
+          >
+            <span
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                isSelected && "bg-sidebar-foreground/10"
+              )}
+            >
+              <entry.icon
+                className={cn(
+                  "h-5 w-5",
+                  isSelected ? "text-sidebar-primary" : "text-sidebar-foreground"
+                )}
+              />
+            </span>
+            <span
+              className={cn(
+                "w-full truncate text-center text-[10px] leading-snug",
+                isSelected
+                  ? "font-semibold text-sidebar-primary"
+                  : "text-sidebar-foreground"
+              )}
+            >
+              {entry.label}
+            </span>
+          </button>
+        );
+      })}
+    </nav>
   );
 }

@@ -1,62 +1,50 @@
 "use client";
 
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useState } from "react";
+import Image from "next/image";
 
-import { Brand } from "./components/Brand";
-import { HeaderActions } from "./components/HeaderActions";
-import { HeaderSearch } from "./components/HeaderSearch";
-import { HeaderSearchExpanded } from "./components/HeaderSearchExpanded";
+import { cn } from "@/lib/utils";
 
-const MD = `@container (min-width: ${768 / 16}rem)`;
+import { SidebarAccount } from "../Sidebar/components/SidebarAccount";
+import { MobileNavButton } from "./components/MobileNavButton";
 
-const toolbar = style({
-  gridArea: "toolbar",
-  display: "flex",
-  padding: 16,
-  paddingStart: 20,
-  boxSizing: "border-box",
-  gap: 20,
-  alignItems: "center",
-  width: "full",
-});
-// 検索が隠れる狭幅（< MD）でアクション群を右端へ押すスペーサー。
-const spacer = style({
-  flexGrow: 1,
-  display: { default: "block", [MD]: "none" },
-});
-
-/** アプリ上部のツールバー。Brand / 検索 / アクション群を配置する Presentational。 */
-export function Header({
-  isDark,
-  onColorSchemeChange,
-}: {
-  isDark: boolean;
-  onColorSchemeChange: (isDark: boolean) => void;
-}) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
+/**
+ * 全幅ダークヘッダー。
+ * デスクトップ: ロゴ+ブランド名（左）・アカウント（右）
+ * モバイル: ハンバーガー+ブランド名（左）・アカウント（右）
+ */
+export function AppHeader() {
   return (
-    <div className={toolbar}>
-      {isSearchOpen ? (
-        // モバイル検索展開時: Brand・スペーサー・通常アクションを隠してフルワイド検索バーを表示
-        <HeaderSearchExpanded
-          isDark={isDark}
-          onColorSchemeChange={onColorSchemeChange}
-          onClose={() => setIsSearchOpen(false)}
-        />
-      ) : (
-        <>
-          <Brand />
-          <HeaderSearch />
-          <div className={spacer} />
-          <HeaderActions
-            isDark={isDark}
-            onColorSchemeChange={onColorSchemeChange}
-            onSearchOpen={() => setIsSearchOpen(true)}
-          />
-        </>
+    <header
+      className={cn(
+        "flex h-14 shrink-0 items-center justify-between bg-sidebar",
+        "border-b border-sidebar-border px-3"
       )}
-    </div>
+    >
+      {/* 左: モバイル=ハンバーガー、デスクトップ=ロゴ+名前 */}
+      <div className="flex items-center gap-2">
+        <div className="sm:hidden">
+          <MobileNavButton />
+        </div>
+        <div className="flex items-center gap-2">
+          <Image
+            src="/setlink-logo.png"
+            alt=""
+            width={28}
+            height={28}
+            className="shrink-0"
+            priority
+          />
+          <span className="text-2xl font-bold text-sidebar-primary">SetLink</span>
+        </div>
+      </div>
+
+      {/* 右: アカウント */}
+      <div className="flex items-center gap-1">
+        <SidebarAccount />
+      </div>
+    </header>
   );
 }
+
+/** @deprecated MobileTopBar は AppHeader に統合済み */
+export { AppHeader as MobileTopBar };

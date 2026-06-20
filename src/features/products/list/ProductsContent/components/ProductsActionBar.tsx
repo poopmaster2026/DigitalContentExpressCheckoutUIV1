@@ -1,44 +1,86 @@
 "use client";
 
-import { ActionBar, ActionButton, Text } from "@react-spectrum/s2/ActionBar";
-import { AlertDialog, DialogTrigger } from "@react-spectrum/s2/AlertDialog";
-import Delete from "@react-spectrum/s2/icons/Delete";
-import Publish from "@react-spectrum/s2/icons/Publish";
-import Revert from "@react-spectrum/s2/icons/Revert";
+import { Eye, EyeOff, Trash2, X } from "lucide-react";
 
-/**
- * 選択時の一括操作バー（グリッド/テーブル共用）。
- * 件数表示・選択解除(×)・Escape・読み上げは S2 が Context 経由で自動注入するため
- * ここには書かない。アクションは行メニューと語彙を揃える（ただし「複製」は単一商品向けの
- * 操作のため一括バーには含めない）。状態遷移→破壊的の順に並べ、破壊的（削除）は色ボタンに
- * せず確認ダイアログ（destructive）で担保する。
- */
-export function ProductsActionBar() {
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/components/ui/alert-dialog";
+import { Button } from "@/shared/components/ui/button";
+import { Separator } from "@/shared/components/ui/separator";
+
+interface ProductsActionBarProps {
+  selectedCount: number;
+  onClear: () => void;
+}
+
+export function ProductsActionBar({ selectedCount, onClear }: ProductsActionBarProps) {
+  if (selectedCount === 0) return null;
+
   return (
-    <ActionBar isEmphasized>
-      <ActionButton aria-label="公開する" onPress={() => {}}>
-        <Publish />
-        <Text>公開する</Text>
-      </ActionButton>
-      <ActionButton aria-label="下書きに戻す" onPress={() => {}}>
-        <Revert />
-        <Text>下書きに戻す</Text>
-      </ActionButton>
-      <DialogTrigger>
-        <ActionButton aria-label="削除">
-          <Delete />
-          <Text>削除</Text>
-        </ActionButton>
-        <AlertDialog
-          variant="destructive"
-          title="選択した商品を削除"
-          primaryActionLabel="削除"
-          cancelLabel="キャンセル"
-          onPrimaryAction={() => {}}
-        >
-          選択した商品を削除します。この操作は取り消せません。
-        </AlertDialog>
-      </DialogTrigger>
-    </ActionBar>
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 sm:bottom-6">
+      <div className="pointer-events-auto flex w-full max-w-2xl items-center gap-2 rounded-xl border bg-card/95 p-2 pl-4 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:w-auto sm:rounded-full">
+        <span className="text-sm font-medium tabular-nums">
+          {selectedCount}件選択
+        </span>
+        <Separator orientation="vertical" className="mx-1 hidden h-5 sm:block" />
+
+        <div className="flex flex-1 items-center justify-end gap-1 sm:flex-none">
+          <Button variant="ghost" size="sm" className="gap-1.5">
+            <Eye className="h-4 w-4" />
+            <span className="hidden sm:inline">公開する</span>
+          </Button>
+          <Button variant="ghost" size="sm" className="gap-1.5">
+            <EyeOff className="h-4 w-4" />
+            <span className="hidden sm:inline">下書きに戻す</span>
+          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="hidden sm:inline">削除</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>選択した商品を削除</AlertDialogTitle>
+                <AlertDialogDescription>
+                  選択した{selectedCount}件の商品を削除します。この操作は取り消せません。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={onClear}>
+                  削除
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <Separator orientation="vertical" className="mx-1 hidden h-5 sm:block" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={onClear}
+            aria-label="選択解除"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

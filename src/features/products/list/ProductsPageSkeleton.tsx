@@ -1,67 +1,58 @@
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
-// ローディング表示。実レイアウト（タイトル行 + 一覧）に合わせた箱を S2 トークンで並べる。
-// raw hex は使わず gray スケールのみ。Phase 0（mock 同期）では未発火。
-const page = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-  flexGrow: 1,
-  minHeight: 0,
-});
-const titleRow = style({ display: "flex", alignItems: "center", gap: 12 });
-const titleBlock = style({
-  width: 96,
-  height: 28,
-  backgroundColor: "gray-200",
-  borderRadius: "sm",
-});
-const spacer = style({ flexGrow: 1 });
-const control = style({
-  width: 160,
-  height: 32,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-});
-const list = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: 12,
-  marginTop: 8,
-});
-const row = style({ display: "flex", alignItems: "center", gap: 12 });
-const thumb = style({
-  width: 36,
-  height: 36,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-  flexShrink: 0,
-});
-const line = style({
-  height: 16,
-  backgroundColor: "gray-100",
-  borderRadius: "sm",
-  flexGrow: 1,
-});
-
-const ROWS = Array.from({ length: 8 }, (_, i) => i);
+const CARDS = Array.from({ length: 10 }, (_, i) => i);
 
 export function ProductsPageSkeleton() {
   return (
-    <div className={page}>
-      <div className={titleRow}>
-        <div className={titleBlock} />
-        <div className={spacer} />
-        <div className={control} />
-        <div className={control} />
-      </div>
-      <div className={list}>
-        {ROWS.map((i) => (
-          <div key={i} className={row}>
-            <div className={thumb} />
-            <div className={line} />
+    <div className="flex flex-col">
+      {/* ヘッダー（ProductsContentUI の header.border-b に合わせる） */}
+      <div className="border-b px-4 pt-5 pb-0 sm:px-6">
+        {/* タイトル行 */}
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-7 w-12" />
+          <Skeleton className="h-4 w-10" />
+          <div className="flex-1" />
+          {/* デスクトップ: 検索 + saleType + view toggle + 新規作成 */}
+          <div className="hidden items-center gap-2 sm:flex">
+            <Skeleton className="h-9 w-56" />
+            <Skeleton className="h-9 w-36" />
+            <Skeleton className="h-9 w-[72px] rounded-md" />
+            <Skeleton className="h-9 w-24" />
           </div>
-        ))}
+          {/* モバイル: アイコンボタン */}
+          <Skeleton className="h-9 w-9 sm:hidden" />
+        </div>
+
+        {/* モバイル検索 */}
+        <Skeleton className="mt-4 h-9 w-full sm:hidden" />
+
+        {/* ステータスタブ（実際の Tabs スタイルに合わせた下線タブ風） */}
+        <div className="mt-4 flex gap-4">
+          <Skeleton className="h-7 w-16" />
+          <Skeleton className="h-7 w-16" />
+          <Skeleton className="h-7 w-16" />
+        </div>
+      </div>
+
+      {/* コンテンツ: デフォルト view は grid */}
+      <div className="px-4 py-5 sm:px-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {CARDS.map((i) => (
+            <div key={i} className="flex flex-col overflow-hidden rounded-lg border bg-card">
+              {/* サムネイル */}
+              <Skeleton className="aspect-square w-full rounded-none" />
+              {/* カード下部 */}
+              <div className="flex flex-col gap-2 p-3">
+                <Skeleton className="h-4 w-full" />
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-16 rounded-full" />
+                  <Skeleton className="h-4 w-12" />
+                </div>
+                <Skeleton className="h-3 w-10" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

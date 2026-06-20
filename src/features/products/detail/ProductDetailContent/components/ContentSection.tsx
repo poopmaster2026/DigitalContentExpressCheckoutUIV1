@@ -1,30 +1,28 @@
 "use client";
 
-import { Button } from "@react-spectrum/s2/Button";
-import { ButtonGroup } from "@react-spectrum/s2/ButtonGroup";
 import {
-  Content,
-  DropZone,
-  Heading,
-  IllustratedMessage,
-} from "@react-spectrum/s2/DropZone";
-import { FileTrigger } from "@react-spectrum/s2/FileTrigger";
-import FileDocument from "@react-spectrum/s2/illustrations/gradient/generic2/Document";
-import DropToUpload from "@react-spectrum/s2/illustrations/gradient/generic2/DropToUpload";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+  CalendarClock,
+  CreditCard,
+  FileText,
+  ListChecks,
+  Upload,
+  X,
+} from "lucide-react";
+import type { ReactNode } from "react";
+import { useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+
+import type { SaleType } from "../../../types";
 import {
   BLOCKED_CONTENT_MIME_TYPES,
   CONTENT_FILE_MAX_SIZE,
   type ProductFormValues,
 } from "../../../types/validation";
 
-import { SectionHeading } from "./SectionHeading";
-
-const section = style({ display: "flex", flexDirection: "column", gap: 12 });
-const dropZone = style({ width: "full", maxWidth: 480 });
-const errorText = style({ font: "ui", color: "negative", marginY: 0 });
+import { SectionCard } from "./SectionCard";
 
 function formatFileSize(bytes: number): string {
   if (bytes <= 0) return "—";
@@ -35,7 +33,48 @@ function formatFileSize(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-export function ContentSection() {
+/** 販売形態ごとの見出し・説明。カードの器は共通、中身だけ差し替える。 */
+const CONTENT_COPY: Record<SaleType, { title: string; description: string }> = {
+  digital: {
+    title: "コンテンツ",
+    description: "購入者にダウンロードで届けるファイルを設定します。",
+  },
+  course: {
+    title: "カリキュラム",
+    description: "レッスンをまとめてコースとして提供します。",
+  },
+  booking: {
+    title: "予約枠",
+    description: "相談やセッションの提供日時を設定します。",
+  },
+  subscription: {
+    title: "プラン",
+    description: "継続課金のプランと提供内容を設定します。",
+  },
+};
+
+export function ContentSection({ saleType, isRequired = false }: { saleType: SaleType; isRequired?: boolean }) {
+  const copy = CONTENT_COPY[saleType];
+
+  return (
+    <SectionCard
+      title={copy.title}
+      description={copy.description}
+      aside={isRequired && saleType === "digital"
+        ? <span className="text-sm text-destructive">*</span>
+        : undefined}
+    >
+      {saleType === "digital" ? (
+        <DigitalContent isRequired={isRequired} />
+      ) : (
+        <NonDigitalContent saleType={saleType} />
+      )}
+    </SectionCard>
+  );
+}
+
+/** digital: ファイルアップロード（実フォーム接続あり）。 */
+function DigitalContent({ isRequired = false }: { isRequired?: boolean }) {
   const {
     control,
     setValue,
@@ -43,11 +82,10 @@ export function ContentSection() {
     formState: { errors },
   } = useFormContext<ProductFormValues>();
   const contentFile = useWatch({ control, name: "contentFile" });
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
-    if ((BLOCKED_CONTENT_MIME_TYPES as readonly string[]).includes(file.type)) {
-      return;
-    }
+    if ((BLOCKED_CONTENT_MIME_TYPES as readonly string[]).includes(file.type)) return;
     setValue(
       "contentFile",
       { name: file.name, size: file.size, type: file.type },
@@ -56,76 +94,137 @@ export function ContentSection() {
     trigger("contentFile");
   };
 
-  const handleRemove = () => {
-    setValue("contentFile", null, { shouldDirty: true });
-  };
-
-  const fileError = (errors.contentFile as { message?: string } | undefined)
-    ?.message;
-
-  const isFilled = contentFile !== null;
+  const fileError = (errors.contentFile as { message?: string } | undefined)?.message;
 
   return (
-    <section className={section}>
-      <SectionHeading>コンテンツ（デジタル配信）</SectionHeading>
-      <DropZone
-        aria-label="配信ファイル"
-        styles={dropZone}
-        isFilled={isFilled}
-        replaceMessage="ファイルを置き換える"
-        getDropOperation={() => "copy"}
-        onDrop={async (event) => {
-          const item = event.items.find((i) => i.kind === "file");
-          if (item && item.kind === "file") {
-            handleFile(await item.getFile());
-          }
+    <>
+      {contentFile ? (
+        <div className="flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3">
+          <FileText className="h-8 w-8 shrink-0 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{contentFile.name}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatFileSize(contentFile.size)}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => inputRef.current?.click()}
+            >
+              変更
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="text-muted-foreground"
+              onClick={() => setValue("contentFile", null, { shouldDirty: true })}
+            >
+              <X />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+          }}
+          className={cn(
+            "flex w-full flex-col items-center gap-3 rounded-lg border-2 border-dashed border-border px-6 py-10",
+            "text-muted-foreground transition-colors",
+            "hover:border-cta hover:bg-accent hover:text-foreground"
+          )}
+        >
+          <Upload className="h-8 w-8" />
+          <div className="text-center">
+            <p className="text-sm font-medium">ファイルをドラッグ&ドロップ</p>
+            <p className="mt-1 text-xs">
+              PDF・動画・音声・ZIP など（最大 {formatFileSize(CONTENT_FILE_MAX_SIZE)}）
+            </p>
+          </div>
+          <span className="text-sm font-medium text-foreground">ファイルを選択</span>
+        </button>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        className="sr-only"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleFile(file);
         }}
-      >
-        {isFilled && contentFile ? (
-          <IllustratedMessage orientation="horizontal" size="S">
-            <FileDocument />
-            <Heading>{contentFile.name}</Heading>
-            <Content>{formatFileSize(contentFile.size)}</Content>
-            <ButtonGroup>
-              <Button
-                variant="secondary"
-                fillStyle="outline"
-                onPress={handleRemove}
+      />
+      {fileError && <p className="mt-2 text-xs text-destructive">{fileError}</p>}
+    </>
+  );
+}
+
+/** course / booking / subscription: 構成のみ提示（フォーム接続は実 API 連携時）。 */
+function NonDigitalContent({
+  saleType,
+}: {
+  saleType: Exclude<SaleType, "digital">;
+}) {
+  const config: Record<
+    Exclude<SaleType, "digital">,
+    { icon: ReactNode; lead: string; items: string[]; cta: string }
+  > = {
+    course: {
+      icon: <ListChecks className="h-7 w-7 text-muted-foreground" />,
+      lead: "セクションとレッスンを追加してカリキュラムを組み立てます。",
+      items: ["レッスン動画・資料", "公開順とドリップ配信", "進捗トラッキング"],
+      cta: "レッスンを追加",
+    },
+    booking: {
+      icon: <CalendarClock className="h-7 w-7 text-muted-foreground" />,
+      lead: "提供する日時と所要時間を設定して予約を受け付けます。",
+      items: ["受付可能な曜日・時間帯", "1 枠の所要時間", "オンライン / 対面の指定"],
+      cta: "予約枠を追加",
+    },
+    subscription: {
+      icon: <CreditCard className="h-7 w-7 text-muted-foreground" />,
+      lead: "継続課金のプランと、会員に届ける内容を設定します。",
+      items: ["請求サイクル（月額 / 年額）", "プランに含む特典", "無料トライアル期間"],
+      cta: "プランを追加",
+    },
+  };
+  const c = config[saleType];
+
+  return (
+    <div className="flex flex-col gap-4 rounded-lg border border-dashed border-border bg-surface px-5 py-6">
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-card">
+          {c.icon}
+        </div>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-foreground">{c.lead}</p>
+          <ul className="flex flex-col gap-1.5">
+            {c.items.map((item) => (
+              <li
+                key={item}
+                className="flex items-center gap-2 text-sm text-muted-foreground"
               >
-                削除
-              </Button>
-              <FileTrigger
-                onSelect={(files) => {
-                  const file = files?.[0];
-                  if (file) handleFile(file);
-                }}
-              >
-                <Button variant="accent">変更</Button>
-              </FileTrigger>
-            </ButtonGroup>
-          </IllustratedMessage>
-        ) : (
-          <IllustratedMessage orientation="horizontal" size="S">
-            <DropToUpload />
-            <Heading>ファイルをドラッグ&ドロップ</Heading>
-            <Content>
-              PDF・動画・音声・ZIP など（最大{" "}
-              {formatFileSize(CONTENT_FILE_MAX_SIZE)}）
-            </Content>
-            <ButtonGroup>
-              <FileTrigger
-                onSelect={(files) => {
-                  const file = files?.[0];
-                  if (file) handleFile(file);
-                }}
-              >
-                <Button variant="accent">ファイルを選択</Button>
-              </FileTrigger>
-            </ButtonGroup>
-          </IllustratedMessage>
-        )}
-      </DropZone>
-      {fileError && <p className={errorText}>{fileError}</p>}
-    </section>
+                <span className="inline-block h-1 w-1 shrink-0 rounded-full bg-muted-foreground/50" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div>
+        <Button type="button" variant="outline" size="sm">
+          {c.cta}
+        </Button>
+      </div>
+    </div>
   );
 }

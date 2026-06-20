@@ -1,46 +1,36 @@
 "use client";
 
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { ActionButtonGroup } from "@react-spectrum/s2/ActionButtonGroup";
-import Cancel from "@react-spectrum/s2/icons/Cancel";
-import { SearchField } from "@react-spectrum/s2/SearchField";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Search, X } from "lucide-react";
+
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
 
 import { useAppSearch } from "../../search-context";
 
 import { AccountMenu } from "./AccountMenu";
 
-/** モバイル幅（< MD）で検索アイコンを押した時に展開するフルワイド検索バー。 */
-export function HeaderSearchExpanded({
-  isDark,
-  onColorSchemeChange,
-  onClose,
-}: {
-  isDark: boolean;
-  onColorSchemeChange: (isDark: boolean) => void;
-  onClose: () => void;
-}) {
+export function HeaderSearchExpanded({ onClose }: { onClose: () => void }) {
   const { query, setQuery } = useAppSearch();
   return (
     <>
-      <SearchField
-        aria-label="商品を検索"
-        placeholder="商品を検索"
-        value={query}
-        onChange={setQuery}
-        // autoFocus: isSearchOpen=true 時に新規マウントされるため有効
-        autoFocus
-        styles={style({ flexGrow: 1 })}
-      />
-      <ActionButtonGroup>
-        <ActionButton isQuiet aria-label="検索を閉じる" onPress={onClose}>
-          <Cancel />
-        </ActionButton>
-        <AccountMenu
-          isDark={isDark}
-          onColorSchemeChange={onColorSchemeChange}
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          aria-label="商品を検索"
+          placeholder="商品を検索"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="pl-9"
+          autoFocus
         />
-      </ActionButtonGroup>
+      </div>
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" aria-label="検索を閉じる" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </Button>
+        <AccountMenu />
+      </div>
     </>
   );
 }

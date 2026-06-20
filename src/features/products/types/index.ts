@@ -7,6 +7,9 @@
 export const PRODUCT_STATUSES = ["published", "draft"] as const;
 export type ProductStatus = (typeof PRODUCT_STATUSES)[number];
 
+/** フィルタ未指定を表す番兵値。URL クエリパラメータとフィルタ条件で共通使用する。 */
+export const FILTER_ALL = "all" as const;
+
 export const PRODUCT_THUMBS = [
   "sage",
   "sky",

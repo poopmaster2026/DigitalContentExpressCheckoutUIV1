@@ -1,164 +1,100 @@
 "use client";
 
 import {
-  Button,
-  ButtonGroup,
-  Content,
-  Dialog,
-  DialogTrigger,
-  Heading,
-} from "@react-spectrum/s2/Dialog";
-import Add from "@react-spectrum/s2/icons/Add";
-import CalendarIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/Calendar";
-import CardTapPaymentIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/CardTapPayment";
-import EducationIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/Education";
-import FileTextIllustration from "@react-spectrum/s2/illustrations/gradient/generic2/FileText";
-import {
-  SelectBox,
-  SelectBoxGroup,
-  Text,
-  type Selection,
-} from "@react-spectrum/s2/SelectBoxGroup";
-import { size, style } from "@react-spectrum/s2/style" with { type: "macro" };
+  BookOpen,
+  Calendar,
+  CreditCard,
+  FileText,
+  Plus,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import type React from "react";
 import { useState } from "react";
 
-import type { NavState } from "../hooks/useSidebarToggle";
+import type { SaleType } from "@/features/products/types";
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
 
-const LG = `@container (width > ${1024 / 16}rem)`;
+const CATEGORIES: { id: SaleType; label: string; description: string; icon: typeof FileText }[] = [
+  { id: "digital", label: "デジタル", description: "ファイル・PDF・動画", icon: FileText },
+  { id: "course", label: "コース", description: "近日公開予定", icon: BookOpen },
+  { id: "booking", label: "予約", description: "近日公開予定", icon: Calendar },
+  { id: "subscription", label: "サブスク", description: "近日公開予定", icon: CreditCard },
+];
 
-const buttonStyles = style({
-  marginBottom: 8,
-  width: { default: 32, [LG]: 96, state: { expanded: 96, collapsed: 32 } },
-});
-
-const textStyles = style({
-  opacity: { default: 0, [LG]: 1, state: { expanded: 1, collapsed: 0 } },
-  transition: "default",
-  transitionDuration: 300,
-  whiteSpace: "nowrap",
-});
-
-/** サイドナビの「新規作成」ボタン。押すとカテゴリー選択 Dialog を開く。 */
-export function NewProductButton({ state }: { state: NavState }) {
+export function NewProductButton() {
   const router = useRouter();
-  const [selected, setSelected] = useState<Selection>(new Set());
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<SaleType | null>(null);
+
+  const handleOpen = (v: boolean) => {
+    setOpen(v);
+    if (!v) setSelected(null);
+  };
 
   return (
-    <DialogTrigger
-      onOpenChange={(open) => {
-        if (!open) setSelected(new Set());
-      }}
-    >
-      <Button
-        variant="accent"
-        styles={buttonStyles({ state })}
-        UNSAFE_style={{
-          alignItems: "center",
-          justifyContent: "start",
-          overflow: "clip",
-          transition: "all 300ms",
-        }}
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="新規作成"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-cta text-cta-foreground transition-colors hover:bg-cta-hover"
       >
-        <span className={style({ marginStart: size(6) })}>
-          <Add />
-        </span>
-        <span className={textStyles({ state })}>新規作成</span>
-      </Button>
-      <Dialog size="M">
-        {({ close }) => (
-          <>
-            <Heading slot="title" UNSAFE_style={{ fontWeight: 700 }}>
-              商品カテゴリーを選択
-            </Heading>
-            <Content>
-              <SelectBoxGroup
-                aria-label="商品カテゴリー"
-                selectionMode="single"
-                orientation="horizontal"
-                disabledKeys={["course", "booking", "subscription"]}
-                selectedKeys={selected}
-                onSelectionChange={setSelected}
-                styles={style({ width: "full" })}
-                UNSAFE_style={
-                  {
-                    "--select-box-group-width": "9999px",
-                  } as React.CSSProperties
+        <Plus className="h-5 w-5" />
+      </button>
+
+      <Dialog open={open} onOpenChange={handleOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>商品カテゴリーを選択</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3 py-2">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isDisabled = cat.id !== "digital";
+              return (
+                <button
+                  key={cat.id}
+                  disabled={isDisabled}
+                  onClick={() => setSelected(cat.id)}
+                  className={cn(
+                    "flex flex-col items-center gap-2 rounded-lg border-2 p-4 text-center transition-colors",
+                    "disabled:cursor-not-allowed disabled:opacity-40",
+                    selected === cat.id
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40 hover:bg-accent"
+                  )}
+                >
+                  <Icon className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm font-semibold">{cat.label}</span>
+                  <span className="text-xs text-muted-foreground">{cat.description}</span>
+                </button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => handleOpen(false)}>
+              キャンセル
+            </Button>
+            <Button
+              disabled={!selected}
+              onClick={() => {
+                if (selected) {
+                  handleOpen(false);
+                  router.push(`/store/products/new?saleType=${selected}`);
                 }
-              >
-                <SelectBox
-                  id="digital"
-                  textValue="デジタル"
-                  UNSAFE_className="sb-digital"
-                  UNSAFE_style={{ width: "100%" }}
-                >
-                  <FileTextIllustration />
-                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>
-                    デジタル
-                  </Text>
-                  <Text slot="description">ファイル・PDF・動画</Text>
-                </SelectBox>
-                <SelectBox
-                  id="course"
-                  textValue="コース"
-                  UNSAFE_className="sb-course"
-                  UNSAFE_style={{ width: "100%" }}
-                >
-                  <EducationIllustration />
-                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>
-                    コース
-                  </Text>
-                  <Text slot="description">近日公開予定</Text>
-                </SelectBox>
-                <SelectBox
-                  id="booking"
-                  textValue="予約"
-                  UNSAFE_className="sb-booking"
-                  UNSAFE_style={{ width: "100%" }}
-                >
-                  <CalendarIllustration />
-                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>
-                    予約
-                  </Text>
-                  <Text slot="description">近日公開予定</Text>
-                </SelectBox>
-                <SelectBox
-                  id="subscription"
-                  textValue="サブスク"
-                  UNSAFE_className="sb-subscription"
-                  UNSAFE_style={{ width: "100%" }}
-                >
-                  <CardTapPaymentIllustration />
-                  <Text slot="label" UNSAFE_style={{ fontWeight: 700 }}>
-                    サブスク
-                  </Text>
-                  <Text slot="description">近日公開予定</Text>
-                </SelectBox>
-              </SelectBoxGroup>
-            </Content>
-            <ButtonGroup>
-              <Button variant="secondary" onPress={close}>
-                キャンセル
-              </Button>
-              <Button
-                variant="accent"
-                isDisabled={(selected as Set<string>).size === 0}
-                onPress={() => {
-                  const saleType =
-                    selected instanceof Set ? [...selected][0] : null;
-                  if (saleType) {
-                    close();
-                    router.push(`/store/products/new?saleType=${saleType}`);
-                  }
-                }}
-              >
-                次へ
-              </Button>
-            </ButtonGroup>
-          </>
-        )}
+              }}
+            >
+              次へ
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
-    </DialogTrigger>
+    </>
   );
 }

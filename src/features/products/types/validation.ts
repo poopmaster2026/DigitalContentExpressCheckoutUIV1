@@ -99,6 +99,24 @@ export const productFormSchema = z
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;
 
+/** 新規デジタル商品作成用スキーマ。説明・コンテンツファイルも必須。 */
+export const newDigitalProductFormSchema = productFormSchema.superRefine((data, ctx) => {
+  if (!data.description.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "説明を入力してください",
+      path: ["description"],
+    });
+  }
+  if (!data.contentFile) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "コンテンツファイルをアップロードしてください",
+      path: ["contentFile"],
+    });
+  }
+});
+
 /** 商品詳細データ → フォーム初期値。既存ファイルは type 不明のため "" を補完。 */
 export function toFormValues(detail: ProductDetail): ProductFormValues {
   return {

@@ -1,88 +1,135 @@
 "use client";
 
-import { AlertDialog, DialogTrigger } from "@react-spectrum/s2/AlertDialog";
-import { Badge } from "@react-spectrum/s2/Badge";
-import { Button } from "@react-spectrum/s2/Button";
-import { Divider } from "@react-spectrum/s2/Divider";
-import ChevronLeft from "@react-spectrum/s2/icons/ChevronLeft";
-import { Link } from "@react-spectrum/s2/Link";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { useFormContext, useWatch } from "react-hook-form";
+import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
+
+import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 
 import { SALE_TYPE_BADGE } from "../../../display";
 import type { ProductDetail } from "../../../types";
-import type { ProductFormValues } from "../../../types/validation";
 
-const backRow = style({ marginBottom: 8 });
-const backLink = style({
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 4,
-});
-const titleRow = style({
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap",
-});
-const titleText = style({ font: "heading", marginY: 0 });
-const spacer = style({ flexGrow: 1 });
-const actions = style({ display: "flex", alignItems: "center", gap: 12 });
-const headerDivider = style({ marginTop: 12 });
-
-type DetailHeaderProps = {
+export function DetailHeader({
+  detail,
+  pending,
+  onDuplicate,
+  onDelete,
+}: {
   detail: ProductDetail;
+  pending: boolean;
+  onDuplicate: () => void;
   onDelete: () => void;
-};
-
-export function DetailHeader({ detail, onDelete }: DetailHeaderProps) {
-  const { control } = useFormContext<ProductFormValues>();
-  const name = useWatch({ control, name: "name" });
-  const published = useWatch({ control, name: "published" });
+}) {
+  const { formState: { isDirty } } = useFormContext();
   const badge = SALE_TYPE_BADGE[detail.saleType];
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   return (
-    <div>
-      <div className={backRow}>
-        <Link href="/store/products" variant="secondary">
-          <span className={backLink}>
-            <ChevronLeft />
-            商品一覧
-          </span>
-        </Link>
-      </div>
-      <div className={titleRow}>
-        <h1 className={titleText}>{name || "(無題の商品)"}</h1>
-        <Badge variant={badge.variant}>{badge.label}</Badge>
-        <StatusLight size="S" variant={published ? "positive" : "neutral"}>
-          {published ? "公開中" : "下書き"}
-        </StatusLight>
-        <div className={spacer} />
-        <div className={actions}>
-          <DialogTrigger>
-            <Button variant="negative" fillStyle="outline">
-              削除
-            </Button>
-            <AlertDialog
-              variant="destructive"
-              title="商品を削除"
-              primaryActionLabel="削除"
-              cancelLabel="キャンセル"
-              onPrimaryAction={onDelete}
+    <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-3">
+        {/* 左: 戻る + 商品名 + 状態 */}
+        <div className="flex min-w-0 items-center gap-3">
+          <Button
+            asChild
+            variant="ghost"
+            size="icon-sm"
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+          >
+            <Link href="/store/products" aria-label="商品一覧に戻る">
+              <ChevronLeft />
+            </Link>
+          </Button>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <h1 className="truncate text-lg font-semibold text-foreground">
+              {detail.name}
+            </h1>
+            <Badge
+              variant="outline"
+              className={cn("hidden shrink-0 sm:inline-flex", badge.className)}
             >
-              「{detail.name}」を削除します。この操作は取り消せません。
-            </AlertDialog>
-          </DialogTrigger>
-          <Button variant="secondary" fillStyle="outline" onPress={() => {}}>
+              {badge.label}
+            </Badge>
+            <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
+              <span
+                className={cn(
+                  "inline-block h-1.5 w-1.5 rounded-full",
+                  detail.status === "published" ? "bg-success" : "bg-muted-foreground/50"
+                )}
+              />
+              <span className="text-sm text-muted-foreground">
+                {detail.status === "published" ? "公開中" : "下書き"}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="flex-1" />
+
+        {/* 右: 複製・削除・保存を横並び */}
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={pending}
+            className="hidden sm:inline-flex"
+            onClick={onDuplicate}
+          >
+            <Copy className="h-4 w-4" />
             複製
           </Button>
-          <Button type="submit" variant="accent">
-            保存
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={pending}
+            className="hidden text-destructive hover:bg-destructive/10 hover:text-destructive sm:inline-flex"
+            onClick={() => setConfirmOpen(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            削除
+          </Button>
+          <Button
+            type="submit"
+            size="sm"
+            disabled={pending || !isDirty}
+            className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
+          >
+            {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={pending ? "invisible" : undefined}>保存</span>
           </Button>
         </div>
       </div>
-      <Divider styles={headerDivider} />
-    </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>商品を削除</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{detail.name}」を削除します。この操作は取り消せません。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={onDelete}>
+              削除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </header>
   );
 }

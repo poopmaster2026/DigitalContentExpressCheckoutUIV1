@@ -1,42 +1,44 @@
 "use client";
 
-import { ActionButton } from "@react-spectrum/s2/ActionButton";
-import { Badge } from "@react-spectrum/s2/Badge";
-import More from "@react-spectrum/s2/icons/More";
-import { Image } from "@react-spectrum/s2/Image";
-import { MenuTrigger, Menu, MenuItem } from "@react-spectrum/s2/Menu";
-import { StatusLight } from "@react-spectrum/s2/StatusLight";
-import {
-  style,
-  iconStyle,
-} from "@react-spectrum/s2/style" with { type: "macro" };
-import {
-  TableView,
-  TableHeader,
-  Column,
-  TableBody,
-  Row,
-  Cell,
-  type SortDescriptor,
-} from "@react-spectrum/s2/TableView";
-import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
-import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../../display";
+import { useNavigate } from "@/shared/hooks/useNavigate";
+
+import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/components/ui/table";
+
+import { KIND_ICON, SALE_TYPE_BADGE, STATUS_DISPLAY, THUMB_HUE } from "../../../display";
 import { formatPrice, formatRevenue } from "../../../format";
 import { productMenuItems } from "../../../productMenu";
-import type { Product, ProductKind, ProductThumb } from "../../../types";
+import type { Product } from "../../../types";
 
-import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
-/** テーブルのソート比較（列ごと）。ソート state はこの Presentational の UI 表示制御に閉じる。 */
-function compareProducts(
-  a: Product,
-  b: Product,
-  column: SortDescriptor["column"]
-): number {
-  switch (column) {
+const SORT_KEYS = ["name", "price", "sales", "revenue"] as const;
+const SORT_DIRS = ["asc", "desc"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+type SortDir = (typeof SORT_DIRS)[number];
+
+function compareProducts(a: Product, b: Product, key: SortKey): number {
+  switch (key) {
     case "name":
       return a.name.localeCompare(b.name, "ja");
     case "price":
@@ -50,157 +52,223 @@ function compareProducts(
   }
 }
 
-const thumbBase = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: 36,
-  height: 36,
-  borderRadius: "sm",
-  flexShrink: 0,
-  overflow: "hidden",
-});
-const thumbImage = style({
-  width: "full",
-  height: "full",
-  objectFit: "cover",
-});
-// 二調色サムネイル: 共有の背景 hue（THUMB_HUE）+ 同一 hue のアイコン
-const thumbIcon = {
-  sage: iconStyle({ color: "celery" }),
-  sky: iconStyle({ color: "blue" }),
-  sand: iconStyle({ color: "orange" }),
-  rose: iconStyle({ color: "pink" }),
-  lilac: iconStyle({ color: "purple" }),
-  mint: iconStyle({ color: "seafoam" }),
-} satisfies Record<ProductThumb, unknown>;
-const productCell = style({ display: "flex", alignItems: "center", gap: 12 });
-// 商品名・価格は一覧での視認性を優先して太字（プロダクト判断。S2 既定より太い）
-const boldText = style({ fontWeight: "bold" });
-
-type KindIconProps = {
-  kind: ProductKind;
-  styles: (typeof thumbIcon)[ProductThumb];
-};
-
-function KindIcon({ kind, styles }: KindIconProps) {
-  const Icon = KIND_ICON[kind];
-  return <Icon styles={styles} />;
+/** ソート可能な列ヘッダー。状態は親から受け取り、render 中のコンポーネント生成を避ける。 */
+function SortButton({
+  label,
+  col,
+  align = "left",
+  sortKey,
+  sortDir,
+  onSort,
+}: {
+  label: string;
+  col: SortKey;
+  align?: "left" | "right";
+  sortKey: SortKey;
+  sortDir: SortDir;
+  onSort: (key: SortKey) => void;
+}) {
+  const active = sortKey === col;
+  const Arrow = !active ? ChevronsUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center gap-1 rounded-sm py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        align === "right" ? "-mr-1 px-1" : "-ml-1 px-1",
+        active ? "text-foreground" : "text-muted-foreground"
+      )}
+      onClick={() => onSort(col)}
+    >
+      {align === "right" && (
+        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
+      )}
+      {label}
+      {align === "left" && (
+        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
+      )}
+    </button>
+  );
 }
 
-type ProductsTableProps = {
+interface ProductsTableProps {
   products: Product[];
   isFiltered: boolean;
-};
+  selected: Set<string>;
+  onToggle: (id: string) => void;
+  onToggleAll: (ids: string[]) => void;
+}
 
-export function ProductsTable({ products, isFiltered }: ProductsTableProps) {
-  // 初期ソートを「売上の降順」に固定する。S2 のソート矢印はアクティブ列にしか描画されないため、
-  // 初期ソート無し（null）だと一度クリックするまで並び替え可能だと気づけない。既定を持たせて
-  // 読み込み時点で現在の並び順とソート可能であることを可視化する。
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: "revenue",
-    direction: "descending",
-  });
-  const router = useRouter();
+export function ProductsTable({
+  products,
+  isFiltered,
+  selected,
+  onToggle,
+  onToggleAll,
+}: ProductsTableProps) {
+  const [sortKey, setSortKey] = useState<SortKey>("revenue");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // TODO: デジタル以外（course / booking / subscription）の詳細画面は未実装。
+  //       実装時はここのガードを外して各 saleType 向けページに振り分ける。
+  const goToDetail = (p: Product) => {
+    if (p.saleType !== "digital") return;
+    setNavigatingId(p.id);
+    navigate(`/store/products/${p.id}`);
+  };
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
 
   const rows = [...products].sort((a, b) => {
-    const cmp = compareProducts(a, b, sortDescriptor.column);
-    return sortDescriptor.direction === "descending" ? -cmp : cmp;
+    const cmp = compareProducts(a, b, sortKey);
+    return sortDir === "desc" ? -cmp : cmp;
   });
 
+  if (products.length === 0) {
+    return <ProductsEmptyState isFiltered={isFiltered} />;
+  }
+
+  const allSelected =
+    products.length > 0 && products.every((p) => selected.has(p.id));
+
+  const sortProps = { sortKey, sortDir, onSort: handleSort };
+
   return (
-    <TableView
-      aria-label="商品一覧"
-      selectionMode="multiple"
-      sortDescriptor={sortDescriptor}
-      onSortChange={setSortDescriptor}
-      renderActionBar={() => <ProductsActionBar />}
-      styles={style({ width: "full", flexGrow: 1, minHeight: 0, marginTop: 8 })}
-    >
-      <TableHeader>
-        <Column id="name" isRowHeader allowsSorting minWidth={260}>
-          商品
-        </Column>
-        <Column id="saleType" align="center" width={130}>
-          販売形態
-        </Column>
-        <Column id="price" align="end" allowsSorting width={120}>
-          価格
-        </Column>
-        <Column id="sales" align="end" allowsSorting width={110}>
-          販売数
-        </Column>
-        <Column id="revenue" align="end" allowsSorting width={140}>
-          売上
-        </Column>
-        <Column id="status" width={140}>
-          状態
-        </Column>
-        <Column id="actions" align="end" width={56} textValue="操作">
-          {""}
-        </Column>
-      </TableHeader>
-      <TableBody
-        items={rows}
-        renderEmptyState={() => <ProductsEmptyState isFiltered={isFiltered} />}
-      >
-        {(p) => (
-          <Row id={p.id}>
-            <Cell>
-              <div className={productCell}>
-                {p.image ? (
-                  <div className={thumbBase}>
-                    <Image src={p.image} alt="" styles={thumbImage} />
-                  </div>
-                ) : (
-                  <div className={`${thumbBase} ${THUMB_HUE[p.thumb]}`}>
-                    <KindIcon kind={p.kind} styles={thumbIcon[p.thumb]} />
-                  </div>
-                )}
-                <span className={boldText}>{p.name}</span>
-              </div>
-            </Cell>
-            <Cell align="center">
-              <Badge variant={SALE_TYPE_BADGE[p.saleType].variant}>
-                {SALE_TYPE_BADGE[p.saleType].label}
-              </Badge>
-            </Cell>
-            <Cell align="end">
-              <span className={boldText}>{formatPrice(p.price)}</span>
-            </Cell>
-            <Cell align="end">{p.sales}</Cell>
-            <Cell align="end">{formatRevenue(p)}</Cell>
-            <Cell>
-              {/* 状態は塗りチップではなく StatusLight（ドット+ラベル）。
-                  S2 公式 Card 例の Published 表現・AEM の公開ステータスと同じ */}
-              <StatusLight
-                size="S"
-                variant={p.status === "published" ? "positive" : "neutral"}
+    <div className="overflow-hidden rounded-lg border bg-card">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-b bg-surface/60 hover:bg-surface/60">
+            <TableHead className="w-10 pl-4">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={() => onToggleAll(products.map((p) => p.id))}
+                aria-label="すべて選択"
+              />
+            </TableHead>
+            <TableHead className="text-muted-foreground">
+              <SortButton label="商品" col="name" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-muted-foreground">販売形態</TableHead>
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="価格" col="price" align="right" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="販売数" col="sales" align="right" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="売上" col="revenue" align="right" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-muted-foreground">状態</TableHead>
+            <TableHead className="w-10 pr-2" />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((p) => {
+            const badge = SALE_TYPE_BADGE[p.saleType];
+            const status = STATUS_DISPLAY[p.status];
+            const Icon = KIND_ICON[p.kind];
+            const isSelected = selected.has(p.id);
+            return (
+              <TableRow
+                key={p.id}
+                data-state={isSelected ? "selected" : undefined}
+                data-loading={navigatingId === p.id ? "true" : undefined}
+                className="transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface data-[loading=true]:opacity-60 data-[clickable=true]:cursor-pointer"
+                data-clickable={p.saleType === "digital" ? "true" : undefined}
+                onClick={() => goToDetail(p)}
               >
-                {p.status === "published" ? "公開中" : "下書き"}
-              </StatusLight>
-            </Cell>
-            <Cell align="end">
-              <MenuTrigger>
-                <ActionButton isQuiet aria-label="操作">
-                  <More />
-                </ActionButton>
-                <Menu
-                  onAction={(key) => {
-                    if (key === "edit") router.push(`/store/products/${p.id}`);
-                  }}
-                >
-                  {productMenuItems(p).map((a) => (
-                    <MenuItem key={a.id} id={a.id}>
-                      {a.label}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </MenuTrigger>
-            </Cell>
-          </Row>
-        )}
-      </TableBody>
-    </TableView>
+                <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => onToggle(p.id)}
+                    aria-label={`${p.name}を選択`}
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border",
+                        !p.image && THUMB_HUE[p.thumb]
+                      )}
+                    >
+                      {p.image ? (
+                        <Image
+                          src={p.image}
+                          alt=""
+                          width={36}
+                          height={36}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Icon className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <span className="font-medium text-foreground">{p.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={badge.className}>
+                    {badge.label}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatPrice(p.price)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums text-muted-foreground">
+                  {p.sales}
+                </TableCell>
+                <TableCell className="text-right font-semibold tabular-nums">
+                  {formatRevenue(p)}
+                </TableCell>
+                <TableCell>
+                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <span
+                      className={cn("h-2 w-2 rounded-full", status.dotClassName)}
+                    />
+                    {status.label}
+                  </span>
+                </TableCell>
+                <TableCell className="pr-2 text-right" onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground"
+                        aria-label="操作"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {productMenuItems(p).map((a) => (
+                        <DropdownMenuItem
+                          key={a.id}
+                          variant={a.id === "delete" ? "destructive" : "default"}
+                          onClick={() => {
+                            if (a.id === "edit") goToDetail(p);
+                          }}
+                        >
+                          {a.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

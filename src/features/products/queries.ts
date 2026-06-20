@@ -5,7 +5,7 @@ import { fetchProductDetail, fetchProducts } from "./api";
 export const productListQueryOptions = () =>
   queryOptions({
     queryKey: ["products"],
-    queryFn: fetchProducts,
+    queryFn: () => fetchProducts(),
   });
 
 export const productDetailQueryOptions = (id: string) =>

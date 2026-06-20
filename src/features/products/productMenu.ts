@@ -1,6 +1,6 @@
 import type { Product } from "./types";
 
-export interface ProductMenuItem {
+interface ProductMenuItem {
   id: string;
   label: string;
 }
