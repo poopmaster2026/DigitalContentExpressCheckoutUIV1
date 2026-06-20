@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Copy, Trash2 } from "lucide-react";
+import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -25,9 +25,11 @@ import type { ProductFormValues } from "../../../types/validation";
 
 export function DetailHeader({
   detail,
+  saving,
   onDelete,
 }: {
   detail: ProductDetail;
+  saving: boolean;
   onDelete: () => void;
 }) {
   const { control } = useFormContext<ProductFormValues>();
@@ -98,8 +100,13 @@ export function DetailHeader({
             <Trash2 className="h-4 w-4" />
             削除
           </Button>
-          <Button type="submit" size="sm" className="bg-cta text-cta-foreground hover:bg-cta-hover">
-            保存
+          <Button
+            type="submit"
+            size="sm"
+            disabled={saving}
+            className="bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "保存"}
           </Button>
         </div>
       </div>

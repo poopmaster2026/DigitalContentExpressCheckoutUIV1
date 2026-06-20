@@ -42,6 +42,13 @@ export function ProductsCardView({
 }: ProductsCardViewProps) {
   const router = useRouter();
 
+  // TODO: デジタル以外（course / booking / subscription）の詳細画面は未実装。
+  //       実装時はここのガードを外して各 saleType 向けページに振り分ける。
+  const goToDetail = (p: Product) => {
+    if (p.saleType !== "digital") return;
+    router.push(`/store/products/${p.id}`);
+  };
+
   if (products.length === 0) {
     return <ProductsEmptyState isFiltered={isFiltered} />;
   }
@@ -102,7 +109,7 @@ export function ProductsCardView({
                       variant={a.id === "delete" ? "destructive" : "default"}
                       onClick={() => {
                         if (a.id === "edit")
-                          router.push(`/store/products/${p.id}`);
+                          goToDetail(p);
                       }}
                     >
                       {a.label}
@@ -115,7 +122,7 @@ export function ProductsCardView({
             {/* カバー画像 */}
             <button
               className="block w-full text-left"
-              onClick={() => router.push(`/store/products/${p.id}`)}
+              onClick={() => goToDetail(p)}
             >
               <div
                 className={cn(
@@ -140,7 +147,7 @@ export function ProductsCardView({
             {/* カード情報 */}
             <button
               className="flex flex-1 flex-col gap-2 p-3 text-left"
-              onClick={() => router.push(`/store/products/${p.id}`)}
+              onClick={() => goToDetail(p)}
             >
               <div className="flex items-start justify-between gap-2">
                 <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
