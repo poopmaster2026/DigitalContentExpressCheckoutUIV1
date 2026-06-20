@@ -23,6 +23,16 @@ import { SALE_TYPE_BADGE } from "../../display";
 import { FILTER_ALL } from "../../types";
 import type { Product } from "../../types";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/shared/components/ui/pagination";
+
 import { ProductsActionBar } from "./components/ProductsActionBar";
 import { ProductsCardView } from "./components/ProductsCardView";
 import { ProductsTable } from "./components/ProductsTable";
@@ -46,6 +56,9 @@ type ProductsContentUIProps = {
   onToggleSelected: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
   onClearSelected: () => void;
+  page: number;
+  pageCount: number;
+  onPageChange: (page: number) => void;
 };
 
 const STATUS_TABS = [
@@ -53,6 +66,13 @@ const STATUS_TABS = [
   { value: "published", label: "公開中", countKey: "published" },
   { value: "draft", label: "下書き", countKey: "draft" },
 ] as const satisfies ReadonlyArray<{ value: string; label: string; countKey: keyof StatusCounts }>;
+
+function buildPageRange(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "ellipsis", total];
+  if (current >= total - 3) return [1, "ellipsis", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", total];
+}
 
 export function ProductsContentUI({
   products,
@@ -72,6 +92,9 @@ export function ProductsContentUI({
   onToggleSelected,
   onToggleAll,
   onClearSelected,
+  page,
+  pageCount,
+  onPageChange,
 }: ProductsContentUIProps) {
   const router = useRouter();
   const goNew = () => router.push("/store/products/new/digital");
@@ -228,6 +251,49 @@ export function ProductsContentUI({
           )}
         </div>
       </div>
+
+      {/* ページネーション */}
+      {pageCount > 1 && (
+        <div className="border-t px-4 py-4 sm:px-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page > 1) onPageChange(page - 1); }}
+                  aria-disabled={page <= 1}
+                  className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
+                />
+              </PaginationItem>
+              {buildPageRange(page, pageCount).map((p, i) =>
+                p === "ellipsis" ? (
+                  <PaginationItem key={`ellipsis-${i}`}>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                ) : (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href="#"
+                      isActive={p === page}
+                      onClick={(e) => { e.preventDefault(); onPageChange(p); }}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page < pageCount) onPageChange(page + 1); }}
+                  aria-disabled={page >= pageCount}
+                  className={page >= pageCount ? "pointer-events-none opacity-50" : undefined}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
 
       {/* 一括操作バー（view 横断で 1 箇所） */}
       <ProductsActionBar

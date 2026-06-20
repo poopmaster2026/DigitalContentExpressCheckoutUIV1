@@ -23,6 +23,9 @@ export function ProductsContent() {
     toggleSelected,
     toggleAll,
     clearSelected,
+    page,
+    pageCount,
+    setPage,
   } = useProductsFilter();
 
   return (
@@ -44,6 +47,9 @@ export function ProductsContent() {
       onToggleSelected={toggleSelected}
       onToggleAll={toggleAll}
       onClearSelected={clearSelected}
+      page={page}
+      pageCount={pageCount}
+      onPageChange={setPage}
     />
   );
 }

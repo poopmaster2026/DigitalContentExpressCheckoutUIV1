@@ -10,6 +10,8 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { productListQueryOptions } from "../../../api/queries";
 import { FILTER_ALL } from "../../../types";
 
+export const PAGE_SIZE = 20;
+
 export type StatusCounts = { all: number; published: number; draft: number };
 
 /**
@@ -30,6 +32,8 @@ export function useProductsFilter() {
   const status = searchParams.get("status") ?? FILTER_ALL;
   const saleType = searchParams.get("saleType") ?? FILTER_ALL;
   const queryFromUrl = searchParams.get("q") ?? "";
+  const pageStr = searchParams.get("page");
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
 
   // searchParams は毎レンダーで変わるため ref で最新値を保持（useEffect / useCallback 内で参照）
   const searchParamsRef = useRef(searchParams);
@@ -61,6 +65,7 @@ export function useProductsFilter() {
       const params = new URLSearchParams(searchParamsRef.current.toString());
       if (debouncedQuery) params.set("q", debouncedQuery);
       else params.delete("q");
+      params.delete("page");
       const qs = params.toString();
       router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
     });
@@ -79,6 +84,13 @@ export function useProductsFilter() {
   const filtered =
     debouncedQuery.trim() !== "" || status !== FILTER_ALL || saleType !== FILTER_ALL;
 
+  const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  const clampedPage = Math.min(page, pageCount);
+  const paginatedProducts = useMemo(
+    () => products.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE),
+    [products, clampedPage]
+  );
+
   const statusCounts = useMemo<StatusCounts>(
     () => ({
       all: allProducts.length,
@@ -94,6 +106,20 @@ export function useProductsFilter() {
         const params = new URLSearchParams(searchParamsRef.current.toString());
         if (value === FILTER_ALL) params.delete(key);
         else params.set(key, value);
+        params.delete("page");
+        const qs = params.toString();
+        router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
+      });
+    },
+    [router, pathname]
+  );
+
+  const setPage = useCallback(
+    (p: number) => {
+      startFilterTransition(() => {
+        const params = new URLSearchParams(searchParamsRef.current.toString());
+        if (p <= 1) params.delete("page");
+        else params.set("page", String(p));
         const qs = params.toString();
         router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
       });
@@ -122,7 +148,7 @@ export function useProductsFilter() {
   const onSaleTypeChange = useCallback((s: string) => updateParam("saleType", s), [updateParam]);
 
   return {
-    products,
+    products: paginatedProducts,
     filtered,
     status,
     saleType,
@@ -139,5 +165,8 @@ export function useProductsFilter() {
     toggleSelected,
     toggleAll,
     clearSelected,
+    page: clampedPage,
+    pageCount,
+    setPage,
   };
 }
