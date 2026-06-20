@@ -27,15 +27,19 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
     <nav aria-label="メインナビゲーション" className="flex flex-col gap-0.5 px-1.5 py-1">
       {entries.map((entry) => {
         const isSelected = entry.key === selectedKey;
+        const isDisabled = entry.disabled === true;
         return (
           <button
             key={entry.key}
             aria-current={isSelected ? "page" : undefined}
+            aria-disabled={isDisabled}
             title={entry.label}
-            onClick={() => router.push(NAV_PATHS[entry.key] ?? "/")}
+            onClick={isDisabled ? undefined : () => router.push(NAV_PATHS[entry.key] ?? "/")}
             className={cn(
               "flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors",
-              "hover:bg-sidebar-accent",
+              isDisabled
+                ? "cursor-not-allowed opacity-40"
+                : "hover:bg-sidebar-accent",
               isSelected && "bg-sidebar-accent"
             )}
           >

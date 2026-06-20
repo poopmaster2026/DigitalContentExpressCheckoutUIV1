@@ -3,7 +3,7 @@
 import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import {
@@ -21,7 +21,6 @@ import { Button } from "@/shared/components/ui/button";
 
 import { SALE_TYPE_BADGE } from "../../../display";
 import type { ProductDetail } from "../../../types";
-import type { ProductFormValues } from "../../../types/validation";
 
 export function DetailHeader({
   detail,
@@ -34,9 +33,7 @@ export function DetailHeader({
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
-  const { control, formState: { isDirty } } = useFormContext<ProductFormValues>();
-  const name = useWatch({ control, name: "name" });
-  const published = useWatch({ control, name: "published" });
+  const { formState: { isDirty } } = useFormContext();
   const badge = SALE_TYPE_BADGE[detail.saleType];
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -57,7 +54,7 @@ export function DetailHeader({
           </Button>
           <div className="flex min-w-0 items-center gap-2.5">
             <h1 className="truncate text-lg font-semibold text-foreground">
-              {name || "(無題の商品)"}
+              {detail.name}
             </h1>
             <Badge
               variant="outline"
@@ -69,11 +66,11 @@ export function DetailHeader({
               <span
                 className={cn(
                   "inline-block h-1.5 w-1.5 rounded-full",
-                  published ? "bg-success" : "bg-muted-foreground/50"
+                  detail.status === "published" ? "bg-success" : "bg-muted-foreground/50"
                 )}
               />
               <span className="text-sm text-muted-foreground">
-                {published ? "公開中" : "下書き"}
+                {detail.status === "published" ? "公開中" : "下書き"}
               </span>
             </span>
           </div>
