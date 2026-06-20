@@ -64,7 +64,7 @@ export function ProductsCardView({
             key={p.id}
             className={cn(
               "group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-border-strong",
-              isSelected && "ring-2 ring-cta/60 ring-offset-1"
+              isSelected && "ring-2 ring-foreground/20 ring-offset-1"
             )}
           >
             {/* チェックボックス（選択中 or hover で表示） */}
