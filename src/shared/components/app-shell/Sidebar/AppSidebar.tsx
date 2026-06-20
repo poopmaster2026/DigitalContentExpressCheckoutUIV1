@@ -28,19 +28,7 @@ export function AppSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      className="bg-card border-0 rounded-tl-xl"
-      style={
-        {
-          "--sidebar-background": "var(--card)",
-          "--sidebar-foreground": "var(--foreground)",
-          "--sidebar-accent": "var(--surface)",
-          "--sidebar-accent-foreground": "var(--foreground)",
-          "--sidebar-border": "var(--border)",
-          "--sidebar-ring": "var(--ring)",
-          "--sidebar-primary": "var(--primary)",
-          "--sidebar-primary-foreground": "var(--primary-foreground)",
-        } as React.CSSProperties
-      }
+      className="border-0 rounded-tl-xl"
     >
       <SidebarContent className="pt-2">
         <SidebarMenu>

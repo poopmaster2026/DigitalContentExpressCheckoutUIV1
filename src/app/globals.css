@@ -158,6 +158,18 @@
   }
 }
 
+/* shadcn sidebar: ライト背景に上書き（ヘッダーは --sidebar のまま維持） */
+[data-slot="sidebar"] {
+  --color-sidebar: var(--card);
+  --color-sidebar-foreground: var(--muted-foreground);
+  --color-sidebar-accent: var(--surface);
+  --color-sidebar-accent-foreground: var(--foreground);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--ring);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--primary-foreground);
+}
+
 /* sonner: success toast を --success トークンで塗る */
 [data-sonner-toast][data-type="success"] {
   --normal-bg: var(--success);
