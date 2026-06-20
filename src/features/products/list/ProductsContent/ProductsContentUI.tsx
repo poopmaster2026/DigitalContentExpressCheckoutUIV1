@@ -128,11 +128,11 @@ export function ProductsContentUI({
               variant="outline"
               className="h-9 bg-card"
             >
-              <ToggleGroupItem value="table" aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-sidebar-primary">
-                <Table2 className="h-4 w-4" />
-              </ToggleGroupItem>
               <ToggleGroupItem value="grid" aria-label="カード表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-sidebar-primary">
                 <LayoutGrid className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="table" aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-sidebar-primary">
+                <Table2 className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
 
