@@ -48,8 +48,12 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
     }, 800);
   }, []);
 
-  const onSubmit = methods.handleSubmit(() => {
-    runWithProgress(() => toast.success("保存しました"));
+  const onSubmit = methods.handleSubmit((values) => {
+    runWithProgress(() => {
+      // 保存成功後に isDirty をリセットして保存ボタンを再度 disabled に戻す
+      methods.reset(values);
+      toast.success("保存しました");
+    });
   });
 
   const handleDuplicate = () => {

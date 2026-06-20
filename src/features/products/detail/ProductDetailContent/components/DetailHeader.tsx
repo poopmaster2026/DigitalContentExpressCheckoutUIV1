@@ -34,7 +34,7 @@ export function DetailHeader({
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
-  const { control } = useFormContext<ProductFormValues>();
+  const { control, formState: { isDirty } } = useFormContext<ProductFormValues>();
   const name = useWatch({ control, name: "name" });
   const published = useWatch({ control, name: "published" });
   const badge = SALE_TYPE_BADGE[detail.saleType];
@@ -108,7 +108,7 @@ export function DetailHeader({
           <Button
             type="submit"
             size="sm"
-            disabled={pending}
+            disabled={pending || !isDirty}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
             {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
