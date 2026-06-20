@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+
 import { DEFAULT_STORE_ID, STORES } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";

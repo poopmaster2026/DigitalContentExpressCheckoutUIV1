@@ -1,28 +1,35 @@
 "use client";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useAppSearch } from "@/shared/components/app-shell/search-context";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
 import { productListQueryOptions } from "../../../api/queries";
-import { FILTER_ALL } from "../../../types";
+import { FILTER_ALL, VIEW_DEFAULT, type ViewMode } from "../../../types";
 
 // TODO: 検証のため12件に設定。本番では20件以上に戻すこと。
 export const PAGE_SIZE = 12;
 
 export type StatusCounts = { all: number; published: number; draft: number };
 
+/** URL に常に持たせるデフォルトパラメータ。遷移時に欠けていれば補完する。 */
+const DEFAULT_PARAMS: Record<string, string> = {
+  status: FILTER_ALL,
+  saleType: FILTER_ALL,
+  view: VIEW_DEFAULT,
+};
+
 /**
  * 商品一覧のフィルタ / 表示形式 / 選択状態の状態管理。
  *
- * フィルタは URL クエリパラメータで管理し、ブラウザバックで戻れる。
- * フィルタ変更は startTransition 内で URL を更新するため、
- * useSuspenseQuery が新しい queryKey で suspend しても現在の UI を維持したまま
- * isFilterPending が true になる（fetch 完了まで loading 表示）。
- * 検索は 300ms debounce 後に URL + queryKey を更新する。
+ * - status / saleType / q の変更: startFilterTransition 経由 → isFilterPending = true → グリッドがスケルトン表示
+ * - view / page の変更: データ取得不要なため transition なしで即時反映（スケルトンが出ない）
+ * - status / saleType / view は「all」や「grid」でも URL に残す
+ * - q は空のとき URL から削除
+ * - page は 1 のとき URL から削除
  */
 export function useProductsFilter() {
   const router = useRouter();
@@ -32,15 +39,16 @@ export function useProductsFilter() {
 
   const status = searchParams.get("status") ?? FILTER_ALL;
   const saleType = searchParams.get("saleType") ?? FILTER_ALL;
+  const view = (searchParams.get("view") ?? VIEW_DEFAULT) as ViewMode;
   const queryFromUrl = searchParams.get("q") ?? "";
   const pageStr = searchParams.get("page");
   const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
 
-  // searchParams は毎レンダーで変わるため ref で最新値を保持（useEffect / useCallback 内で参照）
+  // searchParams は毎レンダーで変わるため ref で最新値を保持
   const searchParamsRef = useRef(searchParams);
+  // eslint-disable-next-line react-hooks/refs
   searchParamsRef.current = searchParams;
 
-  const [view, setView] = useState<string>("grid");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const { query, setQuery } = useAppSearch();
@@ -55,11 +63,21 @@ export function useProductsFilter() {
   const debouncedQuery = useDebounce(query, 300);
   const isSearchPending = query !== debouncedQuery;
 
-  // マウント直後は URL の q をそのまま保持する（初回 debouncedQuery="" で q を消さないため）
+  // マウント時: 欠けているデフォルトパラメータを URL に補完する。
+  // 以降: debouncedQuery の変化を URL に反映（startFilterTransition でスケルトン表示）。
   const isMountedRef = useRef(false);
   useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true;
+      const current = new URLSearchParams(searchParamsRef.current.toString());
+      let changed = false;
+      for (const [key, defaultVal] of Object.entries(DEFAULT_PARAMS)) {
+        if (!current.has(key)) {
+          current.set(key, defaultVal);
+          changed = true;
+        }
+      }
+      if (changed) router.replace(`${pathname}?${current.toString()}`);
       return;
     }
     startFilterTransition(() => {
@@ -72,25 +90,11 @@ export function useProductsFilter() {
     });
   }, [debouncedQuery, router, pathname]);
 
-  // フィルタ条件を queryKey に含めて fetch。
-  // startTransition 内での URL 更新 → searchParams 変化 → queryKey 変化 → useSuspenseQuery が
-  // 新キーで suspend → React が現在の UI を維持しつつ isFilterPending = true。
-  const { data: products = [] } = useSuspenseQuery(
-    productListQueryOptions({ status, saleType, q: debouncedQuery })
-  );
-
-  // ステータスタブの件数はフィルタなし全件ベース（フィルタに左右されない）
-  const { data: allProducts = [] } = useSuspenseQuery(productListQueryOptions());
+  // allProducts: フィルタなし全件（ステータスタブのバッジ件数用）
+  const { data: allProducts } = useSuspenseQuery(productListQueryOptions());
 
   const filtered =
     debouncedQuery.trim() !== "" || status !== FILTER_ALL || saleType !== FILTER_ALL;
-
-  const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
-  const clampedPage = Math.min(page, pageCount);
-  const paginatedProducts = useMemo(
-    () => products.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE),
-    [products, clampedPage]
-  );
 
   const statusCounts = useMemo<StatusCounts>(
     () => ({
@@ -101,12 +105,12 @@ export function useProductsFilter() {
     [allProducts]
   );
 
-  const updateParam = useCallback(
+  // status / saleType の変更: データ変化あり → startFilterTransition でスケルトン表示
+  const updateFilterParam = useCallback(
     (key: string, value: string) => {
       startFilterTransition(() => {
         const params = new URLSearchParams(searchParamsRef.current.toString());
-        if (value === FILTER_ALL) params.delete(key);
-        else params.set(key, value);
+        params.set(key, value);
         params.delete("page");
         const qs = params.toString();
         router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
@@ -115,15 +119,25 @@ export function useProductsFilter() {
     [router, pathname]
   );
 
+  // view の変更: データ変化なし → transition 不要（スケルトンを出さない）
+  const onViewChange = useCallback(
+    (v: string) => {
+      const params = new URLSearchParams(searchParamsRef.current.toString());
+      params.set("view", v);
+      const qs = params.toString();
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
+    },
+    [router, pathname]
+  );
+
+  // page の変更: クライアントサイドスライス（再フェッチなし）→ transition 不要
   const setPage = useCallback(
     (p: number) => {
-      startFilterTransition(() => {
-        const params = new URLSearchParams(searchParamsRef.current.toString());
-        if (p <= 1) params.delete("page");
-        else params.set("page", String(p));
-        const qs = params.toString();
-        router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
-      });
+      const params = new URLSearchParams(searchParamsRef.current.toString());
+      if (p <= 1) params.delete("page");
+      else params.set("page", String(p));
+      const qs = params.toString();
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
     },
     [router, pathname]
   );
@@ -145,29 +159,34 @@ export function useProductsFilter() {
 
   const clearSelected = useCallback(() => setSelected(new Set()), []);
 
-  const onStatusChange = useCallback((s: string) => updateParam("status", s), [updateParam]);
-  const onSaleTypeChange = useCallback((s: string) => updateParam("saleType", s), [updateParam]);
+  const onStatusChange = useCallback(
+    (s: string) => updateFilterParam("status", s),
+    [updateFilterParam]
+  );
+  const onSaleTypeChange = useCallback(
+    (s: string) => updateFilterParam("saleType", s),
+    [updateFilterParam]
+  );
 
   return {
-    products: paginatedProducts,
     filtered,
     status,
     saleType,
+    view,
+    debouncedQuery,
     statusCounts,
     onStatusChange,
     onSaleTypeChange,
+    onViewChange,
     isFilterPending,
     isSearchPending,
     query,
     setQuery,
-    view,
-    setView,
     selected,
     toggleSelected,
     toggleAll,
     clearSelected,
-    page: clampedPage,
-    pageCount,
+    page,
     setPage,
   };
 }

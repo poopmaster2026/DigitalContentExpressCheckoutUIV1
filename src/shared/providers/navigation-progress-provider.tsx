@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 type Ctx = { start: () => void };
 const NavigationProgressContext = createContext<Ctx>({ start: () => {} });
@@ -38,6 +38,7 @@ export function NavigationProgressProvider({ children }: { children: React.React
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (visible) complete();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);

@@ -9,7 +9,7 @@ import { Label } from "@/shared/components/ui/label";
 import { Switch } from "@/shared/components/ui/switch";
 import { Textarea } from "@/shared/components/ui/textarea";
 
-import type { ProductFormValues } from "../../../types/validation";
+import type { ProductFormValues } from "../types/validation";
 
 type StringField = "name" | "description";
 type BoolField = "isFree" | "published";

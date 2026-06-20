@@ -4,8 +4,6 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, MoreHorizontal } from "lucide-react
 import Image from "next/image";
 import { useState } from "react";
 
-import { useNavigate } from "@/shared/hooks/useNavigate";
-
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -24,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
+import { useNavigate } from "@/shared/hooks/useNavigate";
 
 import { KIND_ICON, SALE_TYPE_BADGE, STATUS_DISPLAY, THUMB_HUE } from "../../../display";
 import { formatPrice, formatRevenue } from "../../../format";
@@ -32,10 +31,8 @@ import type { Product } from "../../../types";
 
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
-const SORT_KEYS = ["name", "price", "sales", "revenue"] as const;
-const SORT_DIRS = ["asc", "desc"] as const;
-type SortKey = (typeof SORT_KEYS)[number];
-type SortDir = (typeof SORT_DIRS)[number];
+type SortKey = "name" | "price" | "sales" | "revenue";
+type SortDir = "asc" | "desc";
 
 function compareProducts(a: Product, b: Product, key: SortKey): number {
   switch (key) {
@@ -90,13 +87,13 @@ function SortButton({
   );
 }
 
-type ProductsTableProps = {
+interface ProductsTableProps {
   products: Product[];
   isFiltered: boolean;
   selected: Set<string>;
   onToggle: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
-};
+}
 
 export function ProductsTable({
   products,

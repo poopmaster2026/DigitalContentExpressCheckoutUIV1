@@ -7,20 +7,20 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 
-import { THUMB_HUE, COVER_ILLUSTRATION } from "../../../display";
-import type { ProductDetail } from "../../../types";
+import { THUMB_HUE, COVER_ILLUSTRATION } from "../display";
+import type { ProductDetail } from "../types";
 import {
   COVER_IMAGE_ACCEPTED_TYPES,
   type ProductFormValues,
-} from "../../../types/validation";
+} from "../types/validation";
 
 import { TextAreaControl, TextFieldControl } from "./FormFields";
 import { SectionCard } from "./SectionCard";
 
-type BasicInfoSectionProps = {
+interface BasicInfoSectionProps {
   detail: Pick<ProductDetail, "thumb" | "saleType">;
   isDescriptionRequired?: boolean;
-};
+}
 
 export function BasicInfoSection({ detail, isDescriptionRequired = false }: BasicInfoSectionProps) {
   const {

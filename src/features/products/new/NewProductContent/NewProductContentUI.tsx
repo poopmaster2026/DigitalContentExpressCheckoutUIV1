@@ -1,26 +1,26 @@
 "use client";
 
-import type { FormEventHandler } from "react";
+import type { FormEvent } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
 import { Progress } from "@/shared/components/ui/progress";
 
-import { BasicInfoSection } from "../../detail/ProductDetailContent/components/BasicInfoSection";
-import { ContentSection } from "../../detail/ProductDetailContent/components/ContentSection";
+import { BasicInfoSection } from "../../components/BasicInfoSection";
+import { ContentSection } from "../../components/ContentSection";
 import type { SaleType } from "../../types";
 
 import { NewPricingSection } from "./components/NewPricingSection";
 import { NewProductHeader } from "./components/NewProductHeader";
 
-type NewProductContentUIProps = {
+interface NewProductContentUIProps {
   saleType: SaleType;
   saving?: boolean;
   progress?: number;
   created: boolean;
   error: string | null;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
-};
+}
 
 export function NewProductContentUI({
   saleType,

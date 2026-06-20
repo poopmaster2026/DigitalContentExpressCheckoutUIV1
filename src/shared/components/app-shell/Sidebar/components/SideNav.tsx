@@ -14,10 +14,10 @@ const NAV_PATHS: Record<string, string> = {
   analytics: "/store/analytics",
 };
 
-type SideNavProps = {
+interface SideNavProps {
   sections: NavSection[];
   selectedKey: string;
-};
+}
 
 export function SideNav({ sections, selectedKey }: SideNavProps) {
   const router = useRouter();

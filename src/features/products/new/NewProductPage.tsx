@@ -13,9 +13,9 @@ function isSaleType(v: string | undefined): v is SaleType {
   return VALID_SALE_TYPES.includes(v ?? "");
 }
 
-type NewProductPageProps = {
+interface NewProductPageProps {
   saleType: string | undefined;
-};
+}
 
 /**
  * 新規商品作成ページの最上位エントリ（route から呼ばれる）。

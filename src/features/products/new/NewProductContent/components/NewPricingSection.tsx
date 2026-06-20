@@ -2,8 +2,8 @@
 
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { NumberFieldControl, SwitchControl } from "../../../detail/ProductDetailContent/components/FormFields";
-import { SectionCard } from "../../../detail/ProductDetailContent/components/SectionCard";
+import { NumberFieldControl, SwitchControl } from "../../../components/FormFields";
+import { SectionCard } from "../../../components/SectionCard";
 import type { ProductFormValues } from "../../../types/validation";
 
 export function NewPricingSection() {
