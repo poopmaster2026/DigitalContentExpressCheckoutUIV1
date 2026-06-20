@@ -141,6 +141,7 @@
   }
   button:not(:disabled),
   [role='button']:not([aria-disabled='true']),
+  [role='menuitem']:not([aria-disabled='true']),
   label[for] {
     cursor: pointer;
   }
