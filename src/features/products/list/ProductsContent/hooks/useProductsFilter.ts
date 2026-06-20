@@ -10,7 +10,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { productListQueryOptions } from "../../../api/queries";
 import { FILTER_ALL } from "../../../types";
 
-export const PAGE_SIZE = 20;
+export const PAGE_SIZE = 12;
 
 export type StatusCounts = { all: number; published: number; draft: number };
 
