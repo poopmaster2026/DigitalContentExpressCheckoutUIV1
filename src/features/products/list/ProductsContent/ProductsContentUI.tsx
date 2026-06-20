@@ -126,7 +126,7 @@ export function ProductsContentUI({
                 placeholder="商品を検索"
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
-                className="h-9 w-56 pl-9 bg-white border-cta focus-visible:ring-cta/30"
+                className="h-9 w-56 pl-9"
               />
             </div>
 
