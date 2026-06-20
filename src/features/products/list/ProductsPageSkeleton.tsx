@@ -4,13 +4,18 @@ const ROWS = Array.from({ length: 8 }, (_, i) => i);
 
 export function ProductsPageSkeleton() {
   return (
-    <div className="flex flex-col gap-4 p-5">
+    <div className="flex flex-col gap-4 px-4 py-5 sm:px-6">
       <div className="flex items-center gap-3">
-        <Skeleton className="h-8 w-24" />
+        <Skeleton className="h-7 w-20" />
         <div className="flex-1" />
-        <Skeleton className="h-9 w-36" />
-        <Skeleton className="h-9 w-36" />
-        <Skeleton className="h-9 w-20" />
+        <Skeleton className="hidden h-9 w-36 sm:block" />
+        <Skeleton className="hidden h-9 w-20 sm:block" />
+        <Skeleton className="h-9 w-24" />
+      </div>
+      <div className="flex items-center gap-4">
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-16" />
       </div>
       <div className="flex flex-col gap-3 mt-2">
         {ROWS.map((i) => (

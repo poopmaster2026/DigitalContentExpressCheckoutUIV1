@@ -1,10 +1,13 @@
 "use client";
 
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useNavigate } from "@/shared/hooks/useNavigate";
+
+import { cn } from "@/lib/utils";
+import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import {
@@ -21,39 +24,91 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { cn } from "@/lib/utils";
-import { SALE_TYPE_BADGE, THUMB_HUE, KIND_ICON } from "../../../display";
+
+import { KIND_ICON, SALE_TYPE_BADGE, STATUS_DISPLAY, THUMB_HUE } from "../../../display";
 import { formatPrice, formatRevenue } from "../../../format";
 import { productMenuItems } from "../../../productMenu";
 import type { Product } from "../../../types";
 
-import { ProductsActionBar } from "./ProductsActionBar";
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
-type SortKey = "name" | "price" | "sales" | "revenue";
-type SortDir = "asc" | "desc";
+const SORT_KEYS = ["name", "price", "sales", "revenue"] as const;
+const SORT_DIRS = ["asc", "desc"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+type SortDir = (typeof SORT_DIRS)[number];
 
 function compareProducts(a: Product, b: Product, key: SortKey): number {
   switch (key) {
-    case "name": return a.name.localeCompare(b.name, "ja");
-    case "price": return (a.price ?? 0) - (b.price ?? 0);
-    case "sales": return a.sales - b.sales;
-    case "revenue": return a.revenue - b.revenue;
-    default: return 0;
+    case "name":
+      return a.name.localeCompare(b.name, "ja");
+    case "price":
+      return (a.price ?? 0) - (b.price ?? 0);
+    case "sales":
+      return a.sales - b.sales;
+    case "revenue":
+      return a.revenue - b.revenue;
+    default:
+      return 0;
   }
+}
+
+/** ソート可能な列ヘッダー。状態は親から受け取り、render 中のコンポーネント生成を避ける。 */
+function SortButton({
+  label,
+  col,
+  align = "left",
+  sortKey,
+  sortDir,
+  onSort,
+}: {
+  label: string;
+  col: SortKey;
+  align?: "left" | "right";
+  sortKey: SortKey;
+  sortDir: SortDir;
+  onSort: (key: SortKey) => void;
+}) {
+  const active = sortKey === col;
+  const Arrow = !active ? ChevronsUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
+  return (
+    <button
+      className={cn(
+        "inline-flex items-center gap-1 rounded-sm py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        align === "right" ? "-mr-1 px-1" : "-ml-1 px-1",
+        active ? "text-foreground" : "text-muted-foreground"
+      )}
+      onClick={() => onSort(col)}
+    >
+      {align === "right" && (
+        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
+      )}
+      {label}
+      {align === "left" && (
+        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
+      )}
+    </button>
+  );
+}
+
+interface ProductsTableProps {
+  products: Product[];
+  isFiltered: boolean;
+  selected: Set<string>;
+  onToggle: (id: string) => void;
+  onToggleAll: (ids: string[]) => void;
 }
 
 export function ProductsTable({
   products,
   isFiltered,
-}: {
-  products: Product[];
-  isFiltered: boolean;
-}) {
+  selected,
+  onToggle,
+  onToggleAll,
+}: ProductsTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>("revenue");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const router = useRouter();
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -69,76 +124,62 @@ export function ProductsTable({
     return sortDir === "desc" ? -cmp : cmp;
   });
 
-  const toggleAll = () => {
-    setSelected((prev) =>
-      prev.size === products.length ? new Set() : new Set(products.map((p) => p.id))
-    );
-  };
-
-  const toggle = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
-
   if (products.length === 0) {
     return <ProductsEmptyState isFiltered={isFiltered} />;
   }
 
-  const SortButton = ({ label, col }: { label: string; col: SortKey }) => (
-    <button
-      className={cn(
-        "-ml-1 inline-flex items-center gap-1 rounded px-1 py-0.5 text-xs font-semibold uppercase tracking-wide transition-colors hover:text-foreground",
-        sortKey === col ? "text-foreground" : "text-foreground/60"
-      )}
-      onClick={() => handleSort(col)}
-    >
-      {label}
-      <ArrowUpDown className={cn("h-3 w-3", sortKey === col ? "opacity-100 text-primary" : "opacity-30")} />
-    </button>
-  );
+  const allSelected =
+    products.length > 0 && products.every((p) => selected.has(p.id));
+
+  const sortProps = { sortKey, sortDir, onSort: handleSort };
 
   return (
-    <div className="relative w-full">
+    <div className="overflow-hidden rounded-lg border bg-card">
       <Table>
-        <TableHeader className="sticky top-0 z-10">
-          <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-2">
-            <TableHead className="w-10">
+        <TableHeader>
+          <TableRow className="border-b bg-surface/60 hover:bg-surface/60">
+            <TableHead className="w-10 pl-4">
               <Checkbox
-                checked={selected.size === products.length && products.length > 0}
-                onCheckedChange={toggleAll}
+                checked={allSelected}
+                onCheckedChange={() => onToggleAll(products.map((p) => p.id))}
                 aria-label="すべて選択"
               />
             </TableHead>
-            <TableHead><SortButton label="商品" col="name" /></TableHead>
-            <TableHead className="text-center text-xs font-semibold uppercase tracking-wide text-foreground/60">
-              販売形態
+            <TableHead className="text-muted-foreground">
+              <SortButton label="商品" col="name" {...sortProps} />
             </TableHead>
-            <TableHead className="text-right"><SortButton label="価格" col="price" /></TableHead>
-            <TableHead className="text-right"><SortButton label="販売数" col="sales" /></TableHead>
-            <TableHead className="text-right"><SortButton label="売上" col="revenue" /></TableHead>
-            <TableHead className="text-xs font-semibold uppercase tracking-wide text-foreground/60">
-              状態
+            <TableHead className="text-muted-foreground">販売形態</TableHead>
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="価格" col="price" align="right" {...sortProps} />
             </TableHead>
-            <TableHead className="w-10 text-right" />
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="販売数" col="sales" align="right" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-right text-muted-foreground">
+              <SortButton label="売上" col="revenue" align="right" {...sortProps} />
+            </TableHead>
+            <TableHead className="text-muted-foreground">状態</TableHead>
+            <TableHead className="w-10 pr-2" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.map((p) => {
             const badge = SALE_TYPE_BADGE[p.saleType];
+            const status = STATUS_DISPLAY[p.status];
             const Icon = KIND_ICON[p.kind];
+            const isSelected = selected.has(p.id);
             return (
               <TableRow
                 key={p.id}
-                className="cursor-pointer"
-                onClick={() => router.push(`/store/products/${p.id}`)}
+                data-state={isSelected ? "selected" : undefined}
+                data-loading={navigatingId === p.id ? "true" : undefined}
+                className="cursor-pointer transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface data-[loading=true]:opacity-60"
+                onClick={() => { setNavigatingId(p.id); navigate(`/store/products/${p.id}`); }}
               >
-                <TableCell onClick={(e) => e.stopPropagation()}>
+                <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
-                    checked={selected.has(p.id)}
-                    onCheckedChange={() => toggle(p.id)}
+                    checked={isSelected}
+                    onCheckedChange={() => onToggle(p.id)}
                     aria-label={`${p.name}を選択`}
                   />
                 </TableCell>
@@ -146,52 +187,56 @@ export function ProductsTable({
                   <div className="flex items-center gap-3">
                     <div
                       className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md",
+                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border",
                         !p.image && THUMB_HUE[p.thumb]
                       )}
                     >
                       {p.image ? (
-                        <Image src={p.image} alt="" width={36} height={36} className="h-full w-full object-cover" />
+                        <Image
+                          src={p.image}
+                          alt=""
+                          width={36}
+                          height={36}
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
-                        <Icon className="h-4 w-4 text-gray-500" />
+                        <Icon className="h-4 w-4 text-muted-foreground" />
                       )}
                     </div>
-                    <span className="font-medium">{p.name}</span>
+                    <span className="font-medium text-foreground">{p.name}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-center">
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-                      badge.className
-                    )}
-                  >
+                <TableCell>
+                  <Badge variant="outline" className={badge.className}>
                     {badge.label}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {formatPrice(p.price)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums text-muted-foreground">
+                  {p.sales}
+                </TableCell>
+                <TableCell className="text-right font-semibold tabular-nums">
+                  {formatRevenue(p)}
+                </TableCell>
+                <TableCell>
+                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <span
+                      className={cn("h-2 w-2 rounded-full", status.dotClassName)}
+                    />
+                    {status.label}
                   </span>
                 </TableCell>
-                <TableCell className="text-right font-medium">{formatPrice(p.price)}</TableCell>
-                <TableCell className="text-right">{p.sales}</TableCell>
-                <TableCell className="text-right font-medium">{formatRevenue(p)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={cn(
-                        "inline-block h-2 w-2 rounded-full",
-                        p.status === "published" ? "bg-green-500" : "bg-gray-400"
-                      )}
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {p.status === "published" ? "公開中" : "下書き"}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell
-                  className="text-right"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <TableCell className="pr-2 text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="操作">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground"
+                        aria-label="操作"
+                      >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -199,8 +244,10 @@ export function ProductsTable({
                       {productMenuItems(p).map((a) => (
                         <DropdownMenuItem
                           key={a.id}
+                          variant={a.id === "delete" ? "destructive" : "default"}
                           onClick={() => {
-                            if (a.id === "edit") router.push(`/store/products/${p.id}`);
+                            if (a.id === "edit")
+                              navigate(`/store/products/${p.id}`);
                           }}
                         >
                           {a.label}
@@ -214,10 +261,6 @@ export function ProductsTable({
           })}
         </TableBody>
       </Table>
-      <ProductsActionBar
-        selectedCount={selected.size}
-        onClear={() => setSelected(new Set())}
-      />
     </div>
   );
 }

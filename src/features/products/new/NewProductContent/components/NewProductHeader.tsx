@@ -4,9 +4,10 @@ import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
-import { cn } from "@/lib/utils";
+
 import { SALE_TYPE_BADGE } from "../../../display";
 import type { SaleType } from "../../../types";
 import type { ProductFormValues } from "../../../types/validation";
@@ -44,7 +45,7 @@ export function NewProductHeader({
           {badge.label}
         </span>
         <div className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+          <span className="inline-block h-2 w-2 rounded-full bg-muted-foreground/40" />
           <span className="text-sm text-muted-foreground">下書き</span>
         </div>
         <div className="flex-1" />
@@ -52,7 +53,7 @@ export function NewProductHeader({
           <Button type="button" variant="outline" size="sm" onClick={onCancel}>
             キャンセル
           </Button>
-          <Button type="submit" size="sm">
+          <Button type="submit" size="sm" className="bg-cta text-cta-foreground hover:bg-cta-hover">
             作成
           </Button>
         </div>

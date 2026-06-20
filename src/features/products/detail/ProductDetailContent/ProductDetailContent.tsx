@@ -16,9 +16,9 @@ import { ProductDetailContentUI } from "./ProductDetailContentUI";
  * FormProvider で配下のセクションへ供給する。Phase 0 では保存は永続化せず完了表示のみ。
  * サーバーで prefetchQuery 済みのキャッシュを useSuspenseQuery で消費する。
  */
-type ProductDetailContentProps = {
+interface ProductDetailContentProps {
   id: string;
-};
+}
 
 export function ProductDetailContent({ id }: ProductDetailContentProps) {
   const router = useRouter();

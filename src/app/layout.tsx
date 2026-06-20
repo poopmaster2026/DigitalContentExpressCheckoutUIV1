@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import { ThemeProvider } from "next-themes";
+import type { ReactNode } from "react";
 
+import { NavigationProgressProvider } from "@/shared/providers/navigation-progress-provider";
 import { QueryProvider } from "@/shared/providers/query-provider";
 
 import "./globals.css";
@@ -20,7 +21,11 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <NavigationProgressProvider>
+              {children}
+            </NavigationProgressProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

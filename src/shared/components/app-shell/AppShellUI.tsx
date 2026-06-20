@@ -1,33 +1,19 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-import { Header } from "./Header/Header";
+import { AppHeader } from "./Header/Header";
 import { Sidebar } from "./Sidebar/Sidebar";
-import { useSidebarContext } from "./sidebar-context";
 
 export function AppShellUI({ children }: { children: ReactNode }) {
-  const { isExpanded } = useSidebarContext();
-
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-sidebar">
-      <Header />
-      {/*
-        サイドバーを absolute 配置にすることでフレックスフローから切り離し、
-        main の width を固定させる。main の margin-left だけが変化するため
-        コンテンツ幅のリフロー（ガタつき）が発生しない。
-      */}
+      {/* 全幅ダークヘッダー — デスクトップ・モバイル両方で表示 */}
+      <AppHeader />
       <div className="relative flex flex-1 overflow-hidden">
         <Sidebar />
-        <main
-          className={cn(
-            "flex flex-1 flex-col overflow-y-auto bg-background [scrollbar-gutter:stable]",
-            "sm:rounded-tl-xl sm:shadow-lg",
-            "sm:transition-[margin-left] sm:duration-200 sm:ease-in-out",
-            isExpanded ? "sm:ml-44" : "sm:ml-14"
-          )}
-        >
+        {/* sm:ml-16 = サイドバー幅 64px 分のオフセット */}
+        <main className="flex flex-1 flex-col overflow-y-auto bg-background [scrollbar-gutter:stable] sm:ml-16 sm:mr-2 sm:mb-2 sm:rounded-xl sm:shadow-xl">
           {children}
         </main>
       </div>

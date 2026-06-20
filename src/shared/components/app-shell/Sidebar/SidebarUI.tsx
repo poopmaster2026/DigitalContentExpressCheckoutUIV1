@@ -1,33 +1,15 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
-import { NAV_ENTRIES } from "./navEntries";
-import { NewProductButton } from "./components/NewProductButton";
-import { PanelToggleButton } from "./components/PanelToggleButton";
 import { SideNav } from "./components/SideNav";
+import { NAV_SECTIONS } from "./navEntries";
 
-type SidebarUIProps = {
-  isExpanded: boolean;
-  onToggle: () => void;
-};
-
-export function SidebarUI({ isExpanded, onToggle }: SidebarUIProps) {
+export function SidebarUI() {
   return (
-    <aside
-      className={cn(
-        // absolute 配置: フレックスフローから切り離してコンテンツ幅を固定
-        "absolute top-0 left-0 bottom-0 z-10",
-        "hidden sm:flex flex-col gap-2 overflow-hidden bg-sidebar px-2 py-4",
-        "transition-[width] duration-200 ease-in-out",
-        isExpanded ? "w-44" : "w-14"
-      )}
-    >
-      <NewProductButton isExpanded={isExpanded} />
-      <div className="flex-1 overflow-hidden">
-        <SideNav entries={NAV_ENTRIES} selectedKey="products" isExpanded={isExpanded} />
+    <aside className="absolute top-0 left-0 bottom-0 z-10 hidden sm:flex w-16 flex-col items-center overflow-hidden bg-sidebar py-3 gap-3">
+      {/* ナビゲーション（アイコン + ラベル縦並び） */}
+      <div className="flex-1 w-full overflow-y-auto overflow-x-hidden">
+        <SideNav sections={NAV_SECTIONS} selectedKey="products" />
       </div>
-      <PanelToggleButton onToggle={onToggle} />
     </aside>
   );
 }

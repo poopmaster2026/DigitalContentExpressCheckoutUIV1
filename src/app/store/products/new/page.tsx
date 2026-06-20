@@ -1,10 +1,5 @@
-import { NewProductPage } from "@/features/products/new/NewProductPage";
+import { redirect } from "next/navigation";
 
-interface Props {
-  searchParams: Promise<{ saleType?: string }>;
-}
-
-export default async function Page({ searchParams }: Props) {
-  const { saleType } = await searchParams;
-  return <NewProductPage saleType={saleType} />;
+export default function Page() {
+  redirect("/store/products/new/digital");
 }

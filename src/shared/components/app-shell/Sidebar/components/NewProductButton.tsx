@@ -10,6 +10,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { SaleType } from "@/features/products/types";
+import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -18,9 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { cn } from "@/lib/utils";
-
-import type { SaleType } from "@/features/products/types";
 
 const CATEGORIES: { id: SaleType; label: string; description: string; icon: typeof FileText }[] = [
   { id: "digital", label: "デジタル", description: "ファイル・PDF・動画", icon: FileText },
@@ -29,7 +28,7 @@ const CATEGORIES: { id: SaleType; label: string; description: string; icon: type
   { id: "subscription", label: "サブスク", description: "近日公開予定", icon: CreditCard },
 ];
 
-export function NewProductButton({ isExpanded }: { isExpanded: boolean }) {
+export function NewProductButton() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<SaleType | null>(null);
@@ -41,24 +40,13 @@ export function NewProductButton({ isExpanded }: { isExpanded: boolean }) {
 
   return (
     <>
-      <Button
+      <button
         onClick={() => setOpen(true)}
-        className={cn(
-          "w-full gap-2 justify-start overflow-hidden",
-          isExpanded ? "" : "px-0 justify-center"
-        )}
         aria-label="新規作成"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-cta text-cta-foreground transition-colors hover:bg-cta-hover"
       >
-        <Plus className="h-4 w-4 shrink-0" />
-        <span
-          className={cn(
-            "truncate transition-[opacity,max-width] duration-200 ease-in-out",
-            isExpanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
-          )}
-        >
-          新規作成
-        </span>
-      </Button>
+        <Plus className="h-5 w-5" />
+      </button>
 
       <Dialog open={open} onOpenChange={handleOpen}>
         <DialogContent className="sm:max-w-md">

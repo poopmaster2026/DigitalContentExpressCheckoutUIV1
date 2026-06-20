@@ -1,40 +1,63 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { cn } from "@/lib/utils";
 
-import type { NavEntry } from "../navEntries";
+import type { NavSection } from "../navEntries";
 
-type SideNavProps = {
-  entries: NavEntry[];
-  selectedKey: string;
-  isExpanded: boolean;
+const NAV_PATHS: Record<string, string> = {
+  home: "/store",
+  products: "/store/products",
+  orders: "/store/orders",
+  customers: "/store/customers",
+  analytics: "/store/analytics",
 };
 
-export function SideNav({ entries, selectedKey, isExpanded }: SideNavProps) {
+type SideNavProps = {
+  sections: NavSection[];
+  selectedKey: string;
+};
+
+export function SideNav({ sections, selectedKey }: SideNavProps) {
+  const router = useRouter();
+  const entries = sections.flatMap((s) => s.entries);
+
   return (
-    <nav aria-label="メインナビゲーション" className="flex flex-col gap-1">
+    <nav aria-label="メインナビゲーション" className="flex flex-col gap-0.5 px-1.5 py-1">
       {entries.map((entry) => {
         const isSelected = entry.key === selectedKey;
         return (
           <button
             key={entry.key}
             aria-current={isSelected ? "page" : undefined}
+            title={entry.label}
+            onClick={() => router.push(NAV_PATHS[entry.key] ?? "/")}
             className={cn(
-              "flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors",
-              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              isSelected
-                ? "bg-sidebar-accent text-sidebar-primary font-semibold"
-                : "text-sidebar-foreground/70"
+              "flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors",
+              "hover:bg-sidebar-accent",
+              isSelected && "bg-sidebar-accent"
             )}
           >
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-              <entry.icon className="h-4 w-4" />
-            </span>
-            {/* DOM に常時置き opacity で表示切替 → アイコン位置の突発ジャンプを防ぐ */}
             <span
               className={cn(
-                "overflow-hidden truncate transition-[opacity,max-width] duration-200 ease-in-out",
-                isExpanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
+                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+                isSelected && "bg-sidebar-foreground/10"
+              )}
+            >
+              <entry.icon
+                className={cn(
+                  "h-5 w-5",
+                  isSelected ? "text-sidebar-primary" : "text-sidebar-foreground"
+                )}
+              />
+            </span>
+            <span
+              className={cn(
+                "w-full truncate text-center text-[10px] leading-snug",
+                isSelected
+                  ? "font-semibold text-sidebar-primary"
+                  : "text-sidebar-foreground"
               )}
             >
               {entry.label}

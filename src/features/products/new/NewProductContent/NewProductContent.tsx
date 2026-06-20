@@ -9,9 +9,9 @@ import type { SaleType } from "../../types";
 
 import { NewProductContentUI } from "./NewProductContentUI";
 
-type NewProductContentProps = {
+interface NewProductContentProps {
   saleType: SaleType;
-};
+}
 
 /** 新規商品作成フォームの Container。状態は react-hook-form に集約。 */
 export function NewProductContent({ saleType }: NewProductContentProps) {

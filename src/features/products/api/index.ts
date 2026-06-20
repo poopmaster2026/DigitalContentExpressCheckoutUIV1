@@ -4,12 +4,25 @@
 // import { apiClient } from "@/lib/axios";
 
 import { PRODUCTS, getProductDetail } from "../mock";
+import { FILTER_ALL } from "../types";
 import type { Product, ProductDetail } from "../types";
 
+export interface ProductListParams {
+  status?: string;
+  saleType?: string;
+  q?: string;
+}
+
 // TODO: BE ができたら実 API に差し替える
-export async function fetchProducts(): Promise<Product[]> {
-  return PRODUCTS;
-  // return apiClient.get<Product[]>("/products").then((res) => res.data);
+export async function fetchProducts(params: ProductListParams = {}): Promise<Product[]> {
+  const { status, saleType, q } = params;
+  return PRODUCTS.filter((p) => {
+    const okStatus = !status || status === FILTER_ALL || p.status === status;
+    const okSaleType = !saleType || saleType === FILTER_ALL || p.saleType === saleType;
+    const okQ = !q || p.name.includes(q);
+    return okStatus && okSaleType && okQ;
+  });
+  // return apiClient.get<Product[]>("/products", { params }).then((res) => res.data);
 }
 
 // TODO: BE ができたら実 API に差し替える

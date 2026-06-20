@@ -2,6 +2,7 @@
 
 import { Bell } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -12,11 +13,11 @@ import {
 import { ScrollArea } from "@/shared/components/ui/scroll-area";
 import { NOTIFICATIONS } from "@/shared/mock/notifications";
 
-export function Notifications() {
+export function Notifications({ buttonClassName }: { buttonClassName?: string }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative h-9 w-9" aria-label={`${NOTIFICATIONS.length}件の通知`}>
+        <Button variant="ghost" size="icon" className={cn("relative h-9 w-9", buttonClassName)} aria-label={`${NOTIFICATIONS.length}件の通知`}>
           <Bell className="h-4 w-4" />
           {NOTIFICATIONS.length > 0 && (
             <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">

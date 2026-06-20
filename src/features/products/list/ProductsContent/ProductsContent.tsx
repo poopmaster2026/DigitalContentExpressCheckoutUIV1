@@ -10,10 +10,19 @@ export function ProductsContent() {
     filtered,
     status,
     saleType,
+    statusCounts,
     onStatusChange,
     onSaleTypeChange,
+    isFilterPending,
+    isSearchPending,
+    query,
+    setQuery,
     view,
     setView,
+    selected,
+    toggleSelected,
+    toggleAll,
+    clearSelected,
   } = useProductsFilter();
 
   return (
@@ -24,8 +33,17 @@ export function ProductsContent() {
       onStatusChange={onStatusChange}
       saleTypeFilter={saleType}
       onSaleTypeChange={onSaleTypeChange}
+      statusCounts={statusCounts}
+      isFilterPending={isFilterPending}
+      isSearchPending={isSearchPending}
+      query={query}
+      onQueryChange={setQuery}
       view={view}
       onViewChange={setView}
+      selected={selected}
+      onToggleSelected={toggleSelected}
+      onToggleAll={toggleAll}
+      onClearSelected={clearSelected}
     />
   );
 }

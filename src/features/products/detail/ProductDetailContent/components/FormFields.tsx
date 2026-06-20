@@ -3,11 +3,11 @@
 import type { ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
+import { cn } from "@/lib/utils";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Switch } from "@/shared/components/ui/switch";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { cn } from "@/lib/utils";
 
 import type { ProductFormValues } from "../../../types/validation";
 
