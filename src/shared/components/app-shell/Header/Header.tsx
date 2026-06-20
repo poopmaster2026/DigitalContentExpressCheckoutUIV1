@@ -29,12 +29,12 @@ export function AppHeader() {
           <Image
             src="/setlink-logo.png"
             alt=""
-            width={25}
-            height={25}
+            width={28}
+            height={28}
             className="shrink-0"
             priority
           />
-          <span className="text-xl font-bold text-sidebar-primary">SetLink</span>
+          <span className="text-2xl font-bold text-sidebar-primary">SetLink</span>
         </div>
       </div>
 

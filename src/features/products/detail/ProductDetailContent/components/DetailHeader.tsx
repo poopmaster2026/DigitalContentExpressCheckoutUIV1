@@ -25,11 +25,13 @@ import type { ProductFormValues } from "../../../types/validation";
 
 export function DetailHeader({
   detail,
-  saving,
+  pending,
+  onDuplicate,
   onDelete,
 }: {
   detail: ProductDetail;
-  saving: boolean;
+  pending: boolean;
+  onDuplicate: () => void;
   onDelete: () => void;
 }) {
   const { control } = useFormContext<ProductFormValues>();
@@ -85,7 +87,9 @@ export function DetailHeader({
             type="button"
             variant="outline"
             size="sm"
+            disabled={pending}
             className="hidden sm:inline-flex"
+            onClick={onDuplicate}
           >
             <Copy className="h-4 w-4" />
             複製
@@ -94,6 +98,7 @@ export function DetailHeader({
             type="button"
             variant="ghost"
             size="sm"
+            disabled={pending}
             className="hidden text-destructive hover:bg-destructive/10 hover:text-destructive sm:inline-flex"
             onClick={() => setConfirmOpen(true)}
           >
@@ -103,11 +108,11 @@ export function DetailHeader({
           <Button
             type="submit"
             size="sm"
-            disabled={saving}
+            disabled={pending}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
-            {saving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
-            <span className={saving ? "invisible" : undefined}>保存</span>
+            {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={pending ? "invisible" : undefined}>保存</span>
           </Button>
         </div>
       </div>

@@ -110,6 +110,14 @@ export function ProductsTable({
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // TODO: デジタル以外（course / booking / subscription）の詳細画面は未実装。
+  //       実装時はここのガードを外して各 saleType 向けページに振り分ける。
+  const goToDetail = (p: Product) => {
+    if (p.saleType !== "digital") return;
+    setNavigatingId(p.id);
+    navigate(`/store/products/${p.id}`);
+  };
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -173,8 +181,9 @@ export function ProductsTable({
                 key={p.id}
                 data-state={isSelected ? "selected" : undefined}
                 data-loading={navigatingId === p.id ? "true" : undefined}
-                className="cursor-pointer transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface data-[loading=true]:opacity-60"
-                onClick={() => { setNavigatingId(p.id); navigate(`/store/products/${p.id}`); }}
+                className="transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface data-[loading=true]:opacity-60 data-[clickable=true]:cursor-pointer"
+                data-clickable={p.saleType === "digital" ? "true" : undefined}
+                onClick={() => goToDetail(p)}
               >
                 <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
@@ -246,8 +255,7 @@ export function ProductsTable({
                           key={a.id}
                           variant={a.id === "delete" ? "destructive" : "default"}
                           onClick={() => {
-                            if (a.id === "edit")
-                              navigate(`/store/products/${p.id}`);
+                            if (a.id === "edit") goToDetail(p);
                           }}
                         >
                           {a.label}

@@ -61,7 +61,7 @@ export function NavigationProgressProvider({ children }: { children: React.React
       {visible && (
         <div
           aria-hidden
-          className="pointer-events-none fixed top-0 left-0 z-[200] h-0.5 bg-primary transition-[width] duration-300 ease-out"
+          className="pointer-events-none fixed top-0 left-0 z-[200] h-[3px] bg-cta transition-[width] duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       )}

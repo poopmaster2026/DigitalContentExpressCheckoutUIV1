@@ -120,7 +120,44 @@
 
 ---
 
-## 5. やらないこと（AI感を狩る）
+## 5. 時間のかかる操作の UX パターン
+
+**保存・削除・複製など、APIコールを伴う操作**には一貫して以下のパターンを使う。
+
+### プログレスバー + トースト
+
+```
+ボタン押下
+  → ① 画面最上部に fixed プログレスバー（h-[3px] bg-cta）が 0→85% を 600ms で伸びる
+  → ② 800ms 後に 100% へジャンプ
+  → ③ 200ms 後にバー消去 + sonner トーストで結果通知
+```
+
+- プログレスバーは `<Progress>` shadcn コンポーネントを `fixed inset-x-0 top-0 z-50` で配置。
+- 操作中はすべてのアクションボタンを `disabled` にし、保存ボタンのみ `<Loader2 animate-spin>` を表示。
+- 実 API に差し替えるときは `runWithProgress()` の setTimeout を `useMutation` の `onSuccess/onError` に置き換える。
+
+### ページ遷移プログレス
+
+`<a>` クリック・`router.push()` 両方に対応済み（`NavigationProgressProvider` + `useNavigate` フック）。
+
+- 色: `bg-cta`（青）、高さ: `h-[3px]`
+- `useNavigate()` を使えば自動でプログレスが起動する。`useRouter().push()` を直接呼ぶと発火しないので注意。
+
+### トースト仕様
+
+| 種別 | 背景 | テキスト | アイコン |
+|---|---|---|---|
+| success | `--success`（緑 `#16a34a`） | `--success-foreground`（白） | CircleCheck（白） |
+| error | `--popover`（白） | `--popover-foreground` | OctagonX（赤） |
+| warning | `--popover`（白） | `--popover-foreground` | TriangleAlert（amber） |
+
+- 位置: `bottom-center`
+- 定義: `src/shared/components/ui/sonner.tsx` / `src/app/globals.css`（CSS セレクタ上書き）
+
+---
+
+## 6. やらないこと（AI感を狩る）
 
 - ❌ **青CTAの乱用**：`bg-cta` はボタン（新規作成など）のみ。タブ下線・バッジ・アイコン・リンクへの青の拡張は一つ一つ判断する。
 - ❌ システムフォント／`-apple-system` のままの和文。
@@ -131,14 +168,14 @@
 
 ---
 
-## 6. 参照の借り方（Mobbin等）
+## 7. 参照の借り方（Mobbin等）
 
 - 借りていいのは**骨格だけ**（情報設計・階層・要素配置・操作順序）。
 - **色・書体・角丸・影・装飾は借りない**。常に本書のルールと `globals.css` のトークンで上書きする。
 
 ---
 
-## 7. 確定済み / 残タスク
+## 8. 確定済み / 残タスク
 
 確定済み：
 - [x] **CTA色** … `--cta`（青 `#2563eb`）。ボタン専用。
