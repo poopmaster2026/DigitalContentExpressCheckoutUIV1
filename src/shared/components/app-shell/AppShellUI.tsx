@@ -13,16 +13,17 @@ import { AppSidebar } from "./Sidebar/AppSidebar";
 export function AppShellUI({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-sidebar">
-      {/* 全幅ダークヘッダー */}
+      {/* 全幅ダークヘッダー h-14 = 3.5rem */}
       <AppHeader />
-      {/* サイドバー + メインコンテンツ */}
+
+      {/* サイドバー + メインコンテンツ（ヘッダー下） */}
       <SidebarProvider
         defaultOpen={true}
-        style={{ flex: 1, minHeight: 0 } as React.CSSProperties}
-        className="overflow-hidden"
+        className="flex-1 overflow-hidden"
+        style={{ "--sidebar-top": "3.5rem" } as React.CSSProperties}
       >
         <AppSidebar />
-        <SidebarInset className="overflow-y-auto rounded-tr-xl bg-background [scrollbar-gutter:stable]">
+        <SidebarInset className="overflow-y-auto rounded-tl-none rounded-tr-xl bg-background [scrollbar-gutter:stable]">
           {children}
         </SidebarInset>
       </SidebarProvider>
