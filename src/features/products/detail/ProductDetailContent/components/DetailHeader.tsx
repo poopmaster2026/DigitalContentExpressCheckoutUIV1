@@ -104,9 +104,10 @@ export function DetailHeader({
             type="submit"
             size="sm"
             disabled={saving}
-            className="bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
+            className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "保存"}
+            {saving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={saving ? "invisible" : undefined}>保存</span>
           </Button>
         </div>
       </div>
