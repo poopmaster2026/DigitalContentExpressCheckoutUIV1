@@ -10,6 +10,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { productListQueryOptions } from "../../../api/queries";
 import { FILTER_ALL } from "../../../types";
 
+// TODO: 検証のため12件に設定。本番では20件以上に戻すこと。
 export const PAGE_SIZE = 12;
 
 export type StatusCounts = { all: number; published: number; draft: number };
