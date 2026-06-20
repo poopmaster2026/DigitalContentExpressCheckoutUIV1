@@ -10,7 +10,7 @@ import { AppSidebar } from "./Sidebar/AppSidebar";
 export function AppShellUI({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider
-      defaultOpen={false}
+      defaultOpen={true}
       style={
         {
           "--sidebar-width": "13rem",
