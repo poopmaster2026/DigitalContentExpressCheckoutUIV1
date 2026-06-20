@@ -10,7 +10,7 @@ import { useDebounce } from "@/shared/hooks/useDebounce";
 import { productListQueryOptions } from "../../../api/queries";
 import { FILTER_ALL } from "../../../types";
 
-export interface StatusCounts { all: number; published: number; draft: number }
+export type StatusCounts = { all: number; published: number; draft: number };
 
 /**
  * 商品一覧のフィルタ / 表示形式 / 選択状態の状態管理。
@@ -118,14 +118,17 @@ export function useProductsFilter() {
 
   const clearSelected = useCallback(() => setSelected(new Set()), []);
 
+  const onStatusChange = useCallback((s: string) => updateParam("status", s), [updateParam]);
+  const onSaleTypeChange = useCallback((s: string) => updateParam("saleType", s), [updateParam]);
+
   return {
     products,
     filtered,
     status,
     saleType,
     statusCounts,
-    onStatusChange: (s: string) => updateParam("status", s),
-    onSaleTypeChange: (s: string) => updateParam("saleType", s),
+    onStatusChange,
+    onSaleTypeChange,
     isFilterPending,
     isSearchPending,
     query,

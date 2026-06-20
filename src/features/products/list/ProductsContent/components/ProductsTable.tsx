@@ -90,13 +90,13 @@ function SortButton({
   );
 }
 
-interface ProductsTableProps {
+type ProductsTableProps = {
   products: Product[];
   isFiltered: boolean;
   selected: Set<string>;
   onToggle: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
-}
+};
 
 export function ProductsTable({
   products,

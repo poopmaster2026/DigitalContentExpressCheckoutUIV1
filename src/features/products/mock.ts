@@ -220,12 +220,12 @@ export const PRODUCTS: Product[] = [
  * 詳細/編集画面用の追加データ（説明・カテゴリ・slug・配信ファイル）。
  * 一覧の Product に上乗せして ProductDetail を組み立てる。実 API 接続時に api + queries へ差し替える。
  */
-interface DetailExtra {
+type DetailExtra = {
   description: string;
   category: string;
   slug: string;
   contentFile?: ProductFile;
-}
+};
 
 const DETAIL_EXTRAS: Record<string, DetailExtra> = {
   "1": {

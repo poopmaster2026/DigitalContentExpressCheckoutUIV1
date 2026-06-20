@@ -11,14 +11,14 @@ import { ContentSection } from "./components/ContentSection";
 import { DetailHeader } from "./components/DetailHeader";
 import { PricingSection } from "./components/PricingSection";
 
-interface ProductDetailContentUIProps {
+type ProductDetailContentUIProps = {
   detail: ProductDetail;
   pending: boolean;
   progress: number;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onDuplicate: () => void;
   onDelete: () => void;
-}
+};
 
 export function ProductDetailContentUI({
   detail,
@@ -34,7 +34,7 @@ export function ProductDetailContentUI({
       {pending && (
         <Progress
           value={progress}
-          className="fixed inset-x-0 top-0 z-50 h-[3px] rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
+          className="fixed inset-x-0 top-0 z-50 h-0.5 rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
         />
       )}
 

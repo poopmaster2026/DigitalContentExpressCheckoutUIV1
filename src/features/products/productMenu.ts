@@ -1,9 +1,9 @@
 import type { Product } from "./types";
 
-interface ProductMenuItem {
+type ProductMenuItem = {
   id: string;
   label: string;
-}
+};
 
 /** 商品の操作メニュー項目（カード=ActionMenu / テーブル=Menu 共用）。 */
 export function productMenuItems(p: Product): ProductMenuItem[] {

@@ -97,7 +97,6 @@ export function NumberFieldControl({
   isRequired?: boolean;
   isDisabled?: boolean;
   minValue?: number;
-  formatOptions?: Intl.NumberFormatOptions;
 }) {
   const { control } = useFormContext<ProductFormValues>();
   return (

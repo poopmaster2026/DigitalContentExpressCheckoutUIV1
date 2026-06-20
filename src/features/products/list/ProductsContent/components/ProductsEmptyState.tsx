@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/shared/components/ui/button";
 
-interface ProductsEmptyStateProps {
+type ProductsEmptyStateProps = {
   isFiltered: boolean;
-}
+};
 
 export function ProductsEmptyState({ isFiltered }: ProductsEmptyStateProps) {
   const router = useRouter();

@@ -17,10 +17,10 @@ import {
 import { TextAreaControl, TextFieldControl } from "./FormFields";
 import { SectionCard } from "./SectionCard";
 
-interface BasicInfoSectionProps {
+type BasicInfoSectionProps = {
   detail: Pick<ProductDetail, "thumb" | "saleType">;
   isDescriptionRequired?: boolean;
-}
+};
 
 export function BasicInfoSection({ detail, isDescriptionRequired = false }: BasicInfoSectionProps) {
   const {

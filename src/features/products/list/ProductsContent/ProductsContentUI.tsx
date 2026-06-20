@@ -28,7 +28,7 @@ import { ProductsCardView } from "./components/ProductsCardView";
 import { ProductsTable } from "./components/ProductsTable";
 import type { StatusCounts } from "./hooks/useProductsFilter";
 
-interface ProductsContentUIProps {
+type ProductsContentUIProps = {
   products: Product[];
   isFiltered: boolean;
   statusFilter: string;
@@ -46,7 +46,7 @@ interface ProductsContentUIProps {
   onToggleSelected: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
   onClearSelected: () => void;
-}
+};
 
 const STATUS_TABS = [
   { value: FILTER_ALL, label: "すべて", countKey: "all" },

@@ -16,10 +16,10 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { Separator } from "@/shared/components/ui/separator";
 
-interface ProductsActionBarProps {
+type ProductsActionBarProps = {
   selectedCount: number;
   onClear: () => void;
-}
+};
 
 export function ProductsActionBar({ selectedCount, onClear }: ProductsActionBarProps) {
   if (selectedCount === 0) return null;

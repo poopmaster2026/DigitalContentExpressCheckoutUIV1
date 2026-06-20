@@ -40,7 +40,7 @@ export const SALE_TYPES = [
 ] as const;
 export type SaleType = (typeof SALE_TYPES)[number];
 
-export interface Product {
+export type Product = {
   id: string;
   name: string;
   /** null = 無料 */
@@ -53,20 +53,20 @@ export interface Product {
   saleType: SaleType;
   /** 商品サムネイル画像 URL。無い場合は二調色イラストのプレースホルダー表示。 */
   image?: string;
-}
+};
 
 /** デジタル商品の配信ファイル。 */
-export interface ProductFile {
+export type ProductFile = {
   name: string;
   /** バイト数（表示は整形する）。 */
   size: number;
-}
+};
 
 /**
  * 詳細/編集画面で扱う商品。一覧用の Product に編集対象の追加項目を足したもの。
  * 一覧（Product）は最小構成のため、詳細はこの型で読み込む。
  */
-export interface ProductDetail extends Product {
+export type ProductDetail = Product & {
   /** 商品説明。 */
   description: string;
   /** カテゴリ。 */
@@ -75,4 +75,4 @@ export interface ProductDetail extends Product {
   slug: string;
   /** デジタル配信ファイル（saleType === "digital" のとき）。 */
   contentFile?: ProductFile;
-}
+};

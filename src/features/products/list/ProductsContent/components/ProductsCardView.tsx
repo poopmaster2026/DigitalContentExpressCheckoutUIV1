@@ -27,12 +27,12 @@ import type { Product } from "../../../types";
 
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
-interface ProductsCardViewProps {
+type ProductsCardViewProps = {
   products: Product[];
   isFiltered: boolean;
   selected: Set<string>;
   onToggle: (id: string) => void;
-}
+};
 
 export function ProductsCardView({
   products,

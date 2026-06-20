@@ -168,36 +168,37 @@ function DigitalContent({ isRequired = false }: { isRequired?: boolean }) {
   );
 }
 
+const NON_DIGITAL_CONFIG: Record<
+  Exclude<SaleType, "digital">,
+  { icon: ReactNode; lead: string; items: string[]; cta: string }
+> = {
+  course: {
+    icon: <ListChecks className="h-7 w-7 text-muted-foreground" />,
+    lead: "セクションとレッスンを追加してカリキュラムを組み立てます。",
+    items: ["レッスン動画・資料", "公開順とドリップ配信", "進捗トラッキング"],
+    cta: "レッスンを追加",
+  },
+  booking: {
+    icon: <CalendarClock className="h-7 w-7 text-muted-foreground" />,
+    lead: "提供する日時と所要時間を設定して予約を受け付けます。",
+    items: ["受付可能な曜日・時間帯", "1 枠の所要時間", "オンライン / 対面の指定"],
+    cta: "予約枠を追加",
+  },
+  subscription: {
+    icon: <CreditCard className="h-7 w-7 text-muted-foreground" />,
+    lead: "継続課金のプランと、会員に届ける内容を設定します。",
+    items: ["請求サイクル（月額 / 年額）", "プランに含む特典", "無料トライアル期間"],
+    cta: "プランを追加",
+  },
+};
+
 /** course / booking / subscription: 構成のみ提示（フォーム接続は実 API 連携時）。 */
 function NonDigitalContent({
   saleType,
 }: {
   saleType: Exclude<SaleType, "digital">;
 }) {
-  const config: Record<
-    Exclude<SaleType, "digital">,
-    { icon: ReactNode; lead: string; items: string[]; cta: string }
-  > = {
-    course: {
-      icon: <ListChecks className="h-7 w-7 text-muted-foreground" />,
-      lead: "セクションとレッスンを追加してカリキュラムを組み立てます。",
-      items: ["レッスン動画・資料", "公開順とドリップ配信", "進捗トラッキング"],
-      cta: "レッスンを追加",
-    },
-    booking: {
-      icon: <CalendarClock className="h-7 w-7 text-muted-foreground" />,
-      lead: "提供する日時と所要時間を設定して予約を受け付けます。",
-      items: ["受付可能な曜日・時間帯", "1 枠の所要時間", "オンライン / 対面の指定"],
-      cta: "予約枠を追加",
-    },
-    subscription: {
-      icon: <CreditCard className="h-7 w-7 text-muted-foreground" />,
-      lead: "継続課金のプランと、会員に届ける内容を設定します。",
-      items: ["請求サイクル（月額 / 年額）", "プランに含む特典", "無料トライアル期間"],
-      cta: "プランを追加",
-    },
-  };
-  const c = config[saleType];
+  const c = NON_DIGITAL_CONFIG[saleType];
 
   return (
     <div className="flex flex-col gap-4 rounded-lg border border-dashed border-border bg-surface px-5 py-6">

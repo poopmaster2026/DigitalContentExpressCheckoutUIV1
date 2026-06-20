@@ -19,7 +19,6 @@ export function NewPricingSection() {
           isRequired={!isFree}
           isDisabled={isFree}
           minValue={0}
-          formatOptions={{ style: "currency", currency: "JPY", maximumFractionDigits: 0 }}
         />
         <div className="flex flex-col gap-4">
           <SwitchControl name="isFree">無料で提供する</SwitchControl>

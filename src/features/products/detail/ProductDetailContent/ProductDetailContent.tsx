@@ -12,9 +12,9 @@ import { productDetailQueryOptions } from "../../api/queries";
 import { useProductDetailForm } from "./hooks/useProductDetailForm";
 import { ProductDetailContentUI } from "./ProductDetailContentUI";
 
-interface ProductDetailContentProps {
+type ProductDetailContentProps = {
   id: string;
-}
+};
 
 export function ProductDetailContent({ id }: ProductDetailContentProps) {
   const router = useRouter();

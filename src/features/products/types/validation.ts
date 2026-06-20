@@ -66,18 +66,18 @@ const contentFileSchema = z
  * 商品フォームの Zod スキーマ。
  *
  * 必須フィールド:
- *   - name       商品名（1文字以上）
- *   - price      有料商品（isFree=false）の場合は1円以上
+ *   - name        商品名（1文字以上）
+ *   - description 説明（1文字以上）
+ *   - price       有料商品（isFree=false）の場合は1円以上
  *
  * 任意フィールド:
- *   - description  説明
  *   - coverImage   カバー画像（null のときはデフォルトイラストを表示）
  *   - contentFile  配信ファイル（null 許容。将来 saleType=digital で必須化）
  */
 export const productFormSchema = z
   .object({
     name: z.string().trim().min(1, "商品名を入力してください"),
-    description: z.string().trim(),
+    description: z.string().trim().min(1, "説明を入力してください"),
     isFree: z.boolean(),
     price: z
       .number()
@@ -99,15 +99,8 @@ export const productFormSchema = z
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;
 
-/** 新規デジタル商品作成用スキーマ。説明・コンテンツファイルも必須。 */
+/** 新規デジタル商品作成用スキーマ。コンテンツファイルも必須。 */
 export const newDigitalProductFormSchema = productFormSchema.superRefine((data, ctx) => {
-  if (!data.description.trim()) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "説明を入力してください",
-      path: ["description"],
-    });
-  }
   if (!data.contentFile) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,

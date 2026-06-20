@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-interface Ctx { start: () => void; }
+type Ctx = { start: () => void };
 const NavigationProgressContext = createContext<Ctx>({ start: () => {} });
 export const useNavigationStart = () => useContext(NavigationProgressContext).start;
 
@@ -61,7 +61,7 @@ export function NavigationProgressProvider({ children }: { children: React.React
       {visible && (
         <div
           aria-hidden
-          className="pointer-events-none fixed top-0 left-0 z-[200] h-[3px] bg-cta transition-[width] duration-300 ease-out"
+          className="pointer-events-none fixed top-0 left-0 z-[200] h-0.5 bg-cta transition-[width] duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       )}

@@ -12,7 +12,7 @@ import type { SaleType } from "../../types";
 import { NewPricingSection } from "./components/NewPricingSection";
 import { NewProductHeader } from "./components/NewProductHeader";
 
-interface NewProductContentUIProps {
+type NewProductContentUIProps = {
   saleType: SaleType;
   saving?: boolean;
   progress?: number;
@@ -20,7 +20,7 @@ interface NewProductContentUIProps {
   error: string | null;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onCancel: () => void;
-}
+};
 
 export function NewProductContentUI({
   saleType,
@@ -38,7 +38,7 @@ export function NewProductContentUI({
       {saving && (
         <Progress
           value={progress}
-          className="fixed inset-x-0 top-0 z-50 h-[3px] rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
+          className="fixed inset-x-0 top-0 z-50 h-0.5 rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
         />
       )}
 
@@ -47,7 +47,7 @@ export function NewProductContentUI({
       <div className="mx-auto w-full max-w-3xl px-6 py-8">
         <div className="flex flex-col gap-6">
           {created && (
-            <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
+            <Alert className="border-success/25 bg-success/10 text-success">
               <AlertTitle>商品を作成しました</AlertTitle>
               <AlertDescription>新しい商品を作成しました（モック）。</AlertDescription>
             </Alert>

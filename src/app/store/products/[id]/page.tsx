@@ -4,9 +4,9 @@ import { productDetailQueryOptions } from "@/features/products/api/queries";
 import { ProductDetailPage } from "@/features/products/detail/ProductDetailPage";
 import { getQueryClient } from "@/lib/query-client";
 
-interface Props {
+type Props = {
   params: Promise<{ id: string }>;
-}
+};
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
