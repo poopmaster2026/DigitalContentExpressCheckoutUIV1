@@ -13,7 +13,7 @@ export function AppShellUI({ children }: { children: ReactNode }) {
       <div className="relative flex flex-1 overflow-hidden bg-sidebar">
         <Sidebar />
         {/* sm:ml-16 = サイドバー幅 64px 分のオフセット */}
-        <main className="flex flex-1 flex-col overflow-y-auto bg-background [scrollbar-gutter:stable] sm:ml-16 sm:rounded-tl-xl">
+        <main className="flex flex-1 flex-col overflow-y-auto bg-background [scrollbar-gutter:stable] sm:ml-16 sm:rounded-tr-xl">
           {children}
         </main>
       </div>
