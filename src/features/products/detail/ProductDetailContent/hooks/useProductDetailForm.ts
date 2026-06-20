@@ -32,6 +32,6 @@ export function useNewProductForm() {
       coverImage: null,
       contentFile: null,
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 }

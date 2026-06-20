@@ -127,10 +127,7 @@ export function DetailHeader({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>キャンセル</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={onDelete}
-            >
+            <AlertDialogAction variant="destructive" onClick={onDelete}>
               削除
             </AlertDialogAction>
           </AlertDialogFooter>

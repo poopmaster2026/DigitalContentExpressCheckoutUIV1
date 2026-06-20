@@ -2,7 +2,7 @@
 
 import { ChevronLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
@@ -21,14 +21,13 @@ export function NewProductHeader({
   saving?: boolean;
   onCancel: () => void;
 }) {
-  const { control } = useFormContext<ProductFormValues>();
-  const name = useWatch({ control, name: "name" });
+  const { formState: { isValid } } = useFormContext<ProductFormValues>();
   const badge = SALE_TYPE_BADGE[saleType];
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-3">
-        {/* 左: 戻る + 商品名 + 状態 */}
+        {/* 左: 戻る + badge + 状態 */}
         <div className="flex min-w-0 items-center gap-3">
           <Button
             asChild
@@ -40,21 +39,16 @@ export function NewProductHeader({
               <ChevronLeft />
             </Link>
           </Button>
-          <div className="flex min-w-0 items-center gap-2.5">
-            <h1 className="truncate text-lg font-semibold text-foreground">
-              {name || "(無題の商品)"}
-            </h1>
-            <Badge
-              variant="outline"
-              className={cn("hidden shrink-0 sm:inline-flex", badge.className)}
-            >
-              {badge.label}
-            </Badge>
-            <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
-              <span className="text-sm text-muted-foreground">下書き</span>
-            </span>
-          </div>
+          <Badge
+            variant="outline"
+            className={cn("shrink-0", badge.className)}
+          >
+            {badge.label}
+          </Badge>
+          <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+            <span className="text-sm text-muted-foreground">下書き</span>
+          </span>
         </div>
 
         <div className="flex-1" />
@@ -72,7 +66,7 @@ export function NewProductHeader({
           <Button
             type="submit"
             size="sm"
-            disabled={saving}
+            disabled={saving || !isValid}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
             {saving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
