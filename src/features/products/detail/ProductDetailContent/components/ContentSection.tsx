@@ -53,13 +53,19 @@ const CONTENT_COPY: Record<SaleType, { title: string; description: string }> = {
   },
 };
 
-export function ContentSection({ saleType }: { saleType: SaleType }) {
+export function ContentSection({ saleType, isRequired = false }: { saleType: SaleType; isRequired?: boolean }) {
   const copy = CONTENT_COPY[saleType];
 
   return (
-    <SectionCard title={copy.title} description={copy.description}>
+    <SectionCard
+      title={copy.title}
+      description={copy.description}
+      aside={isRequired && saleType === "digital"
+        ? <span className="text-sm text-destructive">*</span>
+        : undefined}
+    >
       {saleType === "digital" ? (
-        <DigitalContent />
+        <DigitalContent isRequired={isRequired} />
       ) : (
         <NonDigitalContent saleType={saleType} />
       )}
@@ -68,7 +74,7 @@ export function ContentSection({ saleType }: { saleType: SaleType }) {
 }
 
 /** digital: ファイルアップロード（実フォーム接続あり）。 */
-function DigitalContent() {
+function DigitalContent({ isRequired = false }: { isRequired?: boolean }) {
   const {
     control,
     setValue,

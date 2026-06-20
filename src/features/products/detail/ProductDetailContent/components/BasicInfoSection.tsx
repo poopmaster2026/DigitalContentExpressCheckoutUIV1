@@ -19,9 +19,10 @@ import { SectionCard } from "./SectionCard";
 
 interface BasicInfoSectionProps {
   detail: Pick<ProductDetail, "thumb" | "saleType">;
+  isDescriptionRequired?: boolean;
 }
 
-export function BasicInfoSection({ detail }: BasicInfoSectionProps) {
+export function BasicInfoSection({ detail, isDescriptionRequired = false }: BasicInfoSectionProps) {
   const {
     setValue,
     trigger,
@@ -45,7 +46,7 @@ export function BasicInfoSection({ detail }: BasicInfoSectionProps) {
     <SectionCard title="基本情報">
       <div className="flex flex-col gap-5">
         <TextFieldControl name="name" label="商品名" isRequired />
-        <TextAreaControl name="description" label="説明" />
+        <TextAreaControl name="description" label="説明" isRequired={isDescriptionRequired} />
 
         <div className="flex flex-col gap-2">
           <Label>カバー画像</Label>

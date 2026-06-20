@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 
 import type { ProductDetail } from "../../../types";
 import {
+  newDigitalProductFormSchema,
   productFormSchema,
   toFormValues,
   type ProductFormValues,
@@ -22,7 +23,7 @@ export function useProductDetailForm(detail: ProductDetail) {
 
 export function useNewProductForm() {
   return useForm<ProductFormValues>({
-    resolver: zodResolver(productFormSchema),
+    resolver: zodResolver(newDigitalProductFormSchema),
     defaultValues: {
       name: "",
       description: "",

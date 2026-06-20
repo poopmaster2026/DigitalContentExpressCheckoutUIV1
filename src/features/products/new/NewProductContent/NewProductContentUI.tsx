@@ -58,8 +58,8 @@ export function NewProductContentUI({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          <BasicInfoSection detail={shellDetail} />
-          {saleType === "digital" && <ContentSection saleType={saleType} />}
+          <BasicInfoSection detail={shellDetail} isDescriptionRequired />
+          {saleType === "digital" && <ContentSection saleType={saleType} isRequired />}
           <NewPricingSection />
         </div>
       </div>

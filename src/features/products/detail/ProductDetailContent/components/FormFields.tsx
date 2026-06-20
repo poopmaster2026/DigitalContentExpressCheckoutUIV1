@@ -52,9 +52,11 @@ export function TextFieldControl({
 export function TextAreaControl({
   name,
   label,
+  isRequired,
 }: {
   name: StringField;
   label: string;
+  isRequired?: boolean;
 }) {
   const { control } = useFormContext<ProductFormValues>();
   return (
@@ -63,7 +65,10 @@ export function TextAreaControl({
       name={name}
       render={({ field, fieldState }) => (
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>{label}</Label>
+          <Label htmlFor={name}>
+            {label}
+            {isRequired && <span className="ml-1 text-destructive">*</span>}
+          </Label>
           <Textarea
             id={name}
             {...field}
