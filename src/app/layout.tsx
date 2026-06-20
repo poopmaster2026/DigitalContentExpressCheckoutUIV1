@@ -11,6 +11,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "SetLink",
   description: "Digital Content Store",
+  icons: { icon: "/setlink-logo.png" },
 };
 
 export default function RootLayout({
