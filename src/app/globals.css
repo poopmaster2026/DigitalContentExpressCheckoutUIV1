@@ -151,3 +151,10 @@
     margin: 0;
   }
 }
+
+/* sonner: success toast を --success トークンで塗る */
+[data-sonner-toast][data-type="success"] {
+  --normal-bg: var(--success);
+  --normal-text: var(--success-foreground);
+  --normal-border: var(--success);
+}
