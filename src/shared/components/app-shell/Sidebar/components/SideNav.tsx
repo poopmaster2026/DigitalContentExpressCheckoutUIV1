@@ -39,20 +39,20 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
               "flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors",
               isDisabled
                 ? "cursor-not-allowed opacity-40"
-                : "hover:bg-sidebar-accent",
-              isSelected && "bg-sidebar-accent"
+                : "hover:bg-surface",
+              isSelected && "bg-surface"
             )}
           >
             <span
               className={cn(
                 "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-                isSelected && "bg-sidebar-foreground/10"
+                isSelected && "bg-foreground/8"
               )}
             >
               <entry.icon
                 className={cn(
                   "h-5 w-5",
-                  isSelected ? "text-sidebar-primary" : "text-sidebar-foreground"
+                  isSelected ? "text-foreground" : "text-muted-foreground"
                 )}
               />
             </span>
@@ -60,8 +60,8 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
               className={cn(
                 "w-full truncate text-center text-[10px] leading-snug",
                 isSelected
-                  ? "font-semibold text-sidebar-primary"
-                  : "text-sidebar-foreground"
+                  ? "font-semibold text-foreground"
+                  : "text-muted-foreground"
               )}
             >
               {entry.label}
