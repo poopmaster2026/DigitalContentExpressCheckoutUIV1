@@ -25,7 +25,7 @@ export default function RootLayout({
           <QueryProvider>
             <NavigationProgressProvider>
               {children}
-              <Toaster position="bottom-right" />
+              <Toaster position="bottom-center" />
             </NavigationProgressProvider>
           </QueryProvider>
         </ThemeProvider>
