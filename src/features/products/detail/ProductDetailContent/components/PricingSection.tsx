@@ -5,11 +5,13 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { Label } from "@/shared/components/ui/label";
 import { Separator } from "@/shared/components/ui/separator";
 
+import {
+  NumberFieldControl,
+  SwitchControl,
+} from "../../../components/FormFields";
+import { SectionCard } from "../../../components/SectionCard";
 import type { ProductDetail } from "../../../types";
 import type { ProductFormValues } from "../../../types/validation";
-
-import { NumberFieldControl, SwitchControl } from "./FormFields";
-import { SectionCard } from "./SectionCard";
 
 export function PricingSection({ detail }: { detail: ProductDetail }) {
   const { control } = useFormContext<ProductFormValues>();

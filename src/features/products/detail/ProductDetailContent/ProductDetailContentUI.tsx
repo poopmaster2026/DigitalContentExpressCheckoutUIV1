@@ -1,25 +1,25 @@
 "use client";
 
-import type { FormEventHandler } from "react";
+import type { FormEvent } from "react";
 
 import { Progress } from "@/shared/components/ui/progress";
 
+import { BasicInfoSection } from "../../components/BasicInfoSection";
+import { ContentSection } from "../../components/ContentSection";
 import type { ProductDetail } from "../../types";
 
-import { BasicInfoSection } from "./components/BasicInfoSection";
-import { ContentSection } from "./components/ContentSection";
 import { DetailHeader } from "./components/DetailHeader";
 import { PricingSection } from "./components/PricingSection";
 
-type ProductDetailContentUIProps = {
+interface ProductDetailContentUIProps {
   detail: ProductDetail;
   pending: boolean;
   isSaving: boolean;
   progress: number;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onDuplicate: () => void;
   onDelete: () => void;
-};
+}
 
 export function ProductDetailContentUI({
   detail,
@@ -32,7 +32,6 @@ export function ProductDetailContentUI({
 }: ProductDetailContentUIProps) {
   return (
     <form className="flex flex-1 flex-col" onSubmit={onSubmit} noValidate>
-      {/* 時間のかかる操作中のプログレスバー — 画面最上部 fixed */}
       {pending && (
         <Progress
           value={progress}

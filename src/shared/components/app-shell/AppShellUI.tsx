@@ -2,32 +2,21 @@
 
 import type { ReactNode } from "react";
 
-import { SidebarInset, SidebarProvider } from "@/shared/components/ui/sidebar";
-
 import { AppHeader } from "./Header/Header";
-import { AppSidebar } from "./Sidebar/AppSidebar";
+import { Sidebar } from "./Sidebar/Sidebar";
 
 export function AppShellUI({ children }: { children: ReactNode }) {
   return (
-    <SidebarProvider
-      defaultOpen={true}
-      style={
-        {
-          "--sidebar-width": "13rem",
-          "--sidebar-width-icon": "3.5rem",
-        } as React.CSSProperties
-      }
-      className="flex h-screen min-h-0 flex-col overflow-hidden bg-sidebar"
-    >
-      {/* 全幅ダークヘッダー — SidebarTrigger が useSidebar() を使うためここに配置 */}
+    <div className="flex h-screen flex-col overflow-hidden bg-sidebar">
+      {/* 全幅ダークヘッダー — デスクトップ・モバイル両方で表示 */}
       <AppHeader />
-
-      <div className="flex min-h-0 flex-1 overflow-hidden bg-sidebar">
-        <AppSidebar />
-        <SidebarInset className="overflow-y-auto rounded-tl-xl rounded-tr-xl [scrollbar-gutter:stable]">
+      <div className="relative flex flex-1 overflow-hidden bg-sidebar">
+        <Sidebar />
+        {/* sm:ml-16 = サイドバー幅 64px 分のオフセット */}
+        <main className="flex flex-1 flex-col overflow-y-auto bg-background [scrollbar-gutter:stable] sm:ml-16 sm:rounded-tr-xl">
           {children}
-        </SidebarInset>
+        </main>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }

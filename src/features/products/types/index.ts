@@ -40,6 +40,11 @@ export const SALE_TYPES = [
 ] as const;
 export type SaleType = (typeof SALE_TYPES)[number];
 
+/** 商品一覧の表示形式。URL クエリパラメータ "view" の取りうる値。 */
+export const VIEW_MODES = ["grid", "table"] as const;
+export type ViewMode = (typeof VIEW_MODES)[number];
+export const VIEW_DEFAULT: ViewMode = "grid";
+
 export type Product = {
   id: string;
   name: string;

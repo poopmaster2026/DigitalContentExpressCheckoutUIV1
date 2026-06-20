@@ -16,6 +16,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
+
 import { STORES, DEFAULT_STORE_ID } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";

@@ -10,9 +10,9 @@ import { ProductDetailPageSkeleton } from "./ProductDetailPageSkeleton";
  * page.tsx で prefetch + HydrationBoundary 済みのキャッシュがあれば suspend しない。
  * キャッシュが stale / 未取得の場合に Skeleton が機能する。
  */
-type ProductDetailPageProps = {
+interface ProductDetailPageProps {
   id: string;
-};
+}
 
 export function ProductDetailPage({ id }: ProductDetailPageProps) {
   return (

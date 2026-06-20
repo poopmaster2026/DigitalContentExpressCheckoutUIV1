@@ -4,17 +4,16 @@ import { cn } from "@/lib/utils";
 
 /**
  * 編集フォームの 1 セクション = 1 枚の白カード。
- * 階層は「カード（面）＋見出し（序列）＋余白」で立て、影は sm まで・色は出さない。
  * 各セクション（基本情報 / コンテンツ / 価格・公開）で共通の器にする。
  */
-type SectionCardProps = {
+interface SectionCardProps {
   title: string;
   description?: string;
   /** 見出し右の補助要素（バッジなど）。 */
   aside?: ReactNode;
   children: ReactNode;
   className?: string;
-};
+}
 
 export function SectionCard({
   title,

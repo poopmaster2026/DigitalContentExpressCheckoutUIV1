@@ -5,6 +5,7 @@ import { HelpCircle } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 import { Notifications } from "../../Header/components/Notifications";
+
 import { SidebarAccount } from "./SidebarAccount";
 
 const ICON_CLS =

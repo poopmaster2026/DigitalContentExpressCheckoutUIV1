@@ -15,12 +15,12 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 
-import type { SaleType } from "../../../types";
+import type { SaleType } from "../types";
 import {
   BLOCKED_CONTENT_MIME_TYPES,
   CONTENT_FILE_MAX_SIZE,
   type ProductFormValues,
-} from "../../../types/validation";
+} from "../types/validation";
 
 import { SectionCard } from "./SectionCard";
 
@@ -33,7 +33,6 @@ function formatFileSize(bytes: number): string {
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
-/** 販売形態ごとの見出し・説明。カードの器は共通、中身だけ差し替える。 */
 const CONTENT_COPY: Record<SaleType, { title: string; description: string }> = {
   digital: {
     title: "コンテンツ",
@@ -65,7 +64,7 @@ export function ContentSection({ saleType, isRequired = false }: { saleType: Sal
         : undefined}
     >
       {saleType === "digital" ? (
-        <DigitalContent isRequired={isRequired} />
+        <DigitalContent />
       ) : (
         <NonDigitalContent saleType={saleType} />
       )}
@@ -73,8 +72,7 @@ export function ContentSection({ saleType, isRequired = false }: { saleType: Sal
   );
 }
 
-/** digital: ファイルアップロード（実フォーム接続あり）。 */
-function DigitalContent({ isRequired = false }: { isRequired?: boolean }) {
+function DigitalContent() {
   const {
     control,
     setValue,
@@ -192,7 +190,6 @@ const NON_DIGITAL_CONFIG: Record<
   },
 };
 
-/** course / booking / subscription: 構成のみ提示（フォーム接続は実 API 連携時）。 */
 function NonDigitalContent({
   saleType,
 }: {

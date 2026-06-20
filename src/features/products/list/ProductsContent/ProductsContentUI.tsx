@@ -2,6 +2,7 @@
 
 import { LayoutGrid, Loader2, Plus, Search, Table2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
@@ -20,67 +21,48 @@ import {
 } from "@/shared/components/ui/toggle-group";
 
 import { SALE_TYPE_BADGE } from "../../display";
-import { FILTER_ALL } from "../../types";
-import type { Product } from "../../types";
-
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/shared/components/ui/pagination";
+import { FILTER_ALL, PRODUCT_STATUSES, VIEW_MODES, type ViewMode } from "../../types";
 
 import { ProductsActionBar } from "./components/ProductsActionBar";
-import { ProductsCardView } from "./components/ProductsCardView";
-import { ProductsTable } from "./components/ProductsTable";
+import { ProductsGridSection } from "./components/ProductsGridSection";
+import { ProductsGridSkeleton } from "./components/ProductsGridSkeleton";
 import type { StatusCounts } from "./hooks/useProductsFilter";
 
-type ProductsContentUIProps = {
-  products: Product[];
+interface ProductsContentUIProps {
   isFiltered: boolean;
   statusFilter: string;
   onStatusChange: (key: string) => void;
   saleTypeFilter: string;
   onSaleTypeChange: (key: string) => void;
+  debouncedQuery: string;
   statusCounts: StatusCounts;
   isFilterPending: boolean;
   isSearchPending: boolean;
   query: string;
   onQueryChange: (value: string) => void;
-  view: string;
-  onViewChange: (key: string) => void;
+  view: ViewMode;
+  onViewChange: (key: ViewMode) => void;
   selected: Set<string>;
   onToggleSelected: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
   onClearSelected: () => void;
   page: number;
-  pageCount: number;
   onPageChange: (page: number) => void;
-};
+}
 
 const STATUS_TABS = [
   { value: FILTER_ALL, label: "すべて", countKey: "all" },
-  { value: "published", label: "公開中", countKey: "published" },
-  { value: "draft", label: "下書き", countKey: "draft" },
+  { value: PRODUCT_STATUSES[0], label: "公開中", countKey: "published" },
+  { value: PRODUCT_STATUSES[1], label: "下書き", countKey: "draft" },
 ] as const satisfies ReadonlyArray<{ value: string; label: string; countKey: keyof StatusCounts }>;
 
-function buildPageRange(current: number, total: number): (number | "ellipsis")[] {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  if (current <= 4) return [1, 2, 3, 4, 5, "ellipsis", total];
-  if (current >= total - 3) return [1, "ellipsis", total - 4, total - 3, total - 2, total - 1, total];
-  return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", total];
-}
-
 export function ProductsContentUI({
-  products,
   isFiltered,
   statusFilter,
   onStatusChange,
   saleTypeFilter,
   onSaleTypeChange,
+  debouncedQuery,
   statusCounts,
   isFilterPending,
   isSearchPending,
@@ -93,7 +75,6 @@ export function ProductsContentUI({
   onToggleAll,
   onClearSelected,
   page,
-  pageCount,
   onPageChange,
 }: ProductsContentUIProps) {
   const router = useRouter();
@@ -147,14 +128,14 @@ export function ProductsContentUI({
             <ToggleGroup
               type="single"
               value={view}
-              onValueChange={(v) => v && onViewChange(v)}
+              onValueChange={(v) => v && onViewChange(v as ViewMode)}
               variant="outline"
               className="h-9 bg-card"
             >
-              <ToggleGroupItem value="grid" aria-label="カード表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
+              <ToggleGroupItem value={VIEW_MODES[0]} aria-label="カード表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
                 <LayoutGrid className="h-4 w-4" />
               </ToggleGroupItem>
-              <ToggleGroupItem value="table" aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
+              <ToggleGroupItem value={VIEW_MODES[1]} aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
                 <Table2 className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
@@ -192,15 +173,15 @@ export function ProductsContentUI({
         {/* ステータスタブ（横スクロール可） */}
         <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           <Tabs value={statusFilter} onValueChange={onStatusChange}>
-            <TabsList className="h-auto gap-1 bg-transparent p-0">
+            <TabsList variant="line" className="h-auto bg-transparent p-0">
               {STATUS_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
                   className={cn(
-                    "relative rounded-none border-0 border-b-2 border-transparent bg-transparent px-1 pb-2.5 pt-0 text-sm font-medium text-muted-foreground shadow-none",
-                    "data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none",
-                    "hover:text-foreground focus-visible:ring-0"
+                    "h-auto rounded-none border-0 bg-transparent px-2 pb-2.5 pt-0 text-sm font-medium text-muted-foreground shadow-none after:!bottom-0",
+                    "data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none",
+                    "hover:text-foreground focus-visible:ring-0 focus-visible:outline-none"
                   )}
                 >
                   {tab.label}
@@ -221,79 +202,22 @@ export function ProductsContentUI({
         </div>
       </header>
 
-      {/* ── コンテンツ ── */}
-      <div className={cn("px-4 py-5 sm:px-6 transition-opacity duration-150", isFilterPending && "pointer-events-none opacity-50")}>
-        {/* デスクトップ: view 切替。モバイル: カード固定 */}
-        <div className="sm:hidden">
-          <ProductsCardView
-            products={products}
-            isFiltered={isFiltered}
-            selected={selected}
-            onToggle={onToggleSelected}
-          />
-        </div>
-        <div className="hidden sm:block">
-          {view === "grid" ? (
-            <ProductsCardView
-              products={products}
-              isFiltered={isFiltered}
-              selected={selected}
-              onToggle={onToggleSelected}
-            />
-          ) : (
-            <ProductsTable
-              products={products}
-              isFiltered={isFiltered}
-              selected={selected}
-              onToggle={onToggleSelected}
-              onToggleAll={onToggleAll}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* ページネーション */}
-      {pageCount > 1 && (
-        <div className="border-t px-4 py-4 sm:px-6">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); if (page > 1) onPageChange(page - 1); }}
-                  aria-disabled={page <= 1}
-                  className={page <= 1 ? "pointer-events-none opacity-50" : undefined}
-                />
-              </PaginationItem>
-              {buildPageRange(page, pageCount).map((p, i) =>
-                p === "ellipsis" ? (
-                  <PaginationItem key={`ellipsis-${i}`}>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                ) : (
-                  <PaginationItem key={p}>
-                    <PaginationLink
-                      href="#"
-                      isActive={p === page}
-                      onClick={(e) => { e.preventDefault(); onPageChange(p); }}
-                    >
-                      {p}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
-              )}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => { e.preventDefault(); if (page < pageCount) onPageChange(page + 1); }}
-                  aria-disabled={page >= pageCount}
-                  className={page >= pageCount ? "pointer-events-none opacity-50" : undefined}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+      {/* ── グリッド（独立した Suspense でここだけローディング） ── */}
+      <Suspense fallback={<ProductsGridSkeleton />}>
+        <ProductsGridSection
+          status={statusFilter}
+          saleType={saleTypeFilter}
+          debouncedQuery={debouncedQuery}
+          page={page}
+          view={view}
+          selected={selected}
+          onToggle={onToggleSelected}
+          onToggleAll={onToggleAll}
+          onPageChange={onPageChange}
+          isFiltered={isFiltered}
+          isFilterPending={isFilterPending}
+        />
+      </Suspense>
 
       {/* 一括操作バー（view 横断で 1 箇所） */}
       <ProductsActionBar

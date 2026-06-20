@@ -1,7 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { fetchProductDetail, fetchProducts, type ProductListParams } from ".";
 import { FILTER_ALL } from "../types";
+
+import { fetchProductDetail, fetchProducts, type ProductListParams } from ".";
 
 // ---- Queries (reads) ----
 
