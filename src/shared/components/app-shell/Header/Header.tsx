@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
+import { SidebarTrigger } from "@/shared/components/ui/sidebar";
 
 import { useAppSearch } from "../search-context";
 import { SidebarAccount } from "../Sidebar/components/SidebarAccount";
@@ -38,11 +39,12 @@ export function AppHeader() {
         "border-b border-sidebar-border px-3"
       )}
     >
-      {/* 左: モバイル=ハンバーガー、デスクトップ=ロゴ+名前 */}
+      {/* 左: トグル + ロゴ + ブランド名 */}
       <div className="flex shrink-0 items-center gap-2">
         <div className="sm:hidden">
           <MobileNavButton />
         </div>
+        <SidebarTrigger className="hidden text-sidebar-foreground hover:bg-white/10 hover:text-sidebar-primary sm:flex" />
         <div className="flex items-center gap-2">
           <Image
             src="/setlink-logo.png"
