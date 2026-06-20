@@ -14,6 +14,7 @@ import { PricingSection } from "./components/PricingSection";
 type ProductDetailContentUIProps = {
   detail: ProductDetail;
   pending: boolean;
+  isSaving: boolean;
   progress: number;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onDuplicate: () => void;
@@ -23,6 +24,7 @@ type ProductDetailContentUIProps = {
 export function ProductDetailContentUI({
   detail,
   pending,
+  isSaving,
   progress,
   onSubmit,
   onDuplicate,
@@ -41,6 +43,7 @@ export function ProductDetailContentUI({
       <DetailHeader
         detail={detail}
         pending={pending}
+        isSaving={isSaving}
         onDuplicate={onDuplicate}
         onDelete={onDelete}
       />

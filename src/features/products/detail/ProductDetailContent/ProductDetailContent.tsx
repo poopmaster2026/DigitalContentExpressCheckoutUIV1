@@ -24,11 +24,13 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
 
   const methods = useProductDetailForm(detail);
   const [pending, setPending] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [progress, setProgress] = useState(0);
 
   // 時間のかかる操作に共通のプログレス演出。BE 接続後は useMutation のコールバックに置き換える。
-  const runWithProgress = useCallback((onComplete: () => void) => {
+  const runWithProgress = useCallback((onComplete: () => void, saving = false) => {
     setPending(true);
+    if (saving) setIsSaving(true);
     setProgress(0);
     const start = performance.now();
     const tick = () => {
@@ -42,6 +44,7 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
       setProgress(100);
       setTimeout(() => {
         setPending(false);
+        setIsSaving(false);
         setProgress(0);
         onComplete();
       }, 200);
@@ -53,7 +56,7 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
       // 保存成功後に isDirty をリセットして保存ボタンを再度 disabled に戻す
       methods.reset(values);
       toast.success("保存しました");
-    });
+    }, true);
   });
 
   const handleDuplicate = () => {
@@ -72,6 +75,7 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
       <ProductDetailContentUI
         detail={detail}
         pending={pending}
+        isSaving={isSaving}
         progress={progress}
         onSubmit={onSubmit}
         onDuplicate={handleDuplicate}

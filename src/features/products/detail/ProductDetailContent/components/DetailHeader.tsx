@@ -25,11 +25,13 @@ import type { ProductDetail } from "../../../types";
 export function DetailHeader({
   detail,
   pending,
+  isSaving,
   onDuplicate,
   onDelete,
 }: {
   detail: ProductDetail;
   pending: boolean;
+  isSaving: boolean;
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
@@ -108,8 +110,8 @@ export function DetailHeader({
             disabled={pending || !isDirty}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
-            {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
-            <span className={pending ? "invisible" : undefined}>保存</span>
+            {isSaving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={isSaving ? "invisible" : undefined}>保存</span>
           </Button>
         </div>
       </div>

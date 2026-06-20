@@ -80,7 +80,7 @@ export const productFormSchema = z
     description: z.string().trim().min(1, "説明を入力してください"),
     isFree: z.boolean(),
     price: z
-      .number()
+      .number({ error: "価格を入力してください" })
       .int("価格は整数で入力してください")
       .min(0, "価格は0以上で入力してください"),
     published: z.boolean(),
