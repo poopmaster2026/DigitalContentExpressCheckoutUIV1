@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { FormProvider } from "react-hook-form";
+import { toast } from "sonner";
 
 import { useNewProductForm } from "../../detail/ProductDetailContent/hooks/useProductDetailForm";
+import { useProgressAnimation } from "../../detail/ProductDetailContent/hooks/useProgressAnimation";
 import type { SaleType } from "../../types";
 
 import { NewProductContentUI } from "./NewProductContentUI";
@@ -17,22 +18,23 @@ interface NewProductContentProps {
 export function NewProductContent({ saleType }: NewProductContentProps) {
   const router = useRouter();
   const methods = useNewProductForm();
-  const [created, setCreated] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { pending, isSaving, progress, runWithProgress } = useProgressAnimation();
 
   const onSubmit = methods.handleSubmit(() => {
-    // TODO: BE ができたら useMutation に差し替え、onError で setError を呼ぶ
-    setCreated(true);
-    setError(null);
-    setTimeout(() => router.push("/store/products"), 1200);
+    // TODO: BE ができたら useMutation に差し替え、onError で toast.error を呼ぶ
+    runWithProgress(() => {
+      toast.success("商品を作成しました");
+      router.push("/store/products");
+    }, true);
   });
 
   return (
     <FormProvider {...methods}>
       <NewProductContentUI
         saleType={saleType}
-        created={created}
-        error={error}
+        pending={pending}
+        isSaving={isSaving}
+        progress={progress}
         onSubmit={onSubmit}
         onCancel={() => router.push("/store/products")}
       />
