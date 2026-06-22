@@ -2,7 +2,6 @@
 
 import type { FormEvent } from "react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
 import { Progress } from "@/shared/components/ui/progress";
 
 import { BasicInfoSection } from "../../components/BasicInfoSection";
@@ -14,20 +13,18 @@ import { NewProductHeader } from "./components/NewProductHeader";
 
 interface NewProductContentUIProps {
   saleType: SaleType;
-  saving?: boolean;
+  pending?: boolean;
+  isSaving?: boolean;
   progress?: number;
-  created: boolean;
-  error: string | null;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 }
 
 export function NewProductContentUI({
   saleType,
-  saving = false,
+  pending = false,
+  isSaving = false,
   progress = 0,
-  created,
-  error,
   onSubmit,
   onCancel,
 }: NewProductContentUIProps) {
@@ -35,29 +32,17 @@ export function NewProductContentUI({
 
   return (
     <form className="flex flex-1 flex-col" onSubmit={onSubmit} noValidate>
-      {saving && (
+      {pending && (
         <Progress
           value={progress}
           className="fixed inset-x-0 top-0 z-50 h-0.5 rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
         />
       )}
 
-      <NewProductHeader saleType={saleType} saving={saving} onCancel={onCancel} />
+      <NewProductHeader saleType={saleType} pending={pending} isSaving={isSaving} onCancel={onCancel} />
 
       <div className="mx-auto w-full max-w-3xl px-6 py-8">
         <div className="flex flex-col gap-6">
-          {created && (
-            <Alert className="border-success/25 bg-success/10 text-success">
-              <AlertTitle>商品を作成しました</AlertTitle>
-              <AlertDescription>新しい商品を作成しました（モック）。</AlertDescription>
-            </Alert>
-          )}
-          {error && (
-            <Alert variant="destructive">
-              <AlertTitle>作成に失敗しました</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
           <BasicInfoSection detail={shellDetail} isDescriptionRequired />
           {saleType === "digital" && <ContentSection saleType={saleType} isRequired />}
           <NewPricingSection />
