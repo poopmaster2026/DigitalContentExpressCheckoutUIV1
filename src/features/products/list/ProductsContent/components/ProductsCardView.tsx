@@ -54,7 +54,7 @@ export function ProductsCardView({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {products.map((p) => {
         const badge = SALE_TYPE_BADGE[p.saleType];
         const status = STATUS_DISPLAY[p.status];
@@ -126,7 +126,7 @@ export function ProductsCardView({
             >
               <div
                 className={cn(
-                  "relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden border-b",
+                  "relative flex aspect-square w-full items-center justify-center overflow-hidden border-b",
                   !p.image && THUMB_HUE[p.thumb]
                 )}
               >
@@ -146,7 +146,7 @@ export function ProductsCardView({
 
             {/* カード情報 */}
             <button
-              className="flex flex-1 flex-col gap-2 p-3 text-left"
+              className="flex flex-1 flex-col gap-1.5 p-2 text-left"
               onClick={() => goToDetail(p)}
             >
               <div className="flex items-start justify-between gap-2">
@@ -158,7 +158,7 @@ export function ProductsCardView({
                 </span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="mt-auto flex items-center gap-2">
                 <Badge variant="outline" className={badge.className}>
                   {badge.label}
                 </Badge>
@@ -171,7 +171,7 @@ export function ProductsCardView({
               </div>
 
               {/* 売上 / 販売数（常時表示） */}
-              <div className="mt-auto flex items-center justify-between border-t pt-2 text-xs">
+              <div className="flex items-center justify-between border-t pt-2 text-xs">
                 <span className="text-muted-foreground">
                   販売{" "}
                   <span className="font-medium text-foreground tabular-nums">
