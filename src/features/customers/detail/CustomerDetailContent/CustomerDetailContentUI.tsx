@@ -74,6 +74,15 @@ export function CustomerDetailContentUI({
   subscription,
 }: CustomerDetailContentUIProps) {
   const sortedOrders = [...orders].sort((a, b) => b.orderedAt.localeCompare(a.orderedAt));
+  const avgAmount = customer.purchases > 0 ? Math.round(customer.spent / customer.purchases) : 0;
+  const lastOrderDate = sortedOrders[0]?.orderedAt ?? null;
+
+  const stats = [
+    { label: "購入数", value: String(customer.purchases) },
+    { label: "累計金額", value: formatSpent(customer.spent) },
+    { label: "平均単価", value: customer.purchases > 0 ? formatSpent(avgAmount) : "—" },
+    { label: "最終注文日", value: lastOrderDate ? formatSince(lastOrderDate) : "—" },
+  ];
 
   return (
     <div className="flex flex-1 flex-col">
@@ -82,55 +91,47 @@ export function CustomerDetailContentUI({
       <div className="mx-auto w-full max-w-3xl px-6 py-8">
         <div className="flex flex-col gap-6">
 
-          {/* ── 顧客情報 ── */}
-          <SectionCard title="顧客情報">
-            <div className="px-6 py-5">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
-                {/* アバター + 基本情報 */}
-                <div className="flex items-center gap-4">
-                  <div className={cn(
-                    "flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold",
-                    avatarColor(customer.name)
-                  )}>
-                    {customer.name.slice(0, 1)}
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <p className="text-lg font-semibold text-foreground">{customer.name}</p>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Mail className="h-3.5 w-3.5 shrink-0" />
-                      <span>{customer.email}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-                      <span>登録日: {formatSince(customer.since)}</span>
-                    </div>
-                    {customer.phone && (
-                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <Phone className="h-3.5 w-3.5 shrink-0" />
-                        <span>{customer.phone}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 区切り線（デスクトップ縦・モバイル横）*/}
-                <div className="hidden h-auto w-px bg-border sm:block" />
-                <div className="block h-px bg-border sm:hidden" />
-
-                {/* 統計 */}
-                <div className="flex gap-8 sm:flex-col sm:gap-4">
-                  <div>
-                    <p className="text-xs text-muted-foreground">購入数</p>
-                    <p className="text-2xl font-bold tabular-nums">{customer.purchases}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">累計金額</p>
-                    <p className="text-2xl font-bold tabular-nums">{formatSpent(customer.spent)}</p>
-                  </div>
+          {/* ── ヒーローカード（顧客情報 + 統計バー）── */}
+          <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            {/* プロフィール行 */}
+            <div className="flex items-center gap-5 px-6 py-5">
+              <div className={cn(
+                "flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-xl font-bold",
+                avatarColor(customer.name)
+              )}>
+                {customer.name.slice(0, 1)}
+              </div>
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <p className="text-lg font-semibold text-foreground">{customer.name}</p>
+                <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    {customer.email}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CalendarDays className="h-3.5 w-3.5 shrink-0" />
+                    登録: {formatSince(customer.since)}
+                  </span>
+                  {customer.phone && (
+                    <span className="flex items-center gap-1.5">
+                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      {customer.phone}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-          </SectionCard>
+
+            {/* 統計バー */}
+            <div className="grid grid-cols-4 divide-x divide-border border-t border-border bg-muted/30">
+              {stats.map(({ label, value }) => (
+                <div key={label} className="flex flex-col gap-0.5 px-4 py-4">
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="text-base font-bold tabular-nums text-foreground">{value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* ── 最近の注文 ── */}
           <SectionCard
