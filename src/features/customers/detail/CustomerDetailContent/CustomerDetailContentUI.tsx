@@ -74,13 +74,12 @@ export function CustomerDetailContentUI({
   subscription,
 }: CustomerDetailContentUIProps) {
   const sortedOrders = [...orders].sort((a, b) => b.orderedAt.localeCompare(a.orderedAt));
-  const avgAmount = customer.purchases > 0 ? Math.round(customer.spent / customer.purchases) : 0;
   const lastOrderDate = sortedOrders[0]?.orderedAt ?? null;
 
   const stats = [
     { label: "購入数", value: String(customer.purchases) },
     { label: "累計金額", value: formatSpent(customer.spent) },
-    { label: "平均単価", value: customer.purchases > 0 ? formatSpent(avgAmount) : "—" },
+    { label: "登録日", value: formatSince(customer.since) },
     { label: "最終注文日", value: lastOrderDate ? formatSince(lastOrderDate) : "—" },
   ];
 
