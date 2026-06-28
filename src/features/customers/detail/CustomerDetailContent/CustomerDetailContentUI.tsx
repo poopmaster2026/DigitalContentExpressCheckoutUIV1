@@ -1,6 +1,7 @@
 "use client";
 
 import { Mail, Phone, RefreshCw } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
@@ -157,8 +158,13 @@ export function CustomerDetailContentUI({
                         <TableCell className="pl-6 tabular-nums text-muted-foreground">
                           {formatSince(order.orderedAt)}
                         </TableCell>
-                        <TableCell className="font-medium text-foreground">
-                          {order.productName}
+                        <TableCell>
+                          <Link
+                            href={`/store/products/${order.productId}`}
+                            className="font-medium text-foreground hover:underline"
+                          >
+                            {order.productName}
+                          </Link>
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className={s.className}>
