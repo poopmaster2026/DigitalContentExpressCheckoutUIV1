@@ -9,7 +9,7 @@ import type { NavSection } from "../navEntries";
 const NAV_PATHS: Record<string, string> = {
   home: "/store",
   products: "/store/products",
-  orders: "/store/orders",
+  income: "/store/income",
   customers: "/store/customers",
   analytics: "/store/analytics",
 };
