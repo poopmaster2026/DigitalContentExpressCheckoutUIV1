@@ -34,6 +34,17 @@ export function useIncomeFilter() {
     (sum, e) => sum + e.amount,
     0
   );
+  const totalRefunded = INCOME_ENTRIES.filter((e) => e.status === "refunded").reduce(
+    (sum, e) => sum + e.amount,
+    0
+  );
+
+  const statusCounts = {
+    completed:        INCOME_ENTRIES.filter((e) => e.status === "completed").length,
+    refunded:         INCOME_ENTRIES.filter((e) => e.status === "refunded").length,
+    awaiting_payment: INCOME_ENTRIES.filter((e) => e.status === "awaiting_payment").length,
+    processing:       INCOME_ENTRIES.filter((e) => e.status === "processing").length,
+  };
 
   function setParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -59,6 +70,8 @@ export function useIncomeFilter() {
   return {
     entries,
     totalRevenue,
+    totalRefunded,
+    statusCounts,
     totalCount: INCOME_ENTRIES.length,
     filteredCount: filtered.length,
     statusFilter,
