@@ -1,10 +1,15 @@
 "use client";
 
-import { Mail, Phone, RefreshCw } from "lucide-react";
-import Link from "next/link";
+import { ExternalLink, Mail, Phone, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/shared/components/ui/hover-card";
 import {
   Table,
   TableBody,
@@ -74,6 +79,7 @@ export function CustomerDetailContentUI({
   orders,
   subscription,
 }: CustomerDetailContentUIProps) {
+  const router = useRouter();
   const sortedOrders = [...orders].sort((a, b) => b.orderedAt.localeCompare(a.orderedAt));
   const lastOrderDate = sortedOrders[0]?.orderedAt ?? null;
 
@@ -154,27 +160,55 @@ export function CustomerDetailContentUI({
                   {sortedOrders.map((order) => {
                     const s = ORDER_STATUS_MAP[order.status];
                     return (
-                      <TableRow key={order.id} className="border-border/60 last:border-0">
-                        <TableCell className="pl-6 tabular-nums text-muted-foreground">
-                          {formatSince(order.orderedAt)}
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            href={`/store/products/${order.productId}`}
-                            className="font-medium text-foreground hover:underline"
+                      <HoverCard key={order.id} openDelay={300} closeDelay={100}>
+                        <HoverCardTrigger asChild>
+                          <TableRow
+                            className="cursor-pointer border-border/60 last:border-0 hover:bg-muted/40"
+                            onClick={() => router.push(`/store/products/${order.productId}`)}
                           >
-                            {order.productName}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={s.className}>
-                            {s.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="pr-6 text-right font-semibold tabular-nums">
-                          {formatSpent(order.amount)}
-                        </TableCell>
-                      </TableRow>
+                            <TableCell className="pl-6 tabular-nums text-muted-foreground">
+                              {formatSince(order.orderedAt)}
+                            </TableCell>
+                            <TableCell className="font-medium text-foreground">
+                              {order.productName}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className={s.className}>
+                                {s.label}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="pr-6 text-right font-semibold tabular-nums">
+                              {formatSpent(order.amount)}
+                            </TableCell>
+                          </TableRow>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                          side="top"
+                          align="start"
+                          className="w-64 p-4"
+                        >
+                          <div className="flex flex-col gap-3">
+                            <p className="text-sm font-semibold leading-snug text-foreground">
+                              {order.productName}
+                            </p>
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className={s.className}>
+                                {s.label}
+                              </Badge>
+                              <span className="text-sm font-bold tabular-nums">
+                                {formatSpent(order.amount)}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {formatSince(order.orderedAt)}
+                            </p>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <ExternalLink className="h-3 w-3" />
+                              商品ページを開く
+                            </div>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
                     );
                   })}
                 </TableBody>
