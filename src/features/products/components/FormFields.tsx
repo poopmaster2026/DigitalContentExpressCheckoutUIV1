@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -116,22 +116,27 @@ function PriceInputField({
   isRequired,
   isDisabled,
 }: PriceInputFieldProps) {
-  const { setError, clearErrors } = useFormContext<ProductFormValues>();
   const [display, setDisplay] = useState<string>(
     field.value ? formatWithCommas(field.value) : ""
   );
+  // 半角数字チェックはUI上の入力正規化なのでローカル state で管理
+  // (setError はフォーム全体の状態を書き換えるため Controller の render 内では使わない)
+  const [inputError, setInputError] = useState<string>("");
+
+  // フォームが外部からリセットされた場合（detail 画面の初期ロード等）に display を同期する
+  useEffect(() => {
+    setDisplay(field.value ? formatWithCommas(field.value) : "");
+  }, [field.value]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 全角数字（０-９）を半角に変換
     const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
       String.fromCharCode(c.charCodeAt(0) - 0xfee0)
     );
-    // 半角数字・カンマ以外はエラーとして表示し入力を無視
     if (/[^0-9,]/.test(halfWidth)) {
-      setError("price", { type: "manual", message: "半角数字で入力してください" });
+      setInputError("半角数字で入力してください");
       return;
     }
-    clearErrors("price");
+    setInputError("");
     const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
     setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
     field.onChange(raw === "" ? 0 : Number(raw));
@@ -141,6 +146,9 @@ function PriceInputField({
     field.onBlur();
     if (display !== "") setDisplay(formatWithCommas(field.value ?? 0));
   }
+
+  const errorMessage = inputError || fieldState.error?.message;
+  const isInvalid = !!inputError || fieldState.invalid;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -161,12 +169,12 @@ function PriceInputField({
           onChange={handleChange}
           onBlur={handleBlur}
           name={field.name}
-          aria-invalid={fieldState.invalid}
-          className={cn("pl-7", fieldState.invalid && "border-destructive")}
+          aria-invalid={isInvalid}
+          className={cn("pl-7", isInvalid && "border-destructive")}
         />
       </div>
-      {fieldState.error?.message && (
-        <p className="text-xs text-destructive">{fieldState.error.message}</p>
+      {errorMessage && (
+        <p className="text-xs text-destructive">{errorMessage}</p>
       )}
     </div>
   );
