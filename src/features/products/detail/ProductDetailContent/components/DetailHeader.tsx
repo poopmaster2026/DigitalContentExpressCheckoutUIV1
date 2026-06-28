@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
+import { ChevronLeft, Copy, ExternalLink, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { STATUS_DISPLAY } from "../../../display";
 import Link from "next/link";
@@ -75,6 +76,22 @@ export function DetailHeader({
                 </span>
               );
             })()}
+            {detail.status === "published" && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="hidden shrink-0 gap-1 text-xs text-muted-foreground sm:inline-flex"
+                onClick={() => {
+                  const url = `${window.location.origin}/hanako/${detail.slug}`;
+                  navigator.clipboard.writeText(url);
+                  toast.success("リンクをコピーしました");
+                }}
+              >
+                <ExternalLink className="h-3 w-3" />
+                公開リンク
+              </Button>
+            )}
           </div>
         </div>
 
