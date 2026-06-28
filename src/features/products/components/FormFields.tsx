@@ -104,7 +104,6 @@ interface PriceInputFieldProps {
   label: string;
   isRequired?: boolean;
   isDisabled?: boolean;
-  minValue?: number;
 }
 
 function PriceInputField({
@@ -114,7 +113,6 @@ function PriceInputField({
   label,
   isRequired,
   isDisabled,
-  minValue,
 }: PriceInputFieldProps) {
   const [display, setDisplay] = useState<string>(
     field.value ? formatWithCommas(field.value) : ""
@@ -139,9 +137,7 @@ function PriceInputField({
     const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
     setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
     if (raw === "") return;
-    const num = Number(raw);
-    if (minValue !== undefined && num < minValue) return;
-    field.onChange(num);
+    field.onChange(Number(raw));
   }
 
   function handleBlur() {
@@ -193,13 +189,11 @@ export function NumberFieldControl({
   label,
   isRequired,
   isDisabled,
-  minValue,
 }: {
   name: "price";
   label: string;
   isRequired?: boolean;
   isDisabled?: boolean;
-  minValue?: number;
 }) {
   const { control } = useFormContext<ProductFormValues>();
   return (
@@ -214,7 +208,6 @@ export function NumberFieldControl({
           label={label}
           isRequired={isRequired}
           isDisabled={isDisabled}
-          minValue={minValue}
         />
       )}
     />

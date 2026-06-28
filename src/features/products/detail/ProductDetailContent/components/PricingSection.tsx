@@ -25,7 +25,6 @@ export function PricingSection({ detail }: { detail: ProductDetail }) {
           label="価格"
           isRequired={!isFree}
           isDisabled={isFree}
-          minValue={0}
         />
         <div className="flex flex-col gap-4">
           <SwitchControl name="isFree">無料で提供する</SwitchControl>
