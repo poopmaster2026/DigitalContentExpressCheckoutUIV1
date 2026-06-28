@@ -28,10 +28,8 @@ export const NAV_SECTIONS: NavSection[] = [
       // TODO: ホーム画面を実装したら disabled を外す
       { key: "home", label: "ホーム", icon: Home, disabled: true },
       { key: "products", label: "商品", icon: Images },
-      // TODO: 注文画面を実装したら disabled を外す
-      { key: "orders", label: "注文", icon: ListOrdered, disabled: true },
-      // TODO: 顧客画面を実装したら disabled を外す
-      { key: "customers", label: "顧客", icon: Users, disabled: true },
+      { key: "income", label: "収益", icon: ListOrdered },
+      { key: "customers", label: "顧客", icon: Users },
     ],
   },
   {
