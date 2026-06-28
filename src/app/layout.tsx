@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import { Noto_Sans_JP } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { Toaster } from "@/shared/components/ui/sonner";
