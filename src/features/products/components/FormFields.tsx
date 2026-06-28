@@ -114,40 +114,30 @@ function PriceInputField({
   isRequired,
   isDisabled,
 }: PriceInputFieldProps) {
+  const { setError, clearErrors } = useFormContext<ProductFormValues>();
   const [display, setDisplay] = useState<string>(
     field.value ? formatWithCommas(field.value) : ""
   );
-  const [rejected, setRejected] = useState(false);
-
-  function reject() {
-    setRejected(true);
-    setTimeout(() => setRejected(false), 400);
-  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     // 全角数字（０-９）を半角に変換
     const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
       String.fromCharCode(c.charCodeAt(0) - 0xfee0)
     );
-    // 数字・カンマ以外が含まれていたらはじく
+    // 半角数字・カンマ以外はエラーとして表示し入力を無視
     if (/[^0-9,]/.test(halfWidth)) {
-      reject();
+      setError("price", { type: "manual", message: "半角数字で入力してください" });
       return;
     }
+    clearErrors("price");
     const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
     setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
-    // 空でも field.onChange(0) を呼び、Zod のリアルタイムバリデーションを動かす
     field.onChange(raw === "" ? 0 : Number(raw));
   }
 
   function handleBlur() {
     field.onBlur();
-    if (display === "") {
-      field.onChange(0);
-      setDisplay("");
-    } else {
-      setDisplay(formatWithCommas(field.value ?? 0));
-    }
+    if (display !== "") setDisplay(formatWithCommas(field.value ?? 0));
   }
 
   return (
@@ -170,11 +160,7 @@ function PriceInputField({
           onBlur={handleBlur}
           name={field.name}
           aria-invalid={fieldState.invalid}
-          className={cn(
-            "pl-7 transition-colors",
-            (fieldState.invalid || rejected) && "border-destructive",
-            rejected && "bg-destructive/5",
-          )}
+          className={cn("pl-7", fieldState.invalid && "border-destructive")}
         />
       </div>
       {fieldState.error?.message && (
