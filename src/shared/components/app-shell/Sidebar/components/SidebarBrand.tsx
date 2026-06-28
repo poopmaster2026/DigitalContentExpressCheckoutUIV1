@@ -17,7 +17,7 @@ export function SidebarBrand({ isExpanded }: { isExpanded: boolean }) {
       />
       <span
         className={cn(
-          "overflow-hidden truncate text-base font-bold transition-[opacity,max-width] duration-200 ease-in-out",
+          "overflow-hidden truncate text-base font-medium transition-[opacity,max-width] duration-200 ease-in-out",
           isExpanded ? "max-w-full opacity-100" : "max-w-0 opacity-0"
         )}
       >

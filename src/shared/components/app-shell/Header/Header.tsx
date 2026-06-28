@@ -52,7 +52,7 @@ export function AppHeader() {
               className="shrink-0"
               priority
             />
-            <span className="text-2xl font-bold text-white">SetLink</span>
+            <span className="text-2xl font-medium text-white">SetLink</span>
           </div>
         </div>
 

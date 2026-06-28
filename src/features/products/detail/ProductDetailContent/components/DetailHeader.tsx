@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
+
+import { STATUS_DISPLAY } from "../../../display";
 import Link from "next/link";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -55,7 +57,7 @@ export function DetailHeader({
             </Link>
           </Button>
           <div className="flex min-w-0 items-center gap-2.5">
-            <h1 className="truncate text-lg font-semibold text-foreground">
+            <h1 className="truncate text-lg font-medium text-foreground">
               {detail.name}
             </h1>
             <Badge
@@ -64,17 +66,15 @@ export function DetailHeader({
             >
               {badge.label}
             </Badge>
-            <span className="hidden shrink-0 items-center gap-1.5 sm:inline-flex">
-              <span
-                className={cn(
-                  "inline-block h-1.5 w-1.5 rounded-full",
-                  detail.status === "published" ? "bg-success" : "bg-muted-foreground/50"
-                )}
-              />
-              <span className="text-sm text-muted-foreground">
-                {detail.status === "published" ? "公開中" : "下書き"}
-              </span>
-            </span>
+            {(() => {
+              const status = STATUS_DISPLAY[detail.status];
+              return (
+                <span className={cn("hidden shrink-0 items-center gap-0.5 text-sm sm:inline-flex", status.className)}>
+                  <img src={status.iconSrc} alt="" className="h-4 w-4 translate-y-[0.5px]" />
+                  {status.label}
+                </span>
+              );
+            })()}
           </div>
         </div>
 

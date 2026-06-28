@@ -4,8 +4,13 @@ import axios from "axios";
 // 3. baseURL を環境変数に差し替える → baseURL: process.env.NEXT_PUBLIC_API_BASE_URL
 // 4. 下記インターセプターのコメントを外し、トークン取得処理を実装する
 
+const baseURL =
+  typeof window === "undefined"
+    ? "http://localhost:8080/api"
+    : "/api";
+
 export const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL,
   headers: { "Content-Type": "application/json" },
 });
 

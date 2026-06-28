@@ -20,7 +20,7 @@ export function Notifications({ buttonClassName }: { buttonClassName?: string })
         <Button variant="ghost" size="icon" className={cn("relative h-9 w-9", buttonClassName)} aria-label={`${NOTIFICATIONS.length}件の通知`}>
           <Bell className="h-4 w-4" />
           {NOTIFICATIONS.length > 0 && (
-            <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+            <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
               {NOTIFICATIONS.length}
             </span>
           )}
@@ -28,7 +28,7 @@ export function Notifications({ buttonClassName }: { buttonClassName?: string })
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="border-b px-4 py-3">
-          <h3 className="font-semibold">通知</h3>
+          <h3 className="font-medium">通知</h3>
         </div>
         <ScrollArea className="max-h-80">
           <div className="divide-y">

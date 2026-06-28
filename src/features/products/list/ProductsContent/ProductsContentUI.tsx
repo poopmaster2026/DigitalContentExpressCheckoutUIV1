@@ -78,7 +78,7 @@ export function ProductsContentUI({
       <header className="border-b px-4 pt-5 pb-0 sm:px-6">
         {/* タイトル行 */}
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold tracking-tight">商品</h1>
+          <h1 className="text-xl font-medium tracking-tight">商品</h1>
           <span className="text-sm text-muted-foreground">
             {statusCounts.all}件
           </span>
@@ -152,13 +152,13 @@ export function ProductsContentUI({
         {/* ステータスタブ（横スクロール可） */}
         <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           <Tabs value={statusFilter} onValueChange={onStatusChange}>
-            <TabsList variant="line" className="h-auto bg-transparent p-0">
+            <TabsList variant="line" className="h-auto gap-2 bg-transparent p-0">
               {STATUS_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
                   className={cn(
-                    "h-auto rounded-none border-0 bg-transparent px-2 pb-2.5 pt-0 text-sm font-medium text-muted-foreground shadow-none after:!bottom-0",
+                    "h-auto rounded-none border-0 bg-transparent px-3 pb-2.5 pt-0 text-sm font-medium text-muted-foreground shadow-none after:!bottom-0",
                     "data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none",
                     "hover:text-foreground focus-visible:ring-0 focus-visible:outline-none"
                   )}

@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 /*.jpeg
 /*.png
 .claude/worktrees/
+
+# OS
+.DS_Store

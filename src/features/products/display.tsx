@@ -13,21 +13,19 @@ import type { ReactNode } from "react";
 
 import type { ProductKind, ProductStatus, ProductThumb, SaleType } from "./types";
 
-/**
- * 公開ステータスの表示定義。ドットの色だけが画面で許す数少ない「状態色」。
- * 公開中 = success（落ち着いたティール）/ 下書き = 中空（border のリング）。
- */
 export const STATUS_DISPLAY: Record<
   ProductStatus,
-  { label: string; dotClassName: string }
+  { label: string; iconSrc: string; className: string }
 > = {
   published: {
     label: "公開中",
-    dotClassName: "bg-success",
+    iconSrc: "/icons/status-published.svg",
+    className: "text-emerald-500 font-bold",
   },
   draft: {
     label: "下書き",
-    dotClassName: "border-[1.5px] border-muted-foreground/50 bg-transparent",
+    iconSrc: "/icons/status-draft.svg",
+    className: "text-muted-foreground font-bold",
   },
 };
 

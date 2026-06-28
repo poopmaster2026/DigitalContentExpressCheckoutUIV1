@@ -40,7 +40,7 @@ export function AccountMenu() {
               <AvatarFallback>花</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-semibold">花子</p>
+              <p className="font-medium">花子</p>
               <p className="text-xs text-muted-foreground">hanako@ours.jp</p>
             </div>
           </div>

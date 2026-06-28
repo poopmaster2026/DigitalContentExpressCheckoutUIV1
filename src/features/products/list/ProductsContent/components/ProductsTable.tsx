@@ -223,14 +223,12 @@ export function ProductsTable({
                 <TableCell className="text-center tabular-nums text-muted-foreground">
                   {p.sales}
                 </TableCell>
-                <TableCell className="text-center font-semibold tabular-nums">
+                <TableCell className="text-center font-medium tabular-nums">
                   {formatRevenue(p)}
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <span
-                      className={cn("h-2 w-2 rounded-full", status.dotClassName)}
-                    />
+                  <span className={cn("inline-flex items-center justify-center gap-0.5 text-sm", status.className)}>
+                    <img src={status.iconSrc} alt="" className="h-4 w-4 translate-y-[0.5px]" />
                     {status.label}
                   </span>
                 </TableCell>

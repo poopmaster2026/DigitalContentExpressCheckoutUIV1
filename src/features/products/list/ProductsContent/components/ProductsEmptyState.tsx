@@ -19,7 +19,7 @@ export function ProductsEmptyState({ isFiltered }: ProductsEmptyStateProps) {
           <SearchX className="h-6 w-6 text-muted-foreground" />
         </div>
         <div className="space-y-1.5">
-          <h3 className="text-base font-semibold">該当する商品がありません</h3>
+          <h3 className="text-base font-medium">該当する商品がありません</h3>
           <p className="text-sm text-muted-foreground">
             検索条件やフィルタを変更してお試しください。
           </p>
@@ -34,7 +34,7 @@ export function ProductsEmptyState({ isFiltered }: ProductsEmptyStateProps) {
         <PackagePlus className="h-6 w-6 text-muted-foreground" />
       </div>
       <div className="space-y-1.5">
-        <h3 className="text-base font-semibold">最初の商品を作成しましょう</h3>
+        <h3 className="text-base font-medium">最初の商品を作成しましょう</h3>
         <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
           デジタルコンテンツを登録して、販売を始めましょう。作成した商品はここに一覧で表示されます。
         </p>

@@ -155,10 +155,10 @@ export function ProductsCardView({
               onClick={() => goToDetail(p)}
             >
               <div className="flex items-start justify-between gap-2">
-                <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
+                <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
                   {p.name}
                 </p>
-                <span className="shrink-0 text-sm font-semibold tabular-nums">
+                <span className="shrink-0 text-sm font-medium tabular-nums">
                   {formatPrice(p.price)}
                 </span>
               </div>
@@ -167,10 +167,8 @@ export function ProductsCardView({
                 <Badge variant="outline" className={badge.className}>
                   {badge.label}
                 </Badge>
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span
-                    className={cn("h-2 w-2 rounded-full", status.dotClassName)}
-                  />
+                <span className={cn("inline-flex items-center gap-0.5 text-xs", status.className)}>
+                  <img src={status.iconSrc} alt="" className="h-3.5 w-3.5 translate-y-[0.5px]" />
                   {status.label}
                 </span>
               </div>
@@ -185,7 +183,7 @@ export function ProductsCardView({
                 </span>
                 <span className="text-muted-foreground">
                   売上{" "}
-                  <span className="font-semibold text-foreground tabular-nums">
+                  <span className="font-medium text-foreground tabular-nums">
                     {formatRevenue(p)}
                   </span>
                 </span>

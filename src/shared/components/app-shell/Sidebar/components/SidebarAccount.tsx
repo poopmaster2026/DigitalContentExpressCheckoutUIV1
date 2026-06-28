@@ -41,7 +41,7 @@ export function SidebarAccount() {
               <AvatarFallback>花</AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="truncate font-semibold">花子</p>
+              <p className="truncate font-medium">花子</p>
               <p className="truncate text-xs text-muted-foreground">hanako@ours.jp</p>
             </div>
           </div>

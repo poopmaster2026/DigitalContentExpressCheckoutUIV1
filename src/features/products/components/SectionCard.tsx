@@ -31,7 +31,7 @@ export function SectionCard({
     >
       <div className="mb-5 flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-base font-semibold text-card-foreground">
+          <h2 className="text-base font-medium text-card-foreground">
             {title}
           </h2>
           {description && (

@@ -60,7 +60,7 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
               className={cn(
                 "w-full truncate text-center text-[10px] leading-snug",
                 isSelected
-                  ? "font-semibold text-foreground"
+                  ? "font-medium text-foreground"
                   : "text-muted-foreground"
               )}
             >
