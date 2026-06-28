@@ -38,6 +38,7 @@ export function TextFieldControl({
           <Input
             id={name}
             {...field}
+            autoComplete="off"
             aria-invalid={fieldState.invalid}
             className={cn(fieldState.invalid && "border-destructive")}
           />
@@ -74,6 +75,7 @@ export function TextAreaControl({
             id={name}
             {...field}
             rows={4}
+            autoComplete="off"
             aria-invalid={fieldState.invalid}
             className={cn(fieldState.invalid && "border-destructive")}
           />
