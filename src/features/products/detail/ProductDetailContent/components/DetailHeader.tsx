@@ -1,8 +1,6 @@
 "use client";
 
 import { ChevronLeft, Copy, Loader2, Trash2 } from "lucide-react";
-
-import { STATUS_DISPLAY } from "../../../display";
 import Link from "next/link";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -21,19 +19,17 @@ import {
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 
-import { SALE_TYPE_BADGE } from "../../../display";
+import { SALE_TYPE_BADGE, STATUS_DISPLAY } from "../../../display";
 import type { ProductDetail } from "../../../types";
 
 export function DetailHeader({
   detail,
   pending,
-  isSaving,
   onDuplicate,
   onDelete,
 }: {
   detail: ProductDetail;
   pending: boolean;
-  isSaving: boolean;
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
@@ -110,8 +106,8 @@ export function DetailHeader({
             disabled={pending || !isDirty || (isSubmitted && !isValid)}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
-            {isSaving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
-            <span className={isSaving ? "invisible" : undefined}>保存</span>
+            {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={pending ? "invisible" : undefined}>保存</span>
           </Button>
         </div>
       </div>
