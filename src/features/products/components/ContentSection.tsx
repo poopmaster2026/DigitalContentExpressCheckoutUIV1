@@ -82,11 +82,14 @@ function DigitalContent() {
   const contentFile = useWatch({ control, name: "contentFile" });
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const fileRef = useRef<File | null>(null);
+
   const handleFile = (file: File) => {
     if ((BLOCKED_CONTENT_MIME_TYPES as readonly string[]).includes(file.type)) return;
+    fileRef.current = file;
     setValue(
       "contentFile",
-      { name: file.name, size: file.size, type: file.type },
+      { name: file.name, size: file.size, type: file.type, file },
       { shouldDirty: true }
     );
     trigger("contentFile");

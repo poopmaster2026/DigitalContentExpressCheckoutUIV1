@@ -7,20 +7,12 @@ import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/shared/components/ui/toggle-group";
 
-import { SALE_TYPE_BADGE } from "../../display";
 import { FILTER_ALL, PRODUCT_STATUSES, VIEW_MODES, type ViewMode } from "../../types";
 
 import { ProductsActionBar } from "./components/ProductsActionBar";
@@ -111,19 +103,6 @@ export function ProductsContentUI({
               />
             </div>
 
-            <Select value={saleTypeFilter} onValueChange={onSaleTypeChange}>
-              <SelectTrigger className="h-9 w-36 bg-card">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={FILTER_ALL}>すべての形態</SelectItem>
-                {Object.entries(SALE_TYPE_BADGE).map(([id, { label }]) => (
-                  <SelectItem key={id} value={id}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             <ToggleGroup
               type="single"

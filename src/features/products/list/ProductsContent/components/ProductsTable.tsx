@@ -1,8 +1,9 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, ChevronsUpDown, MoreHorizontal } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
@@ -24,6 +25,7 @@ import {
 } from "@/shared/components/ui/table";
 import { useNavigate } from "@/shared/hooks/useNavigate";
 
+import { deleteProduct } from "../../../api";
 import { KIND_ICON, SALE_TYPE_BADGE, STATUS_DISPLAY, THUMB_HUE } from "../../../display";
 import { formatPrice, formatRevenue } from "../../../format";
 import { productMenuItems } from "../../../productMenu";
@@ -53,14 +55,12 @@ function compareProducts(a: Product, b: Product, key: SortKey): number {
 function SortButton({
   label,
   col,
-  align = "left",
   sortKey,
   sortDir,
   onSort,
 }: {
   label: string;
   col: SortKey;
-  align?: "left" | "right";
   sortKey: SortKey;
   sortDir: SortDir;
   onSort: (key: SortKey) => void;
@@ -70,19 +70,13 @@ function SortButton({
   return (
     <button
       className={cn(
-        "inline-flex items-center gap-1 rounded-sm py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        align === "right" ? "-mr-1 px-1" : "-ml-1 px-1",
+        "inline-flex items-center justify-center gap-1 rounded-sm px-1 py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
         active ? "text-foreground" : "text-muted-foreground"
       )}
       onClick={() => onSort(col)}
     >
-      {align === "right" && (
-        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
-      )}
       {label}
-      {align === "left" && (
-        <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
-      )}
+      <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
     </button>
   );
 }
@@ -106,13 +100,21 @@ export function ProductsTable({
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  // TODO: デジタル以外（course / booking / subscription）の詳細画面は未実装。
-  //       実装時はここのガードを外して各 saleType 向けページに振り分ける。
   const goToDetail = (p: Product) => {
-    if (p.saleType !== "digital") return;
     setNavigatingId(p.id);
     navigate(`/store/products/${p.id}`);
+  };
+
+  const handleMenuAction = async (actionId: string, p: Product) => {
+    if (actionId === "edit") {
+      goToDetail(p);
+    } else if (actionId === "delete") {
+      await deleteProduct(p.id);
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("削除しました");
+    }
   };
 
   const handleSort = (key: SortKey) => {
@@ -140,31 +142,31 @@ export function ProductsTable({
 
   return (
     <div className="overflow-hidden rounded-lg border bg-card">
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow className="border-b bg-surface/60 hover:bg-surface/60">
-            <TableHead className="w-10 pl-4">
+            <TableHead className="w-10 pl-4 text-center">
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={() => onToggleAll(products.map((p) => p.id))}
                 aria-label="すべて選択"
               />
             </TableHead>
-            <TableHead className="text-muted-foreground">
+            <TableHead className="w-1/2 text-left text-muted-foreground">
               <SortButton label="商品" col="name" {...sortProps} />
             </TableHead>
-            <TableHead className="text-muted-foreground">販売形態</TableHead>
-            <TableHead className="text-right text-muted-foreground">
-              <SortButton label="価格" col="price" align="right" {...sortProps} />
+            <TableHead className="text-center text-xs text-muted-foreground">販売形態</TableHead>
+            <TableHead className="text-center text-muted-foreground">
+              <SortButton label="価格" col="price" {...sortProps} />
             </TableHead>
-            <TableHead className="text-right text-muted-foreground">
-              <SortButton label="販売数" col="sales" align="right" {...sortProps} />
+            <TableHead className="text-center text-muted-foreground">
+              <SortButton label="販売数" col="sales" {...sortProps} />
             </TableHead>
-            <TableHead className="text-right text-muted-foreground">
-              <SortButton label="売上" col="revenue" align="right" {...sortProps} />
+            <TableHead className="text-center text-muted-foreground">
+              <SortButton label="売上" col="revenue" {...sortProps} />
             </TableHead>
-            <TableHead className="text-muted-foreground">状態</TableHead>
-            <TableHead className="w-10 pr-2" />
+            <TableHead className="text-center text-xs text-muted-foreground">状態</TableHead>
+            <TableHead className="w-16 pr-4" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -182,14 +184,14 @@ export function ProductsTable({
                 data-clickable={p.saleType === "digital" ? "true" : undefined}
                 onClick={() => goToDetail(p)}
               >
-                <TableCell className="pl-4" onClick={(e) => e.stopPropagation()}>
+                <TableCell className="pl-4 text-center" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={() => onToggle(p.id)}
                     aria-label={`${p.name}を選択`}
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-left">
                   <div className="flex items-center gap-3">
                     <div
                       className={cn(
@@ -198,11 +200,9 @@ export function ProductsTable({
                       )}
                     >
                       {p.image ? (
-                        <Image
+                        <img
                           src={p.image}
                           alt=""
-                          width={36}
-                          height={36}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -212,21 +212,21 @@ export function ProductsTable({
                     <span className="font-medium text-foreground">{p.name}</span>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <Badge variant="outline" className={badge.className}>
                     {badge.label}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right tabular-nums">
+                <TableCell className="text-center tabular-nums">
                   {formatPrice(p.price)}
                 </TableCell>
-                <TableCell className="text-right tabular-nums text-muted-foreground">
+                <TableCell className="text-center tabular-nums text-muted-foreground">
                   {p.sales}
                 </TableCell>
-                <TableCell className="text-right font-semibold tabular-nums">
+                <TableCell className="text-center font-semibold tabular-nums">
                   {formatRevenue(p)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                   <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                     <span
                       className={cn("h-2 w-2 rounded-full", status.dotClassName)}
@@ -234,7 +234,7 @@ export function ProductsTable({
                     {status.label}
                   </span>
                 </TableCell>
-                <TableCell className="pr-2 text-right" onClick={(e) => e.stopPropagation()}>
+                <TableCell className="pr-4 text-center" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -251,9 +251,7 @@ export function ProductsTable({
                         <DropdownMenuItem
                           key={a.id}
                           variant={a.id === "delete" ? "destructive" : "default"}
-                          onClick={() => {
-                            if (a.id === "edit") goToDetail(p);
-                          }}
+                          onClick={() => handleMenuAction(a.id, p)}
                         >
                           {a.label}
                         </DropdownMenuItem>

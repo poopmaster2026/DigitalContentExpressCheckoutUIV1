@@ -85,6 +85,18 @@ export function TextAreaControl({
   );
 }
 
+function formatWithCommas(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "";
+  return value.toLocaleString("ja-JP");
+}
+
+function parseCommaNumber(value: string): number | null {
+  const stripped = value.replace(/,/g, "");
+  if (stripped === "") return null;
+  const num = Number(stripped);
+  return isNaN(num) ? null : num;
+}
+
 export function NumberFieldControl({
   name,
   label,
@@ -115,15 +127,16 @@ export function NumberFieldControl({
             </span>
             <Input
               id={name}
-              type="number"
-              min={minValue}
+              type="text"
+              inputMode="numeric"
               disabled={isDisabled}
-              value={field.value ?? ""}
-              onChange={(e) =>
-                field.onChange(
-                  e.target.value === "" ? null : Number(e.target.value)
-                )
-              }
+              value={formatWithCommas(field.value)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                const num = raw === "" ? 0 : Number(raw);
+                if (minValue !== undefined && num < minValue) return;
+                field.onChange(num);
+              }}
               onBlur={field.onBlur}
               name={field.name}
               aria-invalid={fieldState.invalid}

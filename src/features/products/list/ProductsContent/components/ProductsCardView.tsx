@@ -1,8 +1,9 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 
+import { deleteProduct } from "../../../api";
 import {
   KIND_ILLUSTRATION,
   SALE_TYPE_BADGE,
@@ -41,12 +43,20 @@ export function ProductsCardView({
   onToggle,
 }: ProductsCardViewProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  // TODO: デジタル以外（course / booking / subscription）の詳細画面は未実装。
-  //       実装時はここのガードを外して各 saleType 向けページに振り分ける。
   const goToDetail = (p: Product) => {
-    if (p.saleType !== "digital") return;
     router.push(`/store/products/${p.id}`);
+  };
+
+  const handleMenuAction = async (actionId: string, p: Product) => {
+    if (actionId === "edit") {
+      goToDetail(p);
+    } else if (actionId === "delete") {
+      await deleteProduct(p.id);
+      await queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("削除しました");
+    }
   };
 
   if (products.length === 0) {
@@ -107,10 +117,7 @@ export function ProductsCardView({
                     <DropdownMenuItem
                       key={a.id}
                       variant={a.id === "delete" ? "destructive" : "default"}
-                      onClick={() => {
-                        if (a.id === "edit")
-                          goToDetail(p);
-                      }}
+                      onClick={() => handleMenuAction(a.id, p)}
                     >
                       {a.label}
                     </DropdownMenuItem>
@@ -131,12 +138,10 @@ export function ProductsCardView({
                 )}
               >
                 {p.image ? (
-                  <Image
+                  <img
                     src={p.image}
                     alt=""
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
                   KIND_ILLUSTRATION[p.kind]

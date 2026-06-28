@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 
@@ -7,6 +8,11 @@ import { NavigationProgressProvider } from "@/shared/providers/navigation-progre
 import { QueryProvider } from "@/shared/providers/query-provider";
 
 import "./globals.css";
+
+const notoSans = Noto_Sans_JP({
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "SetLink",
@@ -21,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <body className={notoSans.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <QueryProvider>
             <NavigationProgressProvider>

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -34,7 +33,7 @@ export function BasicInfoSection({ detail, isDescriptionRequired = false }: Basi
   const handleCoverImage = (file: File) => {
     setValue(
       "coverImage",
-      { url: URL.createObjectURL(file), name: file.name, size: file.size, type: file.type },
+      { url: URL.createObjectURL(file), name: file.name, size: file.size, type: file.type, file },
       { shouldDirty: true }
     );
     trigger("coverImage");
@@ -58,11 +57,9 @@ export function BasicInfoSection({ detail, isDescriptionRequired = false }: Basi
               )}
             >
               {coverImage?.url ? (
-                <Image
+                <img
                   src={coverImage.url}
                   alt=""
-                  width={96}
-                  height={96}
                   className="h-full w-full object-cover"
                 />
               ) : (

@@ -33,6 +33,7 @@ const coverImageSchema = z
     name: z.string(),
     size: z.number(),
     type: z.string(),
+    file: z.any().optional(),
   })
   .refine(
     (f) =>
@@ -53,6 +54,7 @@ const contentFileSchema = z
     name: z.string(),
     size: z.number(),
     type: z.string(),
+    file: z.any().optional(),
   })
   .refine((f) => f.size > 0, "ファイルが空です")
   .refine(
