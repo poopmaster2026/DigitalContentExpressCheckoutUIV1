@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { useState } from "react";
+import { Controller, useController, useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/shared/components/ui/input";
@@ -93,93 +93,6 @@ function formatWithCommas(value: number | null | undefined): string {
   return value.toLocaleString("ja-JP");
 }
 
-
-interface PriceInputFieldProps {
-  field: {
-    value: number | null | undefined;
-    onChange: (v: number) => void;
-    onBlur: () => void;
-    name: string;
-  };
-  fieldState: { invalid: boolean; error?: { message?: string } };
-  id: string;
-  label: string;
-  isRequired?: boolean;
-  isDisabled?: boolean;
-}
-
-function PriceInputField({
-  field,
-  fieldState,
-  id,
-  label,
-  isRequired,
-  isDisabled,
-}: PriceInputFieldProps) {
-  const [display, setDisplay] = useState<string>(
-    field.value ? formatWithCommas(field.value) : ""
-  );
-  // 半角数字チェックはUI上の入力正規化なのでローカル state で管理
-  // (setError はフォーム全体の状態を書き換えるため Controller の render 内では使わない)
-  const [inputError, setInputError] = useState<string>("");
-
-  // フォームが外部からリセットされた場合（detail 画面の初期ロード等）に display を同期する
-  useEffect(() => {
-    setDisplay(field.value ? formatWithCommas(field.value) : "");
-  }, [field.value]);
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
-      String.fromCharCode(c.charCodeAt(0) - 0xfee0)
-    );
-    if (/[^0-9,]/.test(halfWidth)) {
-      setInputError("半角数字で入力してください");
-      return;
-    }
-    setInputError("");
-    const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
-    setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
-    field.onChange(raw === "" ? 0 : Number(raw));
-  }
-
-  function handleBlur() {
-    field.onBlur();
-    if (display !== "") setDisplay(formatWithCommas(field.value ?? 0));
-  }
-
-  const errorMessage = inputError || fieldState.error?.message;
-  const isInvalid = !!inputError || fieldState.invalid;
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id}>
-        {label}
-        {isRequired && <span className="ml-1 text-destructive">*</span>}
-      </Label>
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-          ¥
-        </span>
-        <Input
-          id={id}
-          type="text"
-          inputMode="numeric"
-          disabled={isDisabled}
-          value={display}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          name={field.name}
-          aria-invalid={isInvalid}
-          className={cn("pl-7", isInvalid && "border-destructive")}
-        />
-      </div>
-      {errorMessage && (
-        <p className="text-xs text-destructive">{errorMessage}</p>
-      )}
-    </div>
-  );
-}
-
 export function NumberFieldControl({
   name,
   label,
@@ -192,21 +105,69 @@ export function NumberFieldControl({
   isDisabled?: boolean;
 }) {
   const { control } = useFormContext<ProductFormValues>();
+  const { field, fieldState } = useController({ control, name });
+
+  const [editing, setEditing] = useState(false);
+  const [rawText, setRawText] = useState("");
+  const [inputError, setInputError] = useState("");
+
+  const display = editing ? rawText : formatWithCommas(field.value);
+  const errorMessage = inputError || fieldState.error?.message;
+  const isInvalid = !!inputError || fieldState.invalid;
+
+  function handleFocus() {
+    setEditing(true);
+    setRawText(field.value ? String(field.value) : "");
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
+      String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+    );
+    if (/[^0-9,]/.test(halfWidth)) {
+      setInputError("半角数字で入力してください");
+      return;
+    }
+    setInputError("");
+    const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
+    setRawText(raw);
+    field.onChange(raw === "" ? 0 : Number(raw));
+  }
+
+  function handleBlur() {
+    setEditing(false);
+    setInputError("");
+    field.onBlur();
+  }
+
   return (
-    <Controller
-      control={control}
-      name={name}
-      render={({ field, fieldState }) => (
-        <PriceInputField
-          field={field}
-          fieldState={fieldState}
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={name}>
+        {label}
+        {isRequired && <span className="ml-1 text-destructive">*</span>}
+      </Label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+          ¥
+        </span>
+        <Input
           id={name}
-          label={label}
-          isRequired={isRequired}
-          isDisabled={isDisabled}
+          type="text"
+          inputMode="numeric"
+          disabled={isDisabled}
+          value={display}
+          onFocus={handleFocus}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          name={field.name}
+          aria-invalid={isInvalid}
+          className={cn("pl-7", isInvalid && "border-destructive")}
         />
+      </div>
+      {errorMessage && (
+        <p className="text-xs text-destructive">{errorMessage}</p>
       )}
-    />
+    </div>
   );
 }
 
