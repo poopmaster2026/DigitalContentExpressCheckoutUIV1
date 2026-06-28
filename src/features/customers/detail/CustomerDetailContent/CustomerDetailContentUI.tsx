@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Mail, Phone, RefreshCw } from "lucide-react";
+import { Mail, Phone, RefreshCw } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/shared/components/ui/badge";
@@ -106,10 +106,6 @@ export function CustomerDetailContentUI({
                   <span className="flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5 shrink-0" />
                     {customer.email}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <CalendarDays className="h-3.5 w-3.5 shrink-0" />
-                    登録: {formatSince(customer.since)}
                   </span>
                   {customer.phone && (
                     <span className="flex items-center gap-1.5">
