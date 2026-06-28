@@ -119,24 +119,33 @@ function PriceInputField({
   const [display, setDisplay] = useState<string>(
     field.value ? formatWithCommas(field.value) : ""
   );
+  const [rejected, setRejected] = useState(false);
+
+  function reject() {
+    setRejected(true);
+    setTimeout(() => setRejected(false), 400);
+  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const raw = e.target.value.replace(/[^0-9]/g, "");
-    // 先頭の余分なゼロを除去
-    const normalized = raw.replace(/^0+(\d)/, "$1");
-    setDisplay(normalized === "" ? "" : formatWithCommas(Number(normalized)));
-    if (normalized === "") {
-      // 空のまま表示を維持し、フォームには 0 を保持（blur 時に確定）
+    // 全角数字（０-９）を半角に変換
+    const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
+      String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+    );
+    // 数字・カンマ以外が含まれていたらはじく
+    if (/[^0-9,]/.test(halfWidth)) {
+      reject();
       return;
     }
-    const num = Number(normalized);
+    const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
+    setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
+    if (raw === "") return;
+    const num = Number(raw);
     if (minValue !== undefined && num < minValue) return;
     field.onChange(num);
   }
 
   function handleBlur() {
     field.onBlur();
-    // フォーカスを外したとき、空なら 0 に確定してフォームに反映
     if (display === "") {
       field.onChange(0);
       setDisplay("");
@@ -165,7 +174,11 @@ function PriceInputField({
           onBlur={handleBlur}
           name={field.name}
           aria-invalid={fieldState.invalid}
-          className={cn("pl-7", fieldState.invalid && "border-destructive")}
+          className={cn(
+            "pl-7 transition-colors",
+            (fieldState.invalid || rejected) && "border-destructive",
+            rejected && "bg-destructive/5",
+          )}
         />
       </div>
       {fieldState.error?.message && (
