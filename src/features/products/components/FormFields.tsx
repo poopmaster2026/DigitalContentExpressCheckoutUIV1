@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
@@ -90,11 +91,88 @@ function formatWithCommas(value: number | null | undefined): string {
   return value.toLocaleString("ja-JP");
 }
 
-function parseCommaNumber(value: string): number | null {
-  const stripped = value.replace(/,/g, "");
-  if (stripped === "") return null;
-  const num = Number(stripped);
-  return isNaN(num) ? null : num;
+
+interface PriceInputFieldProps {
+  field: {
+    value: number | null | undefined;
+    onChange: (v: number) => void;
+    onBlur: () => void;
+    name: string;
+  };
+  fieldState: { invalid: boolean; error?: { message?: string } };
+  id: string;
+  label: string;
+  isRequired?: boolean;
+  isDisabled?: boolean;
+  minValue?: number;
+}
+
+function PriceInputField({
+  field,
+  fieldState,
+  id,
+  label,
+  isRequired,
+  isDisabled,
+  minValue,
+}: PriceInputFieldProps) {
+  const [display, setDisplay] = useState<string>(
+    field.value ? formatWithCommas(field.value) : ""
+  );
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value.replace(/[^0-9]/g, "");
+    // 先頭の余分なゼロを除去
+    const normalized = raw.replace(/^0+(\d)/, "$1");
+    setDisplay(normalized === "" ? "" : formatWithCommas(Number(normalized)));
+    if (normalized === "") {
+      // 空のまま表示を維持し、フォームには 0 を保持（blur 時に確定）
+      return;
+    }
+    const num = Number(normalized);
+    if (minValue !== undefined && num < minValue) return;
+    field.onChange(num);
+  }
+
+  function handleBlur() {
+    field.onBlur();
+    // フォーカスを外したとき、空なら 0 に確定してフォームに反映
+    if (display === "") {
+      field.onChange(0);
+      setDisplay("");
+    } else {
+      setDisplay(formatWithCommas(field.value ?? 0));
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id}>
+        {label}
+        {isRequired && <span className="ml-1 text-destructive">*</span>}
+      </Label>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+          ¥
+        </span>
+        <Input
+          id={id}
+          type="text"
+          inputMode="numeric"
+          disabled={isDisabled}
+          value={display}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          name={field.name}
+          aria-invalid={fieldState.invalid}
+          className={cn("pl-7", fieldState.invalid && "border-destructive")}
+        />
+      </div>
+      {fieldState.error?.message && (
+        <p className="text-xs text-destructive">{fieldState.error.message}</p>
+      )}
+    </div>
+  );
 }
 
 export function NumberFieldControl({
@@ -116,37 +194,15 @@ export function NumberFieldControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
-            {label}
-            {isRequired && <span className="ml-1 text-destructive">*</span>}
-          </Label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-              ¥
-            </span>
-            <Input
-              id={name}
-              type="text"
-              inputMode="numeric"
-              disabled={isDisabled}
-              value={formatWithCommas(field.value)}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/[^0-9]/g, "");
-                const num = raw === "" ? 0 : Number(raw);
-                if (minValue !== undefined && num < minValue) return;
-                field.onChange(num);
-              }}
-              onBlur={field.onBlur}
-              name={field.name}
-              aria-invalid={fieldState.invalid}
-              className={cn("pl-7", fieldState.invalid && "border-destructive")}
-            />
-          </div>
-          {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
-          )}
-        </div>
+        <PriceInputField
+          field={field}
+          fieldState={fieldState}
+          id={name}
+          label={label}
+          isRequired={isRequired}
+          isDisabled={isDisabled}
+          minValue={minValue}
+        />
       )}
     />
   );
