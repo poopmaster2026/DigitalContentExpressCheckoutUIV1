@@ -1,8 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
-import { Controller, useController, useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/shared/components/ui/input";
@@ -104,40 +103,48 @@ export function NumberFieldControl({
   isRequired?: boolean;
   isDisabled?: boolean;
 }) {
-  const { control } = useFormContext<ProductFormValues>();
-  const { field, fieldState } = useController({ control, name });
+  const {
+    register,
+    setError,
+    clearErrors,
+    getValues,
+    formState: { errors },
+  } = useFormContext<ProductFormValues>();
 
-  const [editing, setEditing] = useState(false);
-  const [rawText, setRawText] = useState("");
-  const [inputError, setInputError] = useState("");
+  const {
+    ref,
+    name: fieldName,
+    onChange: rhfOnChange,
+    onBlur: rhfOnBlur,
+  } = register(name, {
+    setValueAs: (v: string) => {
+      const raw = String(v ?? "").replace(/,/g, "").replace(/^0+(\d)/, "$1");
+      return raw === "" ? 0 : Number(raw);
+    },
+  });
 
-  const display = editing ? rawText : formatWithCommas(field.value);
-  const errorMessage = inputError || fieldState.error?.message;
-  const isInvalid = !!inputError || fieldState.invalid;
-
-  function handleFocus() {
-    setEditing(true);
-    setRawText(field.value ? String(field.value) : "");
-  }
+  const fieldError = errors[name];
+  const initialValue = getValues(name);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
       String.fromCharCode(c.charCodeAt(0) - 0xfee0)
     );
     if (/[^0-9,]/.test(halfWidth)) {
-      setInputError("半角数字で入力してください");
+      setError(name, { type: "manual", message: "半角数字で入力してください" });
       return;
     }
-    setInputError("");
+    clearErrors(name);
     const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
-    setRawText(raw);
-    field.onChange(raw === "" ? 0 : Number(raw));
+    e.target.value = raw;
+    rhfOnChange(e);
   }
 
-  function handleBlur() {
-    setEditing(false);
-    setInputError("");
-    field.onBlur();
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    clearErrors(name);
+    const num = getValues(name);
+    e.target.value = num ? formatWithCommas(num) : "";
+    rhfOnBlur(e);
   }
 
   return (
@@ -152,20 +159,20 @@ export function NumberFieldControl({
         </span>
         <Input
           id={name}
+          ref={ref}
+          name={fieldName}
           type="text"
           inputMode="numeric"
           disabled={isDisabled}
-          value={display}
-          onFocus={handleFocus}
+          defaultValue={initialValue ? formatWithCommas(initialValue) : ""}
           onChange={handleChange}
           onBlur={handleBlur}
-          name={field.name}
-          aria-invalid={isInvalid}
-          className={cn("pl-7", isInvalid && "border-destructive")}
+          aria-invalid={!!fieldError}
+          className={cn("pl-7", !!fieldError && "border-destructive")}
         />
       </div>
-      {errorMessage && (
-        <p className="text-xs text-destructive">{errorMessage}</p>
+      {fieldError?.message && (
+        <p className="text-xs text-destructive">{fieldError.message}</p>
       )}
     </div>
   );
