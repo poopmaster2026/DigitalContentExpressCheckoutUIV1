@@ -136,8 +136,8 @@ function PriceInputField({
     }
     const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
     setDisplay(raw === "" ? "" : formatWithCommas(Number(raw)));
-    if (raw === "") return;
-    field.onChange(Number(raw));
+    // 空でも field.onChange(0) を呼び、Zod のリアルタイムバリデーションを動かす
+    field.onChange(raw === "" ? 0 : Number(raw));
   }
 
   function handleBlur() {
