@@ -77,15 +77,46 @@ export function RegisterPage() {
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold text-card-foreground">新規登録</h1>
           <p className="mt-1 text-sm text-muted-foreground">SetLink に参加する</p>
-          {/* セグメント型プログレスバー */}
-          <div className="mt-4 flex gap-1.5">
-            <div className="h-1 flex-1 rounded-full bg-cta" />
+
+          {/* ステップインジケーター */}
+          <div className="mt-5 flex items-start justify-center">
+            {/* Step 1 */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div className="flex size-8 items-center justify-center rounded-full bg-cta text-sm font-semibold text-cta-foreground">
+                {step === 1 ? "1" : <Check className="size-4" />}
+              </div>
+              <span className="text-xs font-medium text-cta">認証情報</span>
+            </div>
+
+            {/* コネクター */}
             <div
               className={cn(
-                "h-1 flex-1 rounded-full transition-colors duration-300",
+                "mx-3 mt-4 h-px w-14 transition-colors duration-300",
                 step === 2 ? "bg-cta" : "bg-border"
               )}
             />
+
+            {/* Step 2 */}
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300",
+                  step === 2
+                    ? "bg-cta text-cta-foreground"
+                    : "border-2 border-border text-muted-foreground"
+                )}
+              >
+                2
+              </div>
+              <span
+                className={cn(
+                  "text-xs font-medium transition-colors duration-300",
+                  step === 2 ? "text-cta" : "text-muted-foreground"
+                )}
+              >
+                プロフィール
+              </span>
+            </div>
           </div>
         </div>
 
