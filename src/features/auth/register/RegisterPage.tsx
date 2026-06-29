@@ -71,19 +71,21 @@ export function RegisterPage() {
         />
       </div>
 
-      {/* プログレスバー（カード外・ロゴ下） */}
-      <div className="mb-3 flex w-full max-w-md gap-1.5">
-        <div className="h-1 flex-1 rounded-full bg-cta" />
-        <div
-          className={cn(
-            "h-1 flex-1 rounded-full transition-colors duration-300",
-            step === 2 ? "bg-cta" : "bg-white/20"
-          )}
-        />
-      </div>
+      {/* White card — overflow-hidden でバーをカード角にクリップ */}
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-card shadow-md">
+        {/* プログレスバー（カード上端） */}
+        <div className="flex h-1 gap-1">
+          <div className="flex-1 bg-cta" />
+          <div
+            className={cn(
+              "flex-1 transition-colors duration-300",
+              step === 2 ? "bg-cta" : "bg-muted"
+            )}
+          />
+        </div>
 
-      {/* White card */}
-      <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
+        {/* Card content */}
+        <div className="p-10">
         {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold text-card-foreground">新規登録</h1>
@@ -328,7 +330,8 @@ export function RegisterPage() {
             </div>
           )}
         </form>
-      </div>
+        </div>{/* /p-10 */}
+      </div>{/* /card */}
 
       {/* Footer — white text on dark background */}
       <div className="mt-8 flex flex-col items-center gap-1.5">
