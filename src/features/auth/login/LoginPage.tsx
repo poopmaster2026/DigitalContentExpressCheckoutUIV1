@@ -47,7 +47,7 @@ export function LoginPage() {
 
       {/* White card */}
       <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
-        <div className="mb-6">
+        <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold text-card-foreground">ログイン</h1>
           <p className="mt-1 text-sm text-muted-foreground">ストア管理へ進む</p>
         </div>
