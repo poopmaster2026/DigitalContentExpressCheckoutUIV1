@@ -365,11 +365,11 @@ function PasswordCheck({ ok, label }: { ok: boolean; label: string }) {
   return (
     <li
       className={cn(
-        "flex items-center gap-1.5 text-xs",
+        "flex items-center gap-2 text-sm font-medium",
         ok ? "text-success" : "text-muted-foreground"
       )}
     >
-      {ok ? <Check className="size-3" /> : <X className="size-3" />}
+      {ok ? <Check className="size-4 shrink-0" /> : <X className="size-4 shrink-0" />}
       {label}
     </li>
   );
