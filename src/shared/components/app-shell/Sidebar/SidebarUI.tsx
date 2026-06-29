@@ -5,9 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 
+import { SidebarAccount } from "./components/SidebarAccount";
 import { SideNav } from "./components/SideNav";
 import { NAV_SECTIONS } from "./navEntries";
+
+const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
+const USERNAME = "kumaaa1212";
 
 export function SidebarUI() {
   const pathname = usePathname();
@@ -20,8 +25,9 @@ export function SidebarUI() {
         <SideNav sections={NAV_SECTIONS} selectedKey="products" />
       </div>
 
-      {/* 設定ボタン（下部固定） */}
-      <div className="w-full px-1.5 pb-1">
+      {/* 下部固定: 設定 + アカウント */}
+      <div className="w-full px-1.5 pb-1 flex flex-col gap-1">
+        {/* 設定 */}
         <Link
           href="/settings"
           title="設定"
@@ -52,6 +58,19 @@ export function SidebarUI() {
             設定
           </span>
         </Link>
+
+        {/* アカウント */}
+        <SidebarAccount>
+          <button className="flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={AVATAR_SRC} alt="" />
+              <AvatarFallback>花</AvatarFallback>
+            </Avatar>
+            <span className="w-full truncate text-center text-[10px] leading-snug text-muted-foreground">
+              {USERNAME}
+            </span>
+          </button>
+        </SidebarAccount>
       </div>
     </aside>
   );

@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { SidebarAccount } from "../Sidebar/components/SidebarAccount";
-
 import { MobileNavButton } from "./components/MobileNavButton";
 import { SearchModal } from "./components/SearchModal";
 
@@ -75,10 +73,6 @@ export function AppHeader() {
           </button>
         </div>
 
-        {/* 右: アカウント */}
-        <div className="ml-auto flex shrink-0 items-center gap-1 sm:ml-0">
-          <SidebarAccount />
-        </div>
       </header>
 
       <SearchModal open={searchOpen} onOpenChange={setSearchOpen} />

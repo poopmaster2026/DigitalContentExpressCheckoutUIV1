@@ -1,6 +1,7 @@
 "use client";
 
 import { Building2, LogOut, Settings } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import {
@@ -18,22 +19,28 @@ import { DEFAULT_STORE_ID, STORES } from "../../stores";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
 
-export function SidebarAccount() {
+interface SidebarAccountProps {
+  children?: ReactNode;
+}
+
+export function SidebarAccount({ children }: SidebarAccountProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-          aria-label="アカウントとストア"
-        >
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={AVATAR_SRC} alt="" />
-            <AvatarFallback>花</AvatarFallback>
-          </Avatar>
-        </button>
+        {children ?? (
+          <button
+            className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            aria-label="アカウントとストア"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={AVATAR_SRC} alt="" />
+              <AvatarFallback>花</AvatarFallback>
+            </Avatar>
+          </button>
+        )}
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent side="bottom" align="end" className="w-60">
+      <DropdownMenuContent side="right" align="end" className="w-60">
         <DropdownMenuLabel className="font-normal">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
