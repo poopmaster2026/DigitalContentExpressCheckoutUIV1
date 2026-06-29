@@ -71,25 +71,22 @@ export function RegisterPage() {
         />
       </div>
 
-      {/* セグメント型プログレスバー（ロゴ下・カード外） */}
-      <div className="mb-4 flex w-full max-w-md gap-1.5">
-        <div className="h-1 flex-1 rounded-full bg-cta" />
-        <div
-          className={cn(
-            "h-1 flex-1 rounded-full transition-colors duration-300",
-            step === 2 ? "bg-cta" : "bg-white/20"
-          )}
-        />
-      </div>
-
       {/* White card */}
-      <div className="w-full max-w-md rounded-2xl bg-card shadow-md">
-        {/* Card content */}
-        <div className="p-10">
+      <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
         {/* Header */}
-        <div className="mb-6 text-center">
+        <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold text-card-foreground">新規登録</h1>
           <p className="mt-1 text-sm text-muted-foreground">SetLink に参加する</p>
+          {/* セグメント型プログレスバー */}
+          <div className="mt-4 flex gap-1.5">
+            <div className="h-1 flex-1 rounded-full bg-cta" />
+            <div
+              className={cn(
+                "h-1 flex-1 rounded-full transition-colors duration-300",
+                step === 2 ? "bg-cta" : "bg-border"
+              )}
+            />
+          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -330,8 +327,7 @@ export function RegisterPage() {
             </div>
           )}
         </form>
-        </div>{/* /p-10 content */}
-      </div>{/* /card */}
+      </div>
 
       {/* Footer — white text on dark background */}
       <div className="mt-8 flex flex-col items-center gap-1.5">
