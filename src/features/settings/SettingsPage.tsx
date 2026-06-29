@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Bell, CreditCard, Eye, EyeOff, Link2, Lock, Receipt, User } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
@@ -9,31 +9,41 @@ import { Label } from "@/shared/components/ui/label";
 import { Separator } from "@/shared/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 
+const TABS = [
+  { value: "profile",       label: "プロフィール",   icon: User,       enabled: true  },
+  { value: "integrations",  label: "連携",            icon: Link2,      enabled: false },
+  { value: "billing",       label: "請求",            icon: Receipt,    enabled: false },
+  { value: "payments",      label: "支払い",           icon: CreditCard, enabled: false },
+  { value: "notifications", label: "メール通知",       icon: Bell,       enabled: false },
+  { value: "security",      label: "セキュリティ",     icon: Lock,       enabled: false },
+] as const;
+
 export function SettingsPage() {
   return (
     <div className="flex flex-col gap-6 p-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">アカウント設定</h1>
-      </div>
+      <h1 className="text-2xl font-semibold text-foreground">アカウント設定</h1>
 
       <Tabs defaultValue="profile">
-        <TabsList variant="line" className="w-full justify-start border-b border-border pb-0 rounded-none h-auto gap-0">
-          <TabsTrigger value="profile" className="px-4 pb-3 text-base rounded-none">
-            プロフィール
-          </TabsTrigger>
-          <TabsTrigger value="security" className="px-4 pb-3 text-base rounded-none">
-            セキュリティ
-          </TabsTrigger>
+        <TabsList className="h-auto w-full justify-start gap-1 bg-transparent p-0 flex-wrap">
+          {TABS.map(({ value, label, icon: Icon, enabled }) => (
+            <TabsTrigger
+              key={value}
+              value={value}
+              disabled={!enabled}
+              className="flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-none transition-colors hover:bg-surface disabled:pointer-events-none disabled:opacity-40 data-[state=active]:border-cta data-[state=active]:bg-cta/8 data-[state=active]:text-cta after:hidden"
+            >
+              <Icon className="size-4 shrink-0" />
+              {label}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        {/* プロフィール */}
         <TabsContent value="profile" className="mt-8">
-          <ProfileSection />
-        </TabsContent>
-
-        {/* セキュリティ */}
-        <TabsContent value="security" className="mt-8">
-          <SecuritySection />
+          <div className="flex flex-col gap-10 max-w-2xl">
+            <ProfileSection />
+            <Separator />
+            <PasswordSection />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
@@ -42,81 +52,71 @@ export function SettingsPage() {
 
 function ProfileSection() {
   return (
-    <div className="flex flex-col gap-8 max-w-2xl">
-      <section className="flex flex-col gap-6">
-        <h2 className="text-lg font-semibold text-foreground">プロフィール</h2>
+    <section className="flex flex-col gap-6">
+      <h2 className="text-lg font-semibold text-foreground">プロフィール</h2>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
-            <Label className="text-sm text-muted-foreground">氏名</Label>
-            <Input
-              defaultValue="花子"
-              className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-sm text-muted-foreground">ユーザー名</Label>
-            <Input
-              defaultValue="kumaaa1212"
-              className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
-            />
-          </div>
-        </div>
-
+      <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
-          <Label className="text-sm text-muted-foreground">メールアドレス</Label>
+          <Label className="text-sm text-muted-foreground">氏名</Label>
           <Input
-            type="email"
-            defaultValue="hanako@ours.jp"
+            defaultValue="花子"
             className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
           />
         </div>
-
-        <div>
-          <Button size="lg" className="h-11 px-8">
-            更新する
-          </Button>
+        <div className="flex flex-col gap-2">
+          <Label className="text-sm text-muted-foreground">ユーザー名</Label>
+          <Input
+            defaultValue="kumaaa1212"
+            className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
+          />
         </div>
-      </section>
-    </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label className="text-sm text-muted-foreground">メールアドレス</Label>
+        <Input
+          type="email"
+          defaultValue="hanako@ours.jp"
+          className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
+        />
+      </div>
+
+      <div>
+        <Button size="lg" className="h-11 px-8">更新する</Button>
+      </div>
+    </section>
   );
 }
 
-function SecuritySection() {
+function PasswordSection() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="flex flex-col gap-8 max-w-2xl">
-      <section className="flex flex-col gap-6">
-        <h2 className="text-lg font-semibold text-foreground">パスワード</h2>
+    <section className="flex flex-col gap-6">
+      <h2 className="text-lg font-semibold text-foreground">パスワード</h2>
 
+      <div className="flex flex-col gap-2">
+        <Label className="text-sm text-muted-foreground">現在のパスワード</Label>
+        <PasswordInput show={showCurrent} onToggle={() => setShowCurrent((v) => !v)} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
-          <Label className="text-sm text-muted-foreground">現在のパスワード</Label>
-          <PasswordInput show={showCurrent} onToggle={() => setShowCurrent((v) => !v)} />
+          <Label className="text-sm text-muted-foreground">新しいパスワード</Label>
+          <PasswordInput show={showNew} onToggle={() => setShowNew((v) => !v)} />
         </div>
-
-        <Separator />
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
-            <Label className="text-sm text-muted-foreground">新しいパスワード</Label>
-            <PasswordInput show={showNew} onToggle={() => setShowNew((v) => !v)} />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label className="text-sm text-muted-foreground">パスワードの確認</Label>
-            <PasswordInput show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
-          </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-sm text-muted-foreground">パスワードの確認</Label>
+          <PasswordInput show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
         </div>
+      </div>
 
-        <div>
-          <Button size="lg" className="h-11 px-8">
-            更新する
-          </Button>
-        </div>
-      </section>
-    </div>
+      <div>
+        <Button size="lg" className="h-11 px-8">更新する</Button>
+      </div>
+    </section>
   );
 }
 
