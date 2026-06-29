@@ -31,7 +31,7 @@ export function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { agreedToTerms: false },
+    defaultValues: { email: "", password: "", name: "", storeName: "", username: "", agreedToTerms: false },
     mode: "onBlur",
   });
 
@@ -139,8 +139,8 @@ export function RegisterPage() {
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
-                {/* パスワード要件チェックリスト */}
-                {password.length > 0 && (
+                {/* パスワード要件チェックリスト: 入力中 or エラー時に表示 */}
+                {(password.length > 0 || errors.password) && (
                   <ul className="mt-1 flex flex-col gap-0.5">
                     <PasswordCheck ok={passwordChecks.length} label="8文字以上" />
                     <PasswordCheck ok={passwordChecks.uppercase} label="大文字を含む" />
@@ -217,10 +217,10 @@ export function RegisterPage() {
                 )}
               </div>
 
-              {/* 会社・ストア名 */}
+              {/* ストア名 */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="storeName" className="text-sm text-muted-foreground">
-                  会社・ストア名
+                  ストア名
                 </Label>
                 <Input
                   id="storeName"
@@ -236,10 +236,10 @@ export function RegisterPage() {
                 )}
               </div>
 
-              {/* ユーザー名 */}
+              {/* ストアURL */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="username" className="text-sm text-muted-foreground">
-                  ユーザー名
+                  ストアURL
                 </Label>
                 {/* 小文字変換: UI の入力正規化のため Controller で処理 */}
                 <Controller

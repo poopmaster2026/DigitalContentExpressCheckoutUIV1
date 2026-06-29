@@ -12,11 +12,11 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const registerSchema = z.object({
   name: z.string().min(1, "氏名を入力してください"),
-  storeName: z.string().min(1, "会社・ストア名を入力してください"),
+  storeName: z.string().min(1, "ストア名を入力してください"),
   username: z
     .string()
-    .min(3, "3文字以上で入力してください")
-    .max(16, "16文字以下で入力してください")
+    .min(3, "ストアURLは3文字以上で入力してください")
+    .max(16, "ストアURLは16文字以下で入力してください")
     .regex(
       /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
       "小文字英数字とハイフンのみ使えます（先頭・末尾は英数字）"
