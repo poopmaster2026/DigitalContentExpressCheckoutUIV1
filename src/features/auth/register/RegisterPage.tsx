@@ -72,7 +72,7 @@ export function RegisterPage() {
 
         {/* フォーム（縦中央） */}
         <div className="flex flex-1 flex-col items-center justify-center px-10 py-12">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-md">
             {/* ヘッダー + プログレスバー */}
             <div className="mb-8">
               <div className="flex items-center justify-between">
@@ -96,10 +96,10 @@ export function RegisterPage() {
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
               {step === 1 && (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-5">
                   {/* メールアドレス */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="email" className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="email" className="text-base text-muted-foreground">
                       メールアドレス
                     </Label>
                     <Input
@@ -109,7 +109,7 @@ export function RegisterPage() {
                       placeholder="you@example.com"
                       aria-invalid={!!errors.email}
                       className={cn(
-                        "border-0 bg-surface focus-visible:ring-1",
+                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
                         errors.email && "ring-1 ring-destructive"
                       )}
                       {...register("email")}
@@ -120,8 +120,8 @@ export function RegisterPage() {
                   </div>
 
                   {/* パスワード */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="password" className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="password" className="text-base text-muted-foreground">
                       パスワード
                     </Label>
                     <div className="relative">
@@ -132,7 +132,7 @@ export function RegisterPage() {
                         placeholder="••••••••"
                         aria-invalid={!!errors.password}
                         className={cn(
-                          "border-0 bg-surface pr-10 focus-visible:ring-1",
+                          "h-12 border-0 bg-surface px-4 pr-12 text-base focus-visible:ring-1",
                           errors.password && "ring-1 ring-destructive"
                         )}
                         {...register("password")}
@@ -140,10 +140,10 @@ export function RegisterPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
                       >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                       </button>
                     </div>
                     {(password.length > 0 || errors.password) && (
@@ -159,19 +159,19 @@ export function RegisterPage() {
                   <Button
                     type="button"
                     size="lg"
-                    className="mt-1 w-full rounded-full"
+                    className="h-12 mt-1 w-full rounded-full text-base"
                     onClick={handleNext}
                   >
                     次へ
                   </Button>
 
-                  <div className="my-1 text-center text-sm text-muted-foreground">または</div>
+                  <div className="my-2 text-center text-sm text-muted-foreground">または</div>
 
                   <Button
                     type="button"
                     variant="outline"
                     size="lg"
-                    className="w-full rounded-full gap-2"
+                    className="h-12 w-full rounded-full gap-2 text-base"
                     onClick={() => {
                       // TODO: Google OAuth による新規登録
                       // 1. Google の OAuth 認可エンドポイントにリダイレクト
@@ -195,10 +195,10 @@ export function RegisterPage() {
               )}
 
               {step === 2 && (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-5">
                   {/* 氏名 */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="name" className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="name" className="text-base text-muted-foreground">
                       氏名
                     </Label>
                     <Input
@@ -208,7 +208,7 @@ export function RegisterPage() {
                       placeholder="山田 太郎"
                       aria-invalid={!!errors.name}
                       className={cn(
-                        "border-0 bg-surface focus-visible:ring-1",
+                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
                         errors.name && "ring-1 ring-destructive"
                       )}
                       {...register("name")}
@@ -219,8 +219,8 @@ export function RegisterPage() {
                   </div>
 
                   {/* ストア名 */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="storeName" className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="storeName" className="text-base text-muted-foreground">
                       ストア名
                     </Label>
                     <Input
@@ -230,7 +230,7 @@ export function RegisterPage() {
                       placeholder="株式会社サンプル"
                       aria-invalid={!!errors.storeName}
                       className={cn(
-                        "border-0 bg-surface focus-visible:ring-1",
+                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
                         errors.storeName && "ring-1 ring-destructive"
                       )}
                       {...register("storeName")}
@@ -241,8 +241,8 @@ export function RegisterPage() {
                   </div>
 
                   {/* ストアURL */}
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="username" className="text-sm text-muted-foreground">
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="username" className="text-base text-muted-foreground">
                       ストアURL
                     </Label>
                     <Controller
@@ -256,7 +256,7 @@ export function RegisterPage() {
                           placeholder="my-store"
                           aria-invalid={!!errors.username}
                           className={cn(
-                            "border-0 bg-surface focus-visible:ring-1",
+                            "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
                             errors.username && "ring-1 ring-destructive"
                           )}
                           {...field}
@@ -316,7 +316,7 @@ export function RegisterPage() {
                     type="submit"
                     size="lg"
                     disabled={isSubmitting}
-                    className="mt-1 w-full rounded-full"
+                    className="h-12 mt-1 w-full rounded-full text-base"
                   >
                     {isSubmitting ? "登録中..." : "アカウントを作成"}
                   </Button>

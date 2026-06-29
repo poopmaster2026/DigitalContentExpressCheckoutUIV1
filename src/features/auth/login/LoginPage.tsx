@@ -49,16 +49,16 @@ export function LoginPage() {
 
         {/* フォーム（縦中央） */}
         <div className="flex flex-1 flex-col items-center justify-center px-10 py-12">
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-md">
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-foreground">ログイン</h1>
               <p className="mt-2 text-sm text-muted-foreground">ストア管理へ進む</p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-3">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
               {/* Email */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email" className="text-sm text-muted-foreground">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="email" className="text-base text-muted-foreground">
                   メールアドレス
                 </Label>
                 <Input
@@ -68,7 +68,7 @@ export function LoginPage() {
                   placeholder="you@example.com"
                   aria-invalid={!!errors.email}
                   className={cn(
-                    "border-0 bg-surface focus-visible:ring-1",
+                    "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
                     errors.email && "ring-1 ring-destructive"
                   )}
                   {...register("email")}
@@ -79,14 +79,14 @@ export function LoginPage() {
               </div>
 
               {/* Password */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm text-muted-foreground">
+                  <Label htmlFor="password" className="text-base text-muted-foreground">
                     パスワード
                   </Label>
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-cta hover:underline"
+                    className="text-sm text-cta hover:underline"
                     tabIndex={-1}
                   >
                     パスワードを忘れた方
@@ -100,7 +100,7 @@ export function LoginPage() {
                     placeholder="••••••••"
                     aria-invalid={!!errors.password}
                     className={cn(
-                      "border-0 bg-surface pr-10 focus-visible:ring-1",
+                      "h-12 border-0 bg-surface px-4 pr-12 text-base focus-visible:ring-1",
                       errors.password && "ring-1 ring-destructive"
                     )}
                     {...register("password")}
@@ -108,10 +108,10 @@ export function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
                   >
-                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                   </button>
                 </div>
                 {errors.password && (
@@ -124,21 +124,21 @@ export function LoginPage() {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="mt-1 w-full rounded-full"
+                className="h-12 mt-1 w-full rounded-full text-base"
               >
                 {isSubmitting ? "ログイン中..." : "ログイン"}
               </Button>
             </form>
 
             {/* OR */}
-            <div className="my-5 text-center text-sm text-muted-foreground">または</div>
+            <div className="my-6 text-center text-sm text-muted-foreground">または</div>
 
             {/* Google */}
             <Button
               type="button"
               variant="outline"
               size="lg"
-              className="w-full rounded-full gap-2"
+              className="h-12 w-full rounded-full gap-2 text-base"
               onClick={() => {
                 // TODO: implement Google OAuth
               }}
