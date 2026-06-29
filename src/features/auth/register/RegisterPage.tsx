@@ -115,7 +115,7 @@ export function RegisterPage() {
                       {...register("email")}
                     />
                     {errors.email && (
-                      <p className="text-xs text-destructive">{errors.email.message}</p>
+                      <p className="text-sm font-medium text-destructive">{errors.email.message}</p>
                     )}
                   </div>
 
@@ -214,7 +214,7 @@ export function RegisterPage() {
                       {...register("name")}
                     />
                     {errors.name && (
-                      <p className="text-xs text-destructive">{errors.name.message}</p>
+                      <p className="text-sm font-medium text-destructive">{errors.name.message}</p>
                     )}
                   </div>
 
@@ -236,7 +236,7 @@ export function RegisterPage() {
                       {...register("storeName")}
                     />
                     {errors.storeName && (
-                      <p className="text-xs text-destructive">{errors.storeName.message}</p>
+                      <p className="text-sm font-medium text-destructive">{errors.storeName.message}</p>
                     )}
                   </div>
 
@@ -266,14 +266,14 @@ export function RegisterPage() {
                     />
                     <p
                       className={cn(
-                        "text-xs",
+                        "text-sm font-medium",
                         username && !errors.username ? "text-cta" : "text-muted-foreground"
                       )}
                     >
                       {username ? `${username}.setlink.jp` : "username.setlink.jp"}
                     </p>
                     {errors.username && (
-                      <p className="text-xs text-destructive">{errors.username.message}</p>
+                      <p className="text-sm font-medium text-destructive">{errors.username.message}</p>
                     )}
                   </div>
 
@@ -308,7 +308,7 @@ export function RegisterPage() {
                       )}
                     />
                     {errors.agreedToTerms && (
-                      <p className="text-xs text-destructive">{errors.agreedToTerms.message}</p>
+                      <p className="text-sm font-medium text-destructive">{errors.agreedToTerms.message}</p>
                     )}
                   </div>
 

@@ -74,7 +74,7 @@ export function LoginPage() {
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.email.message}</p>
                 )}
               </div>
 
@@ -115,7 +115,7 @@ export function LoginPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                  <p className="text-sm font-medium text-destructive">{errors.password.message}</p>
                 )}
               </div>
 
