@@ -12,7 +12,6 @@ import { SideNav } from "./components/SideNav";
 import { NAV_SECTIONS } from "./navEntries";
 
 const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
-const USERNAME = "kumaaa1212";
 
 export function SidebarUI() {
   const pathname = usePathname();
@@ -62,12 +61,11 @@ export function SidebarUI() {
         {/* アカウント */}
         <SidebarAccount>
           <button className="flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={AVATAR_SRC} alt="" />
-              <AvatarFallback>花</AvatarFallback>
-            </Avatar>
-            <span className="w-full truncate text-center text-[10px] leading-snug text-muted-foreground">
-              {USERNAME}
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={AVATAR_SRC} alt="" />
+                <AvatarFallback className="text-[10px]">花</AvatarFallback>
+              </Avatar>
             </span>
           </button>
         </SidebarAccount>

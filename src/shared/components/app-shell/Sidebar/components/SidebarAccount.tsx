@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, LogOut, Settings } from "lucide-react";
+import { Building2, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
@@ -40,16 +40,16 @@ export function SidebarAccount({ children }: SidebarAccountProps) {
         )}
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent side="right" align="end" className="w-60">
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent side="right" align="end" className="w-64">
+        <DropdownMenuLabel className="py-3 font-normal">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-12 w-12">
               <AvatarImage src={AVATAR_SRC} alt="" />
               <AvatarFallback>花</AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="truncate font-medium">花子</p>
-              <p className="truncate text-xs text-muted-foreground">hanako@ours.jp</p>
+              <p className="truncate text-base font-semibold text-foreground">花子</p>
+              <p className="truncate text-sm text-muted-foreground">hanako@ours.jp</p>
             </div>
           </div>
         </DropdownMenuLabel>
@@ -59,19 +59,14 @@ export function SidebarAccount({ children }: SidebarAccountProps) {
         </DropdownMenuLabel>
         <DropdownMenuRadioGroup value={DEFAULT_STORE_ID}>
           {STORES.map((s) => (
-            <DropdownMenuRadioItem key={s.id} value={s.id}>
+            <DropdownMenuRadioItem key={s.id} value={s.id} className="py-2.5 text-sm">
               <Building2 className="mr-2 h-4 w-4" />
               {s.name}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
-          設定
-        </DropdownMenuItem>
-        <DropdownMenuItem>利用規約</DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem className="py-2.5 text-sm">
           <LogOut className="mr-2 h-4 w-4" />
           ログアウト
         </DropdownMenuItem>
