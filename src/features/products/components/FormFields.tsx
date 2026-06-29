@@ -29,8 +29,8 @@ export function TextFieldControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
@@ -39,10 +39,10 @@ export function TextFieldControl({
             {...field}
             autoComplete="off"
             aria-invalid={fieldState.invalid}
-            className={cn(fieldState.invalid && "border-destructive")}
+            className={cn("h-11 px-4 text-base", fieldState.invalid && "border-destructive")}
           />
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}
@@ -65,8 +65,8 @@ export function TextAreaControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
@@ -76,10 +76,10 @@ export function TextAreaControl({
             rows={4}
             autoComplete="off"
             aria-invalid={fieldState.invalid}
-            className={cn(fieldState.invalid && "border-destructive")}
+            className={cn("px-4 text-base", fieldState.invalid && "border-destructive")}
           />
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}
@@ -109,13 +109,13 @@ export function NumberFieldControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-muted-foreground">
               ¥
             </span>
             <Input
@@ -139,11 +139,11 @@ export function NumberFieldControl({
               onBlur={field.onBlur}
               name={field.name}
               aria-invalid={fieldState.invalid}
-              className={cn("pl-7", fieldState.invalid && "border-destructive")}
+              className={cn("h-11 pl-8 text-base", fieldState.invalid && "border-destructive")}
             />
           </div>
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}

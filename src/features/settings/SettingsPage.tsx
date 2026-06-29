@@ -39,7 +39,7 @@ export function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile" className="mt-6">
-          <div className="flex flex-col gap-5 max-w-2xl">
+          <div className="flex flex-col gap-5 max-w-xl">
             <ProfileSection />
             <PasswordSection />
           </div>
