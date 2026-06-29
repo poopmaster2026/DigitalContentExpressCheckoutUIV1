@@ -79,43 +79,30 @@ export function RegisterPage() {
           <p className="mt-1 text-sm text-muted-foreground">SetLink に参加する</p>
 
           {/* ステップインジケーター */}
-          <div className="mt-4 flex items-start justify-center">
+          <div className="mt-4 flex items-center justify-center">
             {/* Step 1 */}
-            <div className="flex flex-col items-center gap-1">
-              <div className="flex size-6 items-center justify-center rounded-full bg-cta text-xs font-semibold text-cta-foreground">
-                {step === 1 ? "1" : <Check className="size-3" />}
-              </div>
-              <span className="text-xs font-medium text-cta">認証情報</span>
+            <div className="flex size-6 items-center justify-center rounded-full bg-cta text-xs font-semibold text-cta-foreground">
+              {step === 1 ? "1" : <Check className="size-3" />}
             </div>
 
             {/* コネクター */}
             <div
               className={cn(
-                "mx-2 mt-3 h-px w-12 transition-colors duration-300",
+                "mx-2 h-px w-12 transition-colors duration-300",
                 step === 2 ? "bg-cta" : "bg-border"
               )}
             />
 
             {/* Step 2 */}
-            <div className="flex flex-col items-center gap-1">
-              <div
-                className={cn(
-                  "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300",
-                  step === 2
-                    ? "bg-cta text-cta-foreground"
-                    : "border border-border text-muted-foreground"
-                )}
-              >
-                2
-              </div>
-              <span
-                className={cn(
-                  "text-xs font-medium transition-colors duration-300",
-                  step === 2 ? "text-cta" : "text-muted-foreground"
-                )}
-              >
-                プロフィール
-              </span>
+            <div
+              className={cn(
+                "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300",
+                step === 2
+                  ? "bg-cta text-cta-foreground"
+                  : "border border-border text-muted-foreground"
+              )}
+            >
+              2
             </div>
           </div>
         </div>
