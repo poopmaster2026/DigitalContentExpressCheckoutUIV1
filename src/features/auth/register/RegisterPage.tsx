@@ -71,19 +71,19 @@ export function RegisterPage() {
         />
       </div>
 
-      {/* White card — overflow-hidden でバーをカード角にクリップ */}
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-card shadow-md">
-        {/* セグメント型プログレスバー（カード上端） */}
-        <div className="flex h-1 gap-1">
-          <div className="flex-1 bg-cta" />
-          <div
-            className={cn(
-              "flex-1 transition-colors duration-300",
-              step === 2 ? "bg-cta" : "bg-muted"
-            )}
-          />
-        </div>
+      {/* セグメント型プログレスバー（ロゴ下・カード外） */}
+      <div className="mb-4 flex w-full max-w-md gap-1.5">
+        <div className="h-1 flex-1 rounded-full bg-cta" />
+        <div
+          className={cn(
+            "h-1 flex-1 rounded-full transition-colors duration-300",
+            step === 2 ? "bg-cta" : "bg-white/20"
+          )}
+        />
+      </div>
 
+      {/* White card */}
+      <div className="w-full max-w-md rounded-2xl bg-card shadow-md">
         {/* Card content */}
         <div className="p-10">
         {/* Header */}
