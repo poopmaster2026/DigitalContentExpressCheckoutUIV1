@@ -10,12 +10,12 @@ import { Separator } from "@/shared/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 
 const TABS = [
-  { value: "profile",       label: "プロフィール",   icon: User,       enabled: true  },
-  { value: "integrations",  label: "連携",            icon: Link2,      enabled: false },
-  { value: "billing",       label: "請求",            icon: Receipt,    enabled: false },
-  { value: "payments",      label: "支払い",           icon: CreditCard, enabled: false },
-  { value: "notifications", label: "メール通知",       icon: Bell,       enabled: false },
-  { value: "security",      label: "セキュリティ",     icon: Lock,       enabled: false },
+  { value: "profile",       label: "プロフィール",  icon: User,       enabled: true  },
+  { value: "integrations",  label: "連携",           icon: Link2,      enabled: false },
+  { value: "billing",       label: "請求",           icon: Receipt,    enabled: false },
+  { value: "payments",      label: "支払い",          icon: CreditCard, enabled: false },
+  { value: "notifications", label: "メール通知",      icon: Bell,       enabled: false },
+  { value: "security",      label: "セキュリティ",    icon: Lock,       enabled: false },
 ] as const;
 
 export function SettingsPage() {
@@ -24,13 +24,13 @@ export function SettingsPage() {
       <h1 className="text-2xl font-semibold text-foreground">アカウント設定</h1>
 
       <Tabs defaultValue="profile">
-        <TabsList className="h-auto w-full justify-start gap-1 bg-transparent p-0 flex-wrap">
+        <TabsList className="h-auto w-full justify-start gap-1.5 bg-transparent p-0 flex-wrap">
           {TABS.map(({ value, label, icon: Icon, enabled }) => (
             <TabsTrigger
               key={value}
               value={value}
               disabled={!enabled}
-              className="flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-none transition-colors hover:bg-surface disabled:pointer-events-none disabled:opacity-40 data-[state=active]:border-cta data-[state=active]:bg-cta/8 data-[state=active]:text-cta after:hidden"
+              className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-35 data-[state=active]:bg-cta data-[state=active]:text-white data-[state=active]:shadow-sm after:hidden"
             >
               <Icon className="size-4 shrink-0" />
               {label}
@@ -38,10 +38,9 @@ export function SettingsPage() {
           ))}
         </TabsList>
 
-        <TabsContent value="profile" className="mt-8">
-          <div className="flex flex-col gap-10 max-w-2xl">
+        <TabsContent value="profile" className="mt-6">
+          <div className="flex flex-col gap-5 max-w-2xl">
             <ProfileSection />
-            <Separator />
             <PasswordSection />
           </div>
         </TabsContent>
@@ -52,22 +51,22 @@ export function SettingsPage() {
 
 function ProfileSection() {
   return (
-    <section className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold text-foreground">プロフィール</h2>
+    <section className="rounded-xl border border-border bg-card p-6 flex flex-col gap-6">
+      <h2 className="text-base font-semibold text-foreground">プロフィール</h2>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
           <Label className="text-sm text-muted-foreground">氏名</Label>
           <Input
             defaultValue="花子"
-            className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
+            className="h-11 border border-border bg-background px-4 text-base focus-visible:ring-1"
           />
         </div>
         <div className="flex flex-col gap-2">
           <Label className="text-sm text-muted-foreground">ユーザー名</Label>
           <Input
             defaultValue="kumaaa1212"
-            className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
+            className="h-11 border border-border bg-background px-4 text-base focus-visible:ring-1"
           />
         </div>
       </div>
@@ -77,12 +76,14 @@ function ProfileSection() {
         <Input
           type="email"
           defaultValue="hanako@ours.jp"
-          className="h-11 border border-border bg-card px-4 text-base focus-visible:ring-1"
+          className="h-11 border border-border bg-background px-4 text-base focus-visible:ring-1"
         />
       </div>
 
       <div>
-        <Button size="lg" className="h-11 px-8">更新する</Button>
+        <Button size="lg" className="h-11 bg-cta px-8 text-white hover:bg-cta-hover">
+          更新する
+        </Button>
       </div>
     </section>
   );
@@ -94,13 +95,15 @@ function PasswordSection() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <section className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold text-foreground">パスワード</h2>
+    <section className="rounded-xl border border-border bg-card p-6 flex flex-col gap-6">
+      <h2 className="text-base font-semibold text-foreground">パスワード</h2>
 
       <div className="flex flex-col gap-2">
         <Label className="text-sm text-muted-foreground">現在のパスワード</Label>
         <PasswordInput show={showCurrent} onToggle={() => setShowCurrent((v) => !v)} />
       </div>
+
+      <Separator />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">
@@ -114,7 +117,9 @@ function PasswordSection() {
       </div>
 
       <div>
-        <Button size="lg" className="h-11 px-8">更新する</Button>
+        <Button size="lg" className="h-11 bg-cta px-8 text-white hover:bg-cta-hover">
+          更新する
+        </Button>
       </div>
     </section>
   );
@@ -126,7 +131,7 @@ function PasswordInput({ show, onToggle }: { show: boolean; onToggle: () => void
       <Input
         type={show ? "text" : "password"}
         placeholder="••••••••"
-        className="h-11 border border-border bg-card px-4 pr-12 text-base focus-visible:ring-1"
+        className="h-11 border border-border bg-background px-4 pr-12 text-base focus-visible:ring-1"
       />
       <button
         type="button"

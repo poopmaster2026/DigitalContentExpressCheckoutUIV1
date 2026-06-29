@@ -169,7 +169,23 @@ Tailwind のシャドウユーティリティではなく CSS 変数で定義。
 - フォーカス時: `border-cta`（青）に自動変化
 - エラー時: `border-destructive` を `cn()` で付与
 
-### タブアンダーライン
+### タブ — Filled Active（設定画面など）
+
+アクティブタブを `bg-cta` 青塗り・白テキストで強調。非アクティブはテキストのみ（ボーダーなし）。
+
+```tsx
+<TabsList className="h-auto w-full justify-start gap-1.5 bg-transparent p-0 flex-wrap">
+  <TabsTrigger
+    value="profile"
+    className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-35 data-[state=active]:bg-cta data-[state=active]:text-white data-[state=active]:shadow-sm after:hidden"
+  >
+    <Icon className="size-4 shrink-0" />
+    タブラベル
+  </TabsTrigger>
+</TabsList>
+```
+
+### タブアンダーライン（汎用）
 
 shadcn Tabs の `variant="line"` を使い、`after:!bottom-0` で underline を位置調整。
 
@@ -182,6 +198,18 @@ shadcn Tabs の `variant="line"` を使い、`after:!bottom-0` で underline を
     タブラベル
   </TabsTrigger>
 </TabsList>
+```
+
+### カードベースのセクション
+
+設定画面・フォームセクションは `bg-card` カードで囲む。
+
+```tsx
+<section className="rounded-xl border border-border bg-card p-6 flex flex-col gap-6">
+  <h2 className="text-base font-semibold text-foreground">セクション名</h2>
+  {/* フォームフィールド */}
+  <Button className="h-11 bg-cta px-8 text-white hover:bg-cta-hover">更新する</Button>
+</section>
 ```
 
 ### ページネーションのアクティブページ
