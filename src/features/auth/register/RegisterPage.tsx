@@ -249,29 +249,26 @@ export function RegisterPage() {
                       control={control}
                       name="username"
                       render={({ field }) => (
-                        <Input
-                          id="username"
-                          type="text"
-                          autoComplete="username"
-                          placeholder="my-store"
-                          aria-invalid={!!errors.username}
+                        <div
                           className={cn(
-                            "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
+                            "flex h-12 items-center rounded-md bg-surface focus-within:ring-1 focus-within:ring-ring",
                             errors.username && "ring-1 ring-destructive"
                           )}
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.value.toLowerCase())}
-                        />
+                        >
+                          <input
+                            id="username"
+                            type="text"
+                            autoComplete="username"
+                            placeholder="my-store"
+                            aria-invalid={!!errors.username}
+                            className="h-full min-w-0 flex-1 bg-transparent pl-4 text-base outline-none placeholder:text-muted-foreground"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value.toLowerCase())}
+                          />
+                          <span className="shrink-0 pr-4 text-base text-muted-foreground">.setlink.jp</span>
+                        </div>
                       )}
                     />
-                    <p
-                      className={cn(
-                        "text-sm font-medium",
-                        username && !errors.username ? "text-cta" : "text-muted-foreground"
-                      )}
-                    >
-                      {username ? `${username}.setlink.jp` : "username.setlink.jp"}
-                    </p>
                     {errors.username && (
                       <p className="text-sm font-medium text-destructive">{errors.username.message}</p>
                     )}
