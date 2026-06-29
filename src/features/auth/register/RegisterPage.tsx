@@ -32,6 +32,7 @@ export function RegisterPage() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { agreedToTerms: false },
+    mode: "onBlur",
   });
 
   // 派生値: useState なし
