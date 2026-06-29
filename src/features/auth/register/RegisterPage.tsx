@@ -13,7 +13,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Separator } from "@/shared/components/ui/separator";
 
 import type { RegisterFormValues } from "../types/validation";
 import { registerSchema } from "../types/validation";
@@ -35,7 +34,6 @@ export function RegisterPage() {
     mode: "onBlur",
   });
 
-  // 派生値: useState なし
   const username = useWatch({ control, name: "username" }) ?? "";
   const password = useWatch({ control, name: "password" }) ?? "";
 
@@ -53,309 +51,311 @@ export function RegisterPage() {
 
   const onSubmit = async (_values: RegisterFormValues) => {
     // TODO: バックエンド API でアカウントを作成する
-    // - POST /api/auth/register にフォーム値を送信
-    // - 成功後: ダッシュボードへリダイレクト
     await new Promise((r) => setTimeout(r, 800));
     router.push("/store/products");
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-auth-bg px-4 py-12">
-      {/* Logo */}
-      <div className="mb-6">
-        <Image
-          src="/setlink-logo.png"
-          alt="SetLink"
-          width={80}
-          height={91}
-          className="rounded-xl"
-        />
-      </div>
-
-      {/* White card — overflow-hidden でバーをカード角にクリップ */}
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-card shadow-md">
-        {/* プログレスバー（カード上端） */}
-        <div className="flex h-1 gap-1">
-          <div className="flex-1 bg-cta" />
-          <div
-            className={cn(
-              "flex-1 transition-colors duration-300",
-              step === 2 ? "bg-cta" : "bg-muted"
-            )}
+    <div className="flex min-h-screen">
+      {/* ===== 左パネル: フォーム ===== */}
+      <div className="flex w-full flex-col lg:w-[45%]">
+        {/* ロゴ */}
+        <div className="px-10 pt-10">
+          <Image
+            src="/setlink-logo.png"
+            alt="SetLink"
+            width={48}
+            height={55}
+            className="rounded-lg"
           />
         </div>
 
-        {/* Card content */}
-        <div className="p-10">
-        {/* Header */}
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold text-card-foreground">新規登録</h1>
-          <p className="mt-1 text-sm text-muted-foreground">SetLink に参加する</p>
+        {/* フォーム（縦中央） */}
+        <div className="flex flex-1 flex-col items-center justify-center px-10 py-12">
+          <div className="w-full max-w-sm">
+            {/* ヘッダー + プログレスバー */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">新規登録</h1>
+                  <p className="mt-2 text-sm text-muted-foreground">SetLink に参加する</p>
+                </div>
+                <span className="text-sm text-muted-foreground">{step} / 2</span>
+              </div>
+              {/* プログレスバー */}
+              <div className="mt-4 flex gap-1.5">
+                <div className="h-1 flex-1 rounded-full bg-cta" />
+                <div
+                  className={cn(
+                    "h-1 flex-1 rounded-full transition-colors duration-300",
+                    step === 2 ? "bg-cta" : "bg-surface-muted"
+                  )}
+                />
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              {step === 1 && (
+                <div className="flex flex-col gap-3">
+                  {/* メールアドレス */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="email" className="text-sm text-muted-foreground">
+                      メールアドレス
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@example.com"
+                      aria-invalid={!!errors.email}
+                      className={cn(
+                        "border-0 bg-surface focus-visible:ring-1",
+                        errors.email && "ring-1 ring-destructive"
+                      )}
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <p className="text-xs text-destructive">{errors.email.message}</p>
+                    )}
+                  </div>
+
+                  {/* パスワード */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="password" className="text-sm text-muted-foreground">
+                      パスワード
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        aria-invalid={!!errors.password}
+                        className={cn(
+                          "border-0 bg-surface pr-10 focus-visible:ring-1",
+                          errors.password && "ring-1 ring-destructive"
+                        )}
+                        {...register("password")}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
+                      >
+                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    {(password.length > 0 || errors.password) && (
+                      <ul className="mt-1 flex flex-col gap-0.5">
+                        <PasswordCheck ok={passwordChecks.length} label="8文字以上" />
+                        <PasswordCheck ok={passwordChecks.uppercase} label="大文字を含む" />
+                        <PasswordCheck ok={passwordChecks.number} label="数字を含む" />
+                        <PasswordCheck ok={passwordChecks.symbol} label="記号を含む" />
+                      </ul>
+                    )}
+                  </div>
+
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="mt-1 w-full rounded-full"
+                    onClick={handleNext}
+                  >
+                    次へ
+                  </Button>
+
+                  <div className="my-1 text-center text-sm text-muted-foreground">または</div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="lg"
+                    className="w-full rounded-full gap-2"
+                    onClick={() => {
+                      // TODO: Google OAuth による新規登録
+                      // 1. Google の OAuth 認可エンドポイントにリダイレクト
+                      // 2. コールバックで受け取った Google プロフィール（name, email）を
+                      //    バックエンドに送信してアカウントを作成
+                      // 3. 新規ユーザー → Step 2（ストアURL・ストア名入力）へ
+                      // 4. 既存ユーザー → ダッシュボード（/store/products）へリダイレクト
+                    }}
+                  >
+                    <GoogleIcon />
+                    Googleで登録
+                  </Button>
+
+                  <p className="mt-4 text-center text-sm text-muted-foreground">
+                    すでにアカウントをお持ちですか？{" "}
+                    <Link href="/login" className="font-medium text-foreground hover:underline">
+                      ログイン
+                    </Link>
+                  </p>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="flex flex-col gap-3">
+                  {/* 氏名 */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="name" className="text-sm text-muted-foreground">
+                      氏名
+                    </Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="山田 太郎"
+                      aria-invalid={!!errors.name}
+                      className={cn(
+                        "border-0 bg-surface focus-visible:ring-1",
+                        errors.name && "ring-1 ring-destructive"
+                      )}
+                      {...register("name")}
+                    />
+                    {errors.name && (
+                      <p className="text-xs text-destructive">{errors.name.message}</p>
+                    )}
+                  </div>
+
+                  {/* ストア名 */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="storeName" className="text-sm text-muted-foreground">
+                      ストア名
+                    </Label>
+                    <Input
+                      id="storeName"
+                      type="text"
+                      autoComplete="organization"
+                      placeholder="株式会社サンプル"
+                      aria-invalid={!!errors.storeName}
+                      className={cn(
+                        "border-0 bg-surface focus-visible:ring-1",
+                        errors.storeName && "ring-1 ring-destructive"
+                      )}
+                      {...register("storeName")}
+                    />
+                    {errors.storeName && (
+                      <p className="text-xs text-destructive">{errors.storeName.message}</p>
+                    )}
+                  </div>
+
+                  {/* ストアURL */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="username" className="text-sm text-muted-foreground">
+                      ストアURL
+                    </Label>
+                    <Controller
+                      control={control}
+                      name="username"
+                      render={({ field }) => (
+                        <Input
+                          id="username"
+                          type="text"
+                          autoComplete="username"
+                          placeholder="my-store"
+                          aria-invalid={!!errors.username}
+                          className={cn(
+                            "border-0 bg-surface focus-visible:ring-1",
+                            errors.username && "ring-1 ring-destructive"
+                          )}
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value.toLowerCase())}
+                        />
+                      )}
+                    />
+                    <p
+                      className={cn(
+                        "text-xs",
+                        username && !errors.username ? "text-cta" : "text-muted-foreground"
+                      )}
+                    >
+                      {username ? `${username}.setlink.jp` : "username.setlink.jp"}
+                    </p>
+                    {errors.username && (
+                      <p className="text-xs text-destructive">{errors.username.message}</p>
+                    )}
+                  </div>
+
+                  {/* 利用規約 */}
+                  <div className="flex flex-col gap-1">
+                    <Controller
+                      control={control}
+                      name="agreedToTerms"
+                      render={({ field }) => (
+                        <div className="flex items-start gap-2.5">
+                          <Checkbox
+                            id="agreedToTerms"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            aria-invalid={!!errors.agreedToTerms}
+                            className="mt-0.5"
+                          />
+                          <label
+                            htmlFor="agreedToTerms"
+                            className="cursor-pointer text-sm leading-snug text-muted-foreground"
+                          >
+                            <Link href="/terms" className="text-cta hover:underline">
+                              利用規約
+                            </Link>
+                            および
+                            <Link href="/privacy" className="text-cta hover:underline">
+                              プライバシーポリシー
+                            </Link>
+                            に同意します
+                          </label>
+                        </div>
+                      )}
+                    />
+                    {errors.agreedToTerms && (
+                      <p className="text-xs text-destructive">{errors.agreedToTerms.message}</p>
+                    )}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="mt-1 w-full rounded-full"
+                  >
+                    {isSubmitting ? "登録中..." : "アカウントを作成"}
+                  </Button>
+
+                  <p className="text-center text-sm text-muted-foreground">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-foreground hover:underline"
+                    >
+                      ← 前のステップに戻る
+                    </button>
+                  </p>
+                </div>
+              )}
+            </form>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          {step === 1 && (
-            <div className="flex flex-col gap-4">
-              {/* メールアドレス */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email" className="text-sm text-muted-foreground">
-                  メールアドレス
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  aria-invalid={!!errors.email}
-                  className={cn(errors.email && "border-destructive")}
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email.message}</p>
-                )}
-              </div>
+        {/* フッター */}
+        <div className="px-10 pb-8 text-center">
+          <p className="text-xs text-muted-foreground">
+            登録することで
+            <Link href="/terms" className="underline hover:text-foreground">
+              利用規約
+            </Link>
+            および
+            <Link href="/privacy" className="underline hover:text-foreground">
+              プライバシーポリシー
+            </Link>
+            に同意したことになります。
+          </p>
+        </div>
+      </div>
 
-              {/* パスワード */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password" className="text-sm text-muted-foreground">
-                  パスワード
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    placeholder="••••••••"
-                    aria-invalid={!!errors.password}
-                    className={cn("pr-10", errors.password && "border-destructive")}
-                    {...register("password")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
-                  >
-                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-                {/* パスワード要件チェックリスト: 入力中 or エラー時に表示 */}
-                {(password.length > 0 || errors.password) && (
-                  <ul className="mt-1 flex flex-col gap-0.5">
-                    <PasswordCheck ok={passwordChecks.length} label="8文字以上" />
-                    <PasswordCheck ok={passwordChecks.uppercase} label="大文字を含む" />
-                    <PasswordCheck ok={passwordChecks.number} label="数字を含む" />
-                    <PasswordCheck ok={passwordChecks.symbol} label="記号を含む" />
-                  </ul>
-                )}
-              </div>
-
-              {/* 次へ */}
-              <Button
-                type="button"
-                size="lg"
-                className="w-full"
-                onClick={handleNext}
-              >
-                次へ
-              </Button>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3">
-                <Separator className="flex-1" />
-                <span className="text-xs text-muted-foreground">または</span>
-                <Separator className="flex-1" />
-              </div>
-
-              {/* Google OAuth */}
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                className="w-full gap-2"
-                onClick={() => {
-                  // TODO: Google OAuth による新規登録
-                  // 1. Google の OAuth 認可エンドポイントにリダイレクト
-                  // 2. コールバックで受け取った Google プロフィール（name, email）を
-                  //    バックエンドに送信してアカウントを作成
-                  // 3. 新規ユーザー → Step 2（ユーザー名・ストア名入力）へ
-                  // 4. 既存ユーザー → ダッシュボード（/store/products）へリダイレクト
-                }}
-              >
-                <GoogleIcon />
-                Googleで登録
-              </Button>
-
-              {/* ログインへ */}
-              <p className="text-center text-sm text-muted-foreground">
-                すでにアカウントをお持ちですか？{" "}
-                <Link href="/login" className="text-cta hover:underline">
-                  ログイン
-                </Link>
-              </p>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="flex flex-col gap-4">
-              {/* 氏名 */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name" className="text-sm text-muted-foreground">
-                  氏名
-                </Label>
-                <Input
-                  id="name"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="山田 太郎"
-                  aria-invalid={!!errors.name}
-                  className={cn(errors.name && "border-destructive")}
-                  {...register("name")}
-                />
-                {errors.name && (
-                  <p className="text-xs text-destructive">{errors.name.message}</p>
-                )}
-              </div>
-
-              {/* ストア名 */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="storeName" className="text-sm text-muted-foreground">
-                  ストア名
-                </Label>
-                <Input
-                  id="storeName"
-                  type="text"
-                  autoComplete="organization"
-                  placeholder="株式会社サンプル"
-                  aria-invalid={!!errors.storeName}
-                  className={cn(errors.storeName && "border-destructive")}
-                  {...register("storeName")}
-                />
-                {errors.storeName && (
-                  <p className="text-xs text-destructive">{errors.storeName.message}</p>
-                )}
-              </div>
-
-              {/* ストアURL */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="username" className="text-sm text-muted-foreground">
-                  ストアURL
-                </Label>
-                {/* 小文字変換: UI の入力正規化のため Controller で処理 */}
-                <Controller
-                  control={control}
-                  name="username"
-                  render={({ field }) => (
-                    <Input
-                      id="username"
-                      type="text"
-                      autoComplete="username"
-                      placeholder="my-store"
-                      aria-invalid={!!errors.username}
-                      className={cn(errors.username && "border-destructive")}
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.value.toLowerCase())}
-                    />
-                  )}
-                />
-                {/* リアルタイム URL プレビュー */}
-                <p
-                  className={cn(
-                    "text-xs",
-                    username && !errors.username ? "text-cta" : "text-muted-foreground"
-                  )}
-                >
-                  {username ? `${username}.setlink.jp` : "username.setlink.jp"}
-                </p>
-                {errors.username && (
-                  <p className="text-xs text-destructive">{errors.username.message}</p>
-                )}
-              </div>
-
-              {/* 利用規約 */}
-              <div className="flex flex-col gap-1">
-                <Controller
-                  control={control}
-                  name="agreedToTerms"
-                  render={({ field }) => (
-                    <div className="flex items-start gap-2.5">
-                      <Checkbox
-                        id="agreedToTerms"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        aria-invalid={!!errors.agreedToTerms}
-                        className="mt-0.5"
-                      />
-                      <label
-                        htmlFor="agreedToTerms"
-                        className="cursor-pointer text-sm leading-snug text-muted-foreground"
-                      >
-                        {/* TODO: リンク先 URL は後で設定 */}
-                        <Link href="/terms" className="text-cta hover:underline">
-                          利用規約
-                        </Link>
-                        および
-                        <Link href="/privacy" className="text-cta hover:underline">
-                          プライバシーポリシー
-                        </Link>
-                        に同意します
-                      </label>
-                    </div>
-                  )}
-                />
-                {errors.agreedToTerms && (
-                  <p className="text-xs text-destructive">{errors.agreedToTerms.message}</p>
-                )}
-              </div>
-
-              {/* アカウントを作成 */}
-              <Button
-                type="submit"
-                size="lg"
-                disabled={isSubmitting}
-                className="w-full"
-              >
-                {isSubmitting ? "登録中..." : "アカウントを作成"}
-              </Button>
-
-              {/* 戻る */}
-              <p className="text-center text-sm text-muted-foreground">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="text-cta hover:underline"
-                >
-                  ← 前のステップに戻る
-                </button>
-              </p>
-            </div>
-          )}
-        </form>
-        </div>{/* /p-10 */}
-      </div>{/* /card */}
-
-      {/* Footer — white text on dark background */}
-      <div className="mt-8 flex flex-col items-center gap-1.5">
-        <button
-          type="button"
-          className="text-sm font-medium text-white hover:underline"
-          onClick={() => {
-            // TODO: サポートページへのリンク
-          }}
-        >
-          お困りの場合
-        </button>
-        <p className="max-w-md text-center text-xs text-white/55">
-          登録することで、
-          <Link href="/terms" className="underline hover:text-white/80">
-            利用規約
-          </Link>
-          および
-          <Link href="/privacy" className="underline hover:text-white/80">
-            プライバシーポリシー
-          </Link>
-          に同意したことになります。
-        </p>
+      {/* ===== 右パネル: ビジュアル ===== */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-cta">
+        {/* TODO: 画像を後で追加 */}
+        <p className="text-white/40 text-sm">画像エリア</p>
       </div>
     </div>
   );

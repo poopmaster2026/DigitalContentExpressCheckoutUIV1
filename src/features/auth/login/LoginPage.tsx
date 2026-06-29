@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Separator } from "@/shared/components/ui/separator";
 
 import type { LoginFormValues } from "../types/validation";
 import { loginSchema } from "../types/validation";
@@ -25,6 +24,7 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: "onBlur",
   });
 
   const onSubmit = async (_values: LoginFormValues) => {
@@ -33,146 +33,150 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-auth-bg px-4 py-12">
-      {/* Logo above card */}
-      <div className="mb-6">
-        <Image
-          src="/setlink-logo.png"
-          alt="SetLink"
-          width={80}
-          height={91}
-          className="rounded-xl"
-        />
-      </div>
-
-      {/* White card */}
-      <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-semibold text-card-foreground">ログイン</h1>
-          <p className="mt-1 text-sm text-muted-foreground">ストア管理へ進む</p>
+    <div className="flex min-h-screen">
+      {/* ===== 左パネル: フォーム ===== */}
+      <div className="flex w-full flex-col lg:w-[45%]">
+        {/* ロゴ */}
+        <div className="px-10 pt-10">
+          <Image
+            src="/setlink-logo.png"
+            alt="SetLink"
+            width={48}
+            height={55}
+            className="rounded-lg"
+          />
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
-          {/* Email */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-sm text-muted-foreground">
-              メールアドレス
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              aria-invalid={!!errors.email}
-              className={cn(errors.email && "border-destructive")}
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-xs text-destructive">{errors.email.message}</p>
-            )}
-          </div>
+        {/* フォーム（縦中央） */}
+        <div className="flex flex-1 flex-col items-center justify-center px-10 py-12">
+          <div className="w-full max-w-sm">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-foreground">ログイン</h1>
+              <p className="mt-2 text-sm text-muted-foreground">ストア管理へ進む</p>
+            </div>
 
-          {/* Password */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-sm text-muted-foreground">
-                パスワード
-              </Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-cta hover:underline"
-                tabIndex={-1}
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-3">
+              {/* Email */}
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="email" className="text-sm text-muted-foreground">
+                  メールアドレス
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  aria-invalid={!!errors.email}
+                  className={cn(
+                    "border-0 bg-surface focus-visible:ring-1",
+                    errors.email && "ring-1 ring-destructive"
+                  )}
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm text-muted-foreground">
+                    パスワード
+                  </Label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs text-cta hover:underline"
+                    tabIndex={-1}
+                  >
+                    パスワードを忘れた方
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    aria-invalid={!!errors.password}
+                    className={cn(
+                      "border-0 bg-surface pr-10 focus-visible:ring-1",
+                      errors.password && "ring-1 ring-destructive"
+                    )}
+                    {...register("password")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                )}
+              </div>
+
+              {/* ログインボタン */}
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubmitting}
+                className="mt-1 w-full rounded-full"
               >
-                パスワードを忘れた方
+                {isSubmitting ? "ログイン中..." : "ログイン"}
+              </Button>
+            </form>
+
+            {/* OR */}
+            <div className="my-5 text-center text-sm text-muted-foreground">または</div>
+
+            {/* Google */}
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full rounded-full gap-2"
+              onClick={() => {
+                // TODO: implement Google OAuth
+              }}
+            >
+              <GoogleIcon />
+              Googleでログイン
+            </Button>
+
+            {/* 新規登録リンク */}
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              アカウントをお持ちでないですか？{" "}
+              <Link href="/register" className="font-medium text-foreground hover:underline">
+                新規登録
               </Link>
-            </div>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                placeholder="••••••••"
-                aria-invalid={!!errors.password}
-                className={cn("pr-10", errors.password && "border-destructive")}
-                {...register("password")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
-              >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
-            )}
+            </p>
           </div>
-
-          {/* Submit — dark full-width button matching Shopify style */}
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isSubmitting}
-            className="w-full"
-          >
-            {isSubmitting ? "ログイン中..." : "ログイン"}
-          </Button>
-        </form>
-
-        {/* Divider */}
-        <div className="my-5 flex items-center gap-3">
-          <Separator className="flex-1" />
-          <span className="text-xs text-muted-foreground">または</span>
-          <Separator className="flex-1" />
         </div>
 
-        {/* Google OAuth — light gray, icon + text */}
-        <Button
-          type="button"
-          variant="secondary"
-          size="lg"
-          className="w-full gap-2"
-          onClick={() => {
-            // TODO: implement Google OAuth
-          }}
-        >
-          <GoogleIcon />
-          Googleでログイン
-        </Button>
-
-        {/* Sign up */}
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          アカウントをお持ちでないですか？{" "}
-          <Link href="/register" className="text-cta hover:underline">
-            新規登録
-          </Link>
-        </p>
+        {/* フッター */}
+        <div className="px-10 pb-8 text-center">
+          <p className="text-xs text-muted-foreground">
+            ログインすることで
+            <Link href="/terms" className="underline hover:text-foreground">
+              利用規約
+            </Link>
+            および
+            <Link href="/privacy" className="underline hover:text-foreground">
+              プライバシーポリシー
+            </Link>
+            に同意したことになります。
+          </p>
+        </div>
       </div>
 
-      {/* Footer — white text on dark background */}
-      <div className="mt-8 flex flex-col items-center gap-1.5">
-        <button
-          type="button"
-          className="text-sm font-medium text-white hover:underline"
-          onClick={() => {
-            // TODO: support link
-          }}
-        >
-          お困りの場合
-        </button>
-        <p className="max-w-md text-center text-xs text-white/55">
-          ログインすることで、
-          <Link href="/terms" className="underline hover:text-white/80">
-            利用規約
-          </Link>
-          および
-          <Link href="/privacy" className="underline hover:text-white/80">
-            プライバシーポリシー
-          </Link>
-          に同意したことになります。
-        </p>
+      {/* ===== 右パネル: ビジュアル ===== */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-cta">
+        {/* TODO: 画像を後で追加 */}
+        <p className="text-white/40 text-sm">画像エリア</p>
       </div>
     </div>
   );
