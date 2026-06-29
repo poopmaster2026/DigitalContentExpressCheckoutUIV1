@@ -16,9 +16,6 @@ import { Separator } from "@/shared/components/ui/separator";
 import type { LoginFormValues } from "../types/validation";
 import { loginSchema } from "../types/validation";
 
-const inputDark =
-  "bg-auth-input-bg border-auth-input-border text-auth-card-foreground placeholder:text-auth-card-muted focus-visible:border-white/30";
-
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -37,7 +34,7 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-auth-bg px-4 py-12">
-      {/* Logo */}
+      {/* Logo above card */}
       <div className="mb-6">
         <Image
           src="/setlink-logo.png"
@@ -48,17 +45,17 @@ export function LoginPage() {
         />
       </div>
 
-      {/* Card */}
-      <div className="w-full max-w-md rounded-2xl bg-auth-card p-10">
+      {/* White card */}
+      <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-auth-card-foreground">ログイン</h1>
-          <p className="mt-1 text-sm text-auth-card-muted">ストア管理へ進む</p>
+          <h1 className="text-2xl font-semibold text-card-foreground">ログイン</h1>
+          <p className="mt-1 text-sm text-muted-foreground">ストア管理へ進む</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-auth-card-muted">
+            <Label htmlFor="email" className="text-sm text-muted-foreground">
               メールアドレス
             </Label>
             <Input
@@ -67,7 +64,7 @@ export function LoginPage() {
               autoComplete="email"
               placeholder="you@example.com"
               aria-invalid={!!errors.email}
-              className={cn(inputDark, errors.email && "border-destructive")}
+              className={cn(errors.email && "border-destructive")}
               {...register("email")}
             />
             {errors.email && (
@@ -78,7 +75,7 @@ export function LoginPage() {
           {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-auth-card-muted">
+              <Label htmlFor="password" className="text-sm text-muted-foreground">
                 パスワード
               </Label>
               <Link
@@ -96,24 +93,16 @@ export function LoginPage() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 aria-invalid={!!errors.password}
-                className={cn(
-                  inputDark,
-                  "pr-10",
-                  errors.password && "border-destructive"
-                )}
+                className={cn("pr-10", errors.password && "border-destructive")}
                 {...register("password")}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-auth-card-muted hover:text-auth-card-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label={showPassword ? "パスワードを非表示" : "パスワードを表示"}
               >
-                {showPassword ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
-                )}
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
             {errors.password && (
@@ -121,12 +110,12 @@ export function LoginPage() {
             )}
           </div>
 
-          {/* Submit */}
+          {/* Submit — dark full-width button matching Shopify style */}
           <Button
             type="submit"
             size="lg"
             disabled={isSubmitting}
-            className="w-full bg-white text-foreground hover:bg-white/90 disabled:opacity-60"
+            className="w-full"
           >
             {isSubmitting ? "ログイン中..." : "ログイン"}
           </Button>
@@ -134,16 +123,17 @@ export function LoginPage() {
 
         {/* Divider */}
         <div className="my-5 flex items-center gap-3">
-          <Separator className="flex-1 bg-auth-separator" />
-          <span className="text-xs text-auth-card-muted">または</span>
-          <Separator className="flex-1 bg-auth-separator" />
+          <Separator className="flex-1" />
+          <span className="text-xs text-muted-foreground">または</span>
+          <Separator className="flex-1" />
         </div>
 
-        {/* Google OAuth */}
+        {/* Google OAuth — light gray, icon + text */}
         <Button
           type="button"
+          variant="secondary"
           size="lg"
-          className="w-full gap-2 border border-auth-input-border bg-transparent text-auth-card-foreground hover:bg-white/10"
+          className="w-full gap-2"
           onClick={() => {
             // TODO: implement Google OAuth
           }}
@@ -152,8 +142,8 @@ export function LoginPage() {
           Googleでログイン
         </Button>
 
-        {/* Sign up link */}
-        <p className="mt-6 text-center text-sm text-auth-card-muted">
+        {/* Sign up */}
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           アカウントをお持ちでないですか？{" "}
           <Link href="/register" className="text-cta hover:underline">
             新規登録
@@ -161,18 +151,29 @@ export function LoginPage() {
         </p>
       </div>
 
-      {/* Footer */}
-      <p className="mt-8 max-w-md text-center text-xs text-auth-card-muted/60">
-        ログインすることで、
-        <Link href="/terms" className="underline hover:text-auth-card-muted">
-          利用規約
-        </Link>
-        および
-        <Link href="/privacy" className="underline hover:text-auth-card-muted">
-          プライバシーポリシー
-        </Link>
-        に同意したことになります。
-      </p>
+      {/* Footer — white text on dark background */}
+      <div className="mt-8 flex flex-col items-center gap-1.5">
+        <button
+          type="button"
+          className="text-sm font-medium text-white hover:underline"
+          onClick={() => {
+            // TODO: support link
+          }}
+        >
+          お困りの場合
+        </button>
+        <p className="max-w-md text-center text-xs text-white/55">
+          ログインすることで、
+          <Link href="/terms" className="underline hover:text-white/80">
+            利用規約
+          </Link>
+          および
+          <Link href="/privacy" className="underline hover:text-white/80">
+            プライバシーポリシー
+          </Link>
+          に同意したことになります。
+        </p>
+      </div>
     </div>
   );
 }
