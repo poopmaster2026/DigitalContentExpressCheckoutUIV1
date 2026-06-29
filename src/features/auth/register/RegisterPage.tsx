@@ -71,40 +71,23 @@ export function RegisterPage() {
         />
       </div>
 
+      {/* プログレスバー（カード外・ロゴ下） */}
+      <div className="mb-3 flex w-full max-w-md gap-1.5">
+        <div className="h-1 flex-1 rounded-full bg-cta" />
+        <div
+          className={cn(
+            "h-1 flex-1 rounded-full transition-colors duration-300",
+            step === 2 ? "bg-cta" : "bg-white/20"
+          )}
+        />
+      </div>
+
       {/* White card */}
       <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-md">
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className="mb-6 text-center">
           <h1 className="text-2xl font-semibold text-card-foreground">新規登録</h1>
           <p className="mt-1 text-sm text-muted-foreground">SetLink に参加する</p>
-
-          {/* ステップインジケーター */}
-          <div className="mt-4 flex items-center justify-center">
-            {/* Step 1 */}
-            <div className="flex size-6 items-center justify-center rounded-full bg-cta text-xs font-semibold text-cta-foreground">
-              {step === 1 ? "1" : <Check className="size-3" />}
-            </div>
-
-            {/* コネクター */}
-            <div
-              className={cn(
-                "mx-2 h-px w-12 transition-colors duration-300",
-                step === 2 ? "bg-cta" : "bg-border"
-              )}
-            />
-
-            {/* Step 2 */}
-            <div
-              className={cn(
-                "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-300",
-                step === 2
-                  ? "bg-cta text-cta-foreground"
-                  : "border border-border text-muted-foreground"
-              )}
-            >
-              2
-            </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
