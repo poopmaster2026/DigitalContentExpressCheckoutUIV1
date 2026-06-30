@@ -33,6 +33,9 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
         const contentFileObj = (
           values.contentFile as unknown as { file?: File } | null
         )?.file;
+        const coverImageFile = (
+          values.coverImage as unknown as { file?: File } | null
+        )?.file;
 
         await updateProduct(
           id,
@@ -41,6 +44,7 @@ export function ProductDetailContent({ id }: ProductDetailContentProps) {
             description: values.description,
             price: values.isFree ? null : values.price,
             published: values.published,
+            coverImage: coverImageFile,
             contentFile: contentFileObj,
           },
           onProgress,
