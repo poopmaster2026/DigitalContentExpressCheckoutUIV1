@@ -71,33 +71,33 @@ export function ProductsGridSection({
 
   return (
     <>
-      <div className="px-4 py-5 sm:px-6">
-        <div className="sm:hidden">
+      {/* モバイル: 常にカードグリッド（横パディングは親が提供） */}
+      <div className="py-2 sm:hidden">
+        <ProductsCardView
+          products={paginatedProducts}
+          isFiltered={isFiltered}
+          selected={selected}
+          onToggle={onToggle}
+        />
+      </div>
+      {/* デスクトップ: グリッドは親パディングに委ねる、テーブルはカード端まで伸ばす */}
+      <div className="hidden sm:block">
+        {view === VIEW_MODES[0] ? (
           <ProductsCardView
             products={paginatedProducts}
             isFiltered={isFiltered}
             selected={selected}
             onToggle={onToggle}
           />
-        </div>
-        <div className="hidden sm:block">
-          {view === VIEW_MODES[0] ? (
-            <ProductsCardView
-              products={paginatedProducts}
-              isFiltered={isFiltered}
-              selected={selected}
-              onToggle={onToggle}
-            />
-          ) : (
-            <ProductsTable
-              products={paginatedProducts}
-              isFiltered={isFiltered}
-              selected={selected}
-              onToggle={onToggle}
-              onToggleAll={onToggleAll}
-            />
-          )}
-        </div>
+        ) : (
+          <ProductsTable
+            products={paginatedProducts}
+            isFiltered={isFiltered}
+            selected={selected}
+            onToggle={onToggle}
+            onToggleAll={onToggleAll}
+          />
+        )}
       </div>
 
       {pageCount > 1 && (

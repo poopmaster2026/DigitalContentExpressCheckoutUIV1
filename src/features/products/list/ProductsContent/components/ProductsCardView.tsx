@@ -64,7 +64,7 @@ export function ProductsCardView({
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
       {products.map((p) => {
         const badge = SALE_TYPE_BADGE[p.saleType];
         const status = STATUS_DISPLAY[p.status];
@@ -73,8 +73,8 @@ export function ProductsCardView({
           <div
             key={p.id}
             className={cn(
-              "group relative flex flex-col overflow-hidden rounded-lg border bg-card transition-colors hover:border-border-strong",
-              isSelected && "ring-2 ring-cta ring-offset-1"
+              "group relative flex flex-col overflow-hidden rounded-xl border border-border-strong bg-card transition-all hover:shadow-sm",
+              isSelected && "border-foreground"
             )}
           >
             {/* チェックボックス（選択中 or hover で表示） */}
@@ -126,22 +126,22 @@ export function ProductsCardView({
               </DropdownMenu>
             </div>
 
-            {/* カバー画像 */}
+            {/* カバー画像 — 周囲に余白を設けて高級感を出す */}
             <button
               className="block w-full text-left"
               onClick={() => goToDetail(p)}
             >
               <div
                 className={cn(
-                  "relative flex aspect-square w-full items-center justify-center overflow-hidden border-b",
-                  !p.image && THUMB_HUE[p.thumb]
+                  "flex aspect-square w-full items-center justify-center overflow-hidden border-b p-3",
+                  !p.image ? THUMB_HUE[p.thumb] : "bg-surface/40"
                 )}
               >
                 {p.image ? (
                   <img
                     src={p.image}
                     alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="h-full w-full rounded-sm object-contain"
                   />
                 ) : (
                   KIND_ILLUSTRATION[p.kind]
@@ -151,19 +151,21 @@ export function ProductsCardView({
 
             {/* カード情報 */}
             <button
-              className="flex flex-1 flex-col gap-1.5 p-2 text-left"
+              className="flex flex-1 flex-col gap-2 p-3 text-left"
               onClick={() => goToDetail(p)}
             >
-              <div className="flex items-start justify-between gap-2">
-                <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
+              {/* タイトル + 価格（縦並び） */}
+              <div className="flex flex-col gap-0.5">
+                <p className="line-clamp-2 text-base font-bold leading-snug text-foreground">
                   {p.name}
                 </p>
-                <span className="shrink-0 text-sm font-medium tabular-nums">
+                <span className="text-sm font-semibold tabular-nums">
                   {formatPrice(p.price)}
                 </span>
               </div>
 
-              <div className="mt-auto flex items-center gap-2">
+              {/* バッジ */}
+              <div className="flex flex-wrap items-center gap-1.5">
                 <Badge variant="outline" className={badge.className}>
                   {badge.label}
                 </Badge>
@@ -173,20 +175,16 @@ export function ProductsCardView({
                 </span>
               </div>
 
-              {/* 売上 / 販売数（常時表示） */}
-              <div className="flex items-center justify-between border-t pt-2 text-xs">
-                <span className="text-muted-foreground">
-                  販売{" "}
-                  <span className="font-medium text-foreground tabular-nums">
-                    {p.sales}
-                  </span>
-                </span>
-                <span className="text-muted-foreground">
-                  売上{" "}
-                  <span className="font-medium text-foreground tabular-nums">
-                    {formatRevenue(p)}
-                  </span>
-                </span>
+              {/* 売上 / 販売数 — 2カラムで中央揃え */}
+              <div className="mt-auto grid grid-cols-2 divide-x border-t pt-2">
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-xs font-medium text-muted-foreground">販売</span>
+                  <span className="text-sm font-semibold tabular-nums">{p.sales}</span>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <span className="text-xs font-medium text-muted-foreground">売上</span>
+                  <span className="text-sm font-semibold tabular-nums">{formatRevenue(p)}</span>
+                </div>
               </div>
             </button>
           </div>

@@ -1,10 +1,31 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Copy, Search } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
+
+// TODO: 仮の表示。実際のストアURLに差し替える
+const STORE_URL = "setlink/kumaaa1212";
+
+function StoreUrlButton() {
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(`https://${STORE_URL}`);
+    toast.success("URLをコピーしました");
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="hidden items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm text-white transition-colors hover:bg-white/10 sm:flex"
+      aria-label="ストアURLをコピー"
+    >
+      <span>{STORE_URL}</span>
+      <Copy className="h-3.5 w-3.5 shrink-0 opacity-70" />
+    </button>
+  );
+}
 
 import { MobileNavButton } from "./components/MobileNavButton";
 import { SearchModal } from "./components/SearchModal";
@@ -59,7 +80,7 @@ export function AppHeader() {
           <button
             onClick={() => setSearchOpen(true)}
             className={cn(
-              "relative flex h-9 w-full max-w-sm items-center gap-2 rounded-md",
+              "relative flex h-11 w-full max-w-sm items-center gap-2 rounded-md",
               "border border-white/15 bg-white/10 px-3",
               "text-sm text-sidebar-foreground/40",
               "transition-colors hover:bg-white/15"
@@ -72,6 +93,9 @@ export function AppHeader() {
             </kbd>
           </button>
         </div>
+
+        {/* 右: ストアURL */}
+        <StoreUrlButton />
 
       </header>
 

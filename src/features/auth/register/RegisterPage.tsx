@@ -109,7 +109,7 @@ export function RegisterPage() {
                       placeholder="you@example.com"
                       aria-invalid={!!errors.email}
                       className={cn(
-                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
+                        "h-12 border-0 bg-card px-4 text-base focus-visible:ring-1",
                         errors.email && "ring-1 ring-destructive"
                       )}
                       {...register("email")}
@@ -132,7 +132,7 @@ export function RegisterPage() {
                         placeholder="••••••••"
                         aria-invalid={!!errors.password}
                         className={cn(
-                          "h-12 border-0 bg-surface px-4 pr-12 text-base focus-visible:ring-1",
+                          "h-12 border-0 bg-card px-4 pr-12 text-base focus-visible:ring-1",
                           errors.password && "ring-1 ring-destructive"
                         )}
                         {...register("password")}
@@ -208,7 +208,7 @@ export function RegisterPage() {
                       placeholder="山田 太郎"
                       aria-invalid={!!errors.name}
                       className={cn(
-                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
+                        "h-12 border-0 bg-card px-4 text-base focus-visible:ring-1",
                         errors.name && "ring-1 ring-destructive"
                       )}
                       {...register("name")}
@@ -230,7 +230,7 @@ export function RegisterPage() {
                       placeholder="株式会社サンプル"
                       aria-invalid={!!errors.storeName}
                       className={cn(
-                        "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
+                        "h-12 border-0 bg-card px-4 text-base focus-visible:ring-1",
                         errors.storeName && "ring-1 ring-destructive"
                       )}
                       {...register("storeName")}
@@ -251,7 +251,7 @@ export function RegisterPage() {
                       render={({ field }) => (
                         <div
                           className={cn(
-                            "flex h-12 items-center rounded-md bg-surface focus-within:ring-1 focus-within:ring-ring",
+                            "flex h-12 items-center rounded-md bg-card focus-within:ring-1 focus-within:ring-ring",
                             errors.username && "ring-1 ring-destructive"
                           )}
                         >

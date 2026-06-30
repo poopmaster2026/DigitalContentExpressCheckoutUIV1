@@ -26,7 +26,7 @@ export function ProductsActionBar({ selectedCount, onClear }: ProductsActionBarP
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 sm:bottom-6">
-      <div className="pointer-events-auto flex w-full max-w-2xl items-center gap-2 rounded-xl border bg-card/95 p-2 pl-4 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:w-auto sm:rounded-full">
+      <div className="pointer-events-auto flex w-full max-w-2xl items-center gap-2 rounded-xl border bg-card p-2 pl-4 shadow-md sm:w-auto sm:rounded-full">
         <span className="text-sm font-medium tabular-nums">
           {selectedCount}件選択
         </span>

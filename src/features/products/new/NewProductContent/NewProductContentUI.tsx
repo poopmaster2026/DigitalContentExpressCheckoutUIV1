@@ -4,7 +4,7 @@ import type { FormEvent } from "react";
 
 import { BasicInfoSection } from "../../components/BasicInfoSection";
 import { ContentSection } from "../../components/ContentSection";
-import { SubmitProgressBar } from "../../components/SubmitProgressBar";
+import { SubmitProgressBar } from "@/shared/components/SubmitProgressBar";
 import type { SaleType } from "../../types";
 
 import { NewPricingSection } from "./components/NewPricingSection";
@@ -33,7 +33,7 @@ export function NewProductContentUI({
 
       <NewProductHeader saleType={saleType} pending={pending} onCancel={onCancel} />
 
-      <div className="mx-auto w-full max-w-3xl px-6 py-8">
+      <div className="mx-auto w-full max-w-4xl px-6 py-8">
         <div className="flex flex-col gap-6">
           <BasicInfoSection detail={shellDetail} isDescriptionRequired />
           {saleType === "digital" && <ContentSection saleType={saleType} isRequired />}

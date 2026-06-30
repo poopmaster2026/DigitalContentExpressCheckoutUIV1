@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 import { createProduct } from "../../api";
 import { useNewProductForm } from "../../detail/ProductDetailContent/hooks/useProductDetailForm";
-import { useSubmitProgress } from "../../hooks/useSubmitProgress";
+import { useSubmitProgress } from "@/shared/hooks/useSubmitProgress";
 import type { SaleType } from "../../types";
 
 import { NewProductContentUI } from "./NewProductContentUI";

@@ -77,12 +77,12 @@ export function ProductsContentUI({
       {/* ── ページヘッダー ── */}
       <header className="border-b px-4 pt-5 pb-0 sm:px-6">
         {/* タイトル行 */}
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-medium tracking-tight">商品</h1>
-          <span className="text-sm text-muted-foreground">
-            {statusCounts.all}件
-          </span>
-          <div className="flex-1" />
+        <div className="flex items-start gap-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight">商品</h1>
+            </div>
+          </div>
 
           {/* デスクトップ操作群 */}
           <div className="hidden items-center gap-2 sm:flex">
@@ -99,7 +99,7 @@ export function ProductsContentUI({
                 placeholder="商品を検索"
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
-                className="h-9 w-56 pl-9"
+                className="h-9 w-80 pl-9"
               />
             </div>
 
@@ -111,10 +111,10 @@ export function ProductsContentUI({
               variant="outline"
               className="h-9 bg-card"
             >
-              <ToggleGroupItem value={VIEW_MODES[0]} aria-label="カード表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
+              <ToggleGroupItem value={VIEW_MODES[0]} aria-label="カード表示" className="h-9 px-2.5 data-[state=on]:bg-cta data-[state=on]:text-cta-foreground">
                 <LayoutGrid className="h-4 w-4" />
               </ToggleGroupItem>
-              <ToggleGroupItem value={VIEW_MODES[1]} aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-sidebar data-[state=on]:text-white">
+              <ToggleGroupItem value={VIEW_MODES[1]} aria-label="テーブル表示" className="h-9 px-2.5 data-[state=on]:bg-cta data-[state=on]:text-cta-foreground">
                 <Table2 className="h-4 w-4" />
               </ToggleGroupItem>
             </ToggleGroup>
@@ -130,6 +130,7 @@ export function ProductsContentUI({
             <Plus className="h-4 w-4" />
           </Button>
         </div>
+        {/* /タイトル行 */}
 
         {/* モバイル検索 */}
         <div className="relative mt-4 sm:hidden">
@@ -149,29 +150,18 @@ export function ProductsContentUI({
           />
         </div>
 
-        {/* ステータスタブ（横スクロール可） */}
-        <div className="-mx-4 mt-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        {/* ステータスタブ（Pill型） */}
+        <div className="mt-6 pt-1 pb-3 overflow-x-auto">
           <Tabs value={statusFilter} onValueChange={onStatusChange}>
-            <TabsList variant="line" className="h-auto gap-2 bg-transparent p-0">
+            <TabsList className="h-auto gap-2 rounded-none bg-transparent p-0">
               {STATUS_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className={cn(
-                    "h-auto rounded-none border-0 bg-transparent px-3 pb-2.5 pt-0 text-sm font-medium text-muted-foreground shadow-none after:!bottom-0",
-                    "data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none",
-                    "hover:text-foreground focus-visible:ring-0 focus-visible:outline-none"
-                  )}
+                  className="h-9 rounded-full border border-border-strong px-4 text-sm font-medium transition-all shadow-none data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:border-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:hover:border-foreground data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-foreground"
                 >
                   {tab.label}
-                  <span
-                    className={cn(
-                      "ml-1.5 rounded-full px-1.5 py-0.5 text-xs tabular-nums",
-                      statusFilter === tab.value
-                        ? "bg-secondary text-foreground"
-                        : "bg-secondary/60 text-muted-foreground"
-                    )}
-                  >
+                  <span className="ml-1.5 tabular-nums opacity-60">
                     {statusCounts[tab.countKey]}
                   </span>
                 </TabsTrigger>
@@ -182,21 +172,43 @@ export function ProductsContentUI({
       </header>
 
       {/* ── グリッド（独立した Suspense でここだけローディング） ── */}
-      <Suspense fallback={<ProductsGridSkeleton />}>
-        <ProductsGridSection
-          status={statusFilter}
-          saleType={saleTypeFilter}
-          debouncedQuery={debouncedQuery}
-          page={page}
-          view={view}
-          selected={selected}
-          onToggle={onToggleSelected}
-          onToggleAll={onToggleAll}
-          onPageChange={onPageChange}
-          isFiltered={isFiltered}
-          isFilterPending={isFilterPending}
-        />
-      </Suspense>
+      <div className="px-4 py-4 sm:px-6 w-full max-w-7xl mx-auto">
+        {view === VIEW_MODES[1] ? (
+          <div className="w-full overflow-hidden rounded-xl border bg-card shadow-sm">
+            <Suspense fallback={<ProductsGridSkeleton />}>
+              <ProductsGridSection
+                status={statusFilter}
+                saleType={saleTypeFilter}
+                debouncedQuery={debouncedQuery}
+                page={page}
+                view={view}
+                selected={selected}
+                onToggle={onToggleSelected}
+                onToggleAll={onToggleAll}
+                onPageChange={onPageChange}
+                isFiltered={isFiltered}
+                isFilterPending={isFilterPending}
+              />
+            </Suspense>
+          </div>
+        ) : (
+          <Suspense fallback={<ProductsGridSkeleton />}>
+            <ProductsGridSection
+              status={statusFilter}
+              saleType={saleTypeFilter}
+              debouncedQuery={debouncedQuery}
+              page={page}
+              view={view}
+              selected={selected}
+              onToggle={onToggleSelected}
+              onToggleAll={onToggleAll}
+              onPageChange={onPageChange}
+              isFiltered={isFiltered}
+              isFilterPending={isFilterPending}
+            />
+          </Suspense>
+        )}
+      </div>
 
       {/* 一括操作バー（view 横断で 1 箇所） */}
       <ProductsActionBar

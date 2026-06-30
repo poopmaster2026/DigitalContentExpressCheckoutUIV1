@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { deleteProduct, updateProduct } from "../../api";
 import { productDetailQueryOptions } from "../../api/queries";
-import { useSubmitProgress } from "../../hooks/useSubmitProgress";
+import { useSubmitProgress } from "@/shared/hooks/useSubmitProgress";
 
 import { useProductDetailForm } from "./hooks/useProductDetailForm";
 import { ProductDetailContentUI } from "./ProductDetailContentUI";

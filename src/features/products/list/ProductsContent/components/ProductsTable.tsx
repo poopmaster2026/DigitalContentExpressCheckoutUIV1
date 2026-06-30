@@ -71,7 +71,7 @@ function SortButton({
     <button
       className={cn(
         "inline-flex items-center justify-center gap-1 rounded-sm px-1 py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        active ? "text-foreground" : "text-muted-foreground"
+        active ? "text-foreground" : "text-foreground/60"
       )}
       onClick={() => onSort(col)}
     >
@@ -141,7 +141,7 @@ export function ProductsTable({
   const sortProps = { sortKey, sortDir, onSort: handleSort };
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
+    <div className="overflow-hidden">
       <Table className="table-fixed">
         <TableHeader>
           <TableRow className="border-b bg-surface/60 hover:bg-surface/60">
@@ -152,21 +152,21 @@ export function ProductsTable({
                 aria-label="すべて選択"
               />
             </TableHead>
-            <TableHead className="w-1/2 text-left text-muted-foreground">
+            <TableHead className="text-left text-foreground/60">
               <SortButton label="商品" col="name" {...sortProps} />
             </TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">販売形態</TableHead>
-            <TableHead className="text-center text-muted-foreground">
+            <TableHead className="w-28 text-center text-xs text-foreground/60">販売形態</TableHead>
+            <TableHead className="w-24 text-center text-foreground/60">
               <SortButton label="価格" col="price" {...sortProps} />
             </TableHead>
-            <TableHead className="text-center text-muted-foreground">
+            <TableHead className="w-20 text-center text-foreground/60">
               <SortButton label="販売数" col="sales" {...sortProps} />
             </TableHead>
-            <TableHead className="text-center text-muted-foreground">
+            <TableHead className="w-24 text-center text-foreground/60">
               <SortButton label="売上" col="revenue" {...sortProps} />
             </TableHead>
-            <TableHead className="text-center text-xs text-muted-foreground">状態</TableHead>
-            <TableHead className="w-16 pr-4" />
+            <TableHead className="w-28 text-center text-xs text-foreground/60">状態</TableHead>
+            <TableHead className="w-12 pr-4" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -180,7 +180,7 @@ export function ProductsTable({
                 key={p.id}
                 data-state={isSelected ? "selected" : undefined}
                 data-loading={navigatingId === p.id ? "true" : undefined}
-                className="transition-colors hover:bg-surface/50 data-[state=selected]:bg-surface data-[loading=true]:opacity-60 data-[clickable=true]:cursor-pointer"
+                className="transition-colors hover:bg-surface/50 data-[state=selected]:bg-accent data-[state=selected]:border-l-4 data-[state=selected]:border-l-foreground data-[loading=true]:opacity-60 data-[clickable=true]:cursor-pointer"
                 data-clickable={p.saleType === "digital" ? "true" : undefined}
                 onClick={() => goToDetail(p)}
               >

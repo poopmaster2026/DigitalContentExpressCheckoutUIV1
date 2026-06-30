@@ -17,7 +17,7 @@ import {
 
 import { DEFAULT_STORE_ID, STORES } from "../../stores";
 
-const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
+const AVATAR_SRC = "https://i.pravatar.cc/64?img=10";
 
 interface SidebarAccountProps {
   children?: ReactNode;
@@ -40,7 +40,7 @@ export function SidebarAccount({ children }: SidebarAccountProps) {
         )}
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent side="right" align="end" className="w-64">
+      <DropdownMenuContent side="right" align="start" className="w-64">
         <DropdownMenuLabel className="py-3 font-normal">
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">

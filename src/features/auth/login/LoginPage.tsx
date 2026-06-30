@@ -68,7 +68,7 @@ export function LoginPage() {
                   placeholder="you@example.com"
                   aria-invalid={!!errors.email}
                   className={cn(
-                    "h-12 border-0 bg-surface px-4 text-base focus-visible:ring-1",
+                    "h-12 border-0 bg-card px-4 text-base focus-visible:ring-1",
                     errors.email && "ring-1 ring-destructive"
                   )}
                   {...register("email")}
@@ -100,7 +100,7 @@ export function LoginPage() {
                     placeholder="••••••••"
                     aria-invalid={!!errors.password}
                     className={cn(
-                      "h-12 border-0 bg-surface px-4 pr-12 text-base focus-visible:ring-1",
+                      "h-12 border-0 bg-card px-4 pr-12 text-base focus-visible:ring-1",
                       errors.password && "ring-1 ring-destructive"
                     )}
                     {...register("password")}
