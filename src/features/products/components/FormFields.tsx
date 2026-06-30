@@ -29,19 +29,20 @@ export function TextFieldControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
           <Input
             id={name}
             {...field}
+            autoComplete="off"
             aria-invalid={fieldState.invalid}
-            className={cn(fieldState.invalid && "border-destructive")}
+            className={cn("h-11 px-4 text-base", fieldState.invalid && "border-destructive")}
           />
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}
@@ -64,8 +65,8 @@ export function TextAreaControl({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
@@ -73,11 +74,12 @@ export function TextAreaControl({
             id={name}
             {...field}
             rows={4}
+            autoComplete="off"
             aria-invalid={fieldState.invalid}
-            className={cn(fieldState.invalid && "border-destructive")}
+            className={cn("px-4 text-base", fieldState.invalid && "border-destructive")}
           />
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}
@@ -90,39 +92,30 @@ function formatWithCommas(value: number | null | undefined): string {
   return value.toLocaleString("ja-JP");
 }
 
-function parseCommaNumber(value: string): number | null {
-  const stripped = value.replace(/,/g, "");
-  if (stripped === "") return null;
-  const num = Number(stripped);
-  return isNaN(num) ? null : num;
-}
-
 export function NumberFieldControl({
   name,
   label,
   isRequired,
   isDisabled,
-  minValue,
 }: {
   name: "price";
   label: string;
   isRequired?: boolean;
   isDisabled?: boolean;
-  minValue?: number;
 }) {
-  const { control } = useFormContext<ProductFormValues>();
+  const { control, setError, clearErrors } = useFormContext<ProductFormValues>();
   return (
     <Controller
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={name}>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor={name} className="text-sm text-muted-foreground">
             {label}
             {isRequired && <span className="ml-1 text-destructive">*</span>}
           </Label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-muted-foreground">
               ¥
             </span>
             <Input
@@ -130,21 +123,27 @@ export function NumberFieldControl({
               type="text"
               inputMode="numeric"
               disabled={isDisabled}
-              value={formatWithCommas(field.value)}
+              value={field.value > 0 ? formatWithCommas(field.value) : ""}
               onChange={(e) => {
-                const raw = e.target.value.replace(/[^0-9]/g, "");
-                const num = raw === "" ? 0 : Number(raw);
-                if (minValue !== undefined && num < minValue) return;
-                field.onChange(num);
+                const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
+                  String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+                );
+                if (/[^0-9,]/.test(halfWidth)) {
+                  setError(name, { type: "manual", message: "半角数字で入力してください" });
+                  return;
+                }
+                clearErrors(name);
+                const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
+                field.onChange(raw === "" ? 0 : Number(raw));
               }}
               onBlur={field.onBlur}
               name={field.name}
               aria-invalid={fieldState.invalid}
-              className={cn("pl-7", fieldState.invalid && "border-destructive")}
+              className={cn("h-11 pl-8 text-base", fieldState.invalid && "border-destructive")}
             />
           </div>
           {fieldState.error?.message && (
-            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+            <p className="text-sm font-medium text-destructive">{fieldState.error.message}</p>
           )}
         </div>
       )}

@@ -2,10 +2,9 @@
 
 import type { FormEvent } from "react";
 
-import { Progress } from "@/shared/components/ui/progress";
-
 import { BasicInfoSection } from "../../components/BasicInfoSection";
 import { ContentSection } from "../../components/ContentSection";
+import { SubmitProgressBar } from "@/shared/components/SubmitProgressBar";
 import type { SaleType } from "../../types";
 
 import { NewPricingSection } from "./components/NewPricingSection";
@@ -14,7 +13,6 @@ import { NewProductHeader } from "./components/NewProductHeader";
 interface NewProductContentUIProps {
   saleType: SaleType;
   pending?: boolean;
-  isSaving?: boolean;
   progress?: number;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
@@ -23,7 +21,6 @@ interface NewProductContentUIProps {
 export function NewProductContentUI({
   saleType,
   pending = false,
-  isSaving = false,
   progress = 0,
   onSubmit,
   onCancel,
@@ -32,16 +29,11 @@ export function NewProductContentUI({
 
   return (
     <form className="flex flex-1 flex-col" onSubmit={onSubmit} noValidate>
-      {pending && (
-        <Progress
-          value={progress}
-          className="fixed inset-x-0 top-0 z-50 h-0.5 rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
-        />
-      )}
+      <SubmitProgressBar pending={pending} progress={progress} />
 
-      <NewProductHeader saleType={saleType} pending={pending} isSaving={isSaving} onCancel={onCancel} />
+      <NewProductHeader saleType={saleType} pending={pending} onCancel={onCancel} />
 
-      <div className="mx-auto w-full max-w-3xl px-6 py-8">
+      <div className="mx-auto w-full max-w-4xl px-6 py-8">
         <div className="flex flex-col gap-6">
           <BasicInfoSection detail={shellDetail} isDescriptionRequired />
           {saleType === "digital" && <ContentSection saleType={saleType} isRequired />}

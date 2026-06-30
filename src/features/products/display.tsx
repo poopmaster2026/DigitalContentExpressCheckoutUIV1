@@ -20,7 +20,7 @@ export const STATUS_DISPLAY: Record<
   published: {
     label: "公開中",
     iconSrc: "/icons/status-published.svg",
-    className: "text-[#1a9e42] font-bold",
+    className: "text-success font-bold",
   },
   draft: {
     label: "下書き",

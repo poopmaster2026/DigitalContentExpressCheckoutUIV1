@@ -15,12 +15,10 @@ import type { ProductFormValues } from "../../../types/validation";
 export function NewProductHeader({
   saleType,
   pending = false,
-  isSaving = false,
   onCancel,
 }: {
   saleType: SaleType;
   pending?: boolean;
-  isSaving?: boolean;
   onCancel: () => void;
 }) {
   const { formState: { isValid } } = useFormContext<ProductFormValues>();
@@ -71,8 +69,8 @@ export function NewProductHeader({
             disabled={pending || !isValid}
             className="relative min-w-[3.5rem] bg-cta text-cta-foreground hover:bg-cta-hover disabled:opacity-70"
           >
-            {isSaving && <Loader2 className="absolute h-4 w-4 animate-spin" />}
-            <span className={isSaving ? "invisible" : undefined}>作成</span>
+            {pending && <Loader2 className="absolute h-4 w-4 animate-spin" />}
+            <span className={pending ? "invisible" : undefined}>作成</span>
           </Button>
         </div>
       </div>

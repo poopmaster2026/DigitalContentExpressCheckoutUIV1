@@ -12,6 +12,8 @@
   --background: #F2F1EF;
   --surface: #f6f5f4;
   --surface-muted: #eeedeb;
+  --surface-deep: #fafafa;
+  --sidebar-divider: rgba(28, 25, 23, 0.10);
   --card: #ffffff;
   --card-foreground: #1c1a19;
   --popover: #ffffff;
@@ -19,7 +21,7 @@
 
   /* text — warm-tinted near-black */
   --foreground: #1c1a19;
-  --muted-foreground: #6e6864;
+  --muted-foreground: #4a4847;
 
   /* primary = black CTA + 状態色 */
   --primary: #0d0d0d;
@@ -41,23 +43,25 @@
   --link-foreground: #ffffff;
 
   /* cta — 新規作成など行動喚起ボタン */
-  --cta: #2563eb;
-  --cta-hover: #1d4ed8;
+  --cta: #2563EB;
+  --cta-hover: #1D4ED8;
   --cta-foreground: #ffffff;
+  --cta-light: #DBEAFE;
+  --cta-border: #BFDBFE;
 
   /* semantic */
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --warning: #d97706;
+  --warning: #F59E0B;
   --warning-foreground: #ffffff;
   --success: #16a34a;
   --success-foreground: #ffffff;
 
   /* lines — warm-tinted */
-  --border: rgba(28, 25, 23, 0.12);
-  --border-strong: rgba(28, 25, 23, 0.20);
+  --border: rgba(28, 25, 23, 0.14);
+  --border-strong: rgba(28, 25, 23, 0.30);
   --input: rgba(28, 25, 23, 0.18);
-  --ring: rgba(28, 25, 23, 0.35);
+  --ring: #2563EB;
 
   /* shadows — warm, restrained（主に xs / sm を使う） */
   --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.05);
@@ -65,6 +69,15 @@
   --shadow-md: 0 4px 8px -2px rgba(28, 25, 23, 0.08), 0 2px 4px -2px rgba(28, 25, 23, 0.05);
   --shadow-lg: 0 12px 20px -4px rgba(28, 25, 23, 0.10), 0 4px 8px -4px rgba(28, 25, 23, 0.06);
   --shadow-xl: 0 24px 40px -8px rgba(28, 25, 23, 0.12);
+
+  /* auth page (login / register) */
+  --auth-bg: #0B1314;
+  --auth-card: #202223;
+  --auth-card-foreground: rgba(255, 255, 255, 0.90);
+  --auth-card-muted: rgba(255, 255, 255, 0.45);
+  --auth-input-bg: rgba(255, 255, 255, 0.06);
+  --auth-input-border: rgba(255, 255, 255, 0.14);
+  --auth-separator: rgba(255, 255, 255, 0.10);
 
   /* sidebar — warm dark chrome */
   --sidebar: #1c1a19;
@@ -87,6 +100,8 @@
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-muted: var(--surface-muted);
+  --color-surface-deep: var(--surface-deep);
+  --color-sidebar-divider: var(--sidebar-divider);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -105,6 +120,8 @@
   --color-cta: var(--cta);
   --color-cta-hover: var(--cta-hover);
   --color-cta-foreground: var(--cta-foreground);
+  --color-cta-light: var(--cta-light);
+  --color-cta-border: var(--cta-border);
   --color-link: var(--link);
   --color-link-foreground: var(--link-foreground);
   --color-destructive: var(--destructive);
@@ -130,6 +147,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-auth-bg: var(--auth-bg);
+  --color-auth-card: var(--auth-card);
+  --color-auth-card-foreground: var(--auth-card-foreground);
+  --color-auth-card-muted: var(--auth-card-muted);
+  --color-auth-input-bg: var(--auth-input-bg);
+  --color-auth-input-border: var(--auth-input-border);
+  --color-auth-separator: var(--auth-separator);
 }
 
 @layer base {
@@ -161,4 +185,16 @@
   --normal-bg: var(--success);
   --normal-text: var(--success-foreground);
   --normal-border: var(--success);
+}
+
+/* ブラウザ autofill のグレー/黄色背景を打ち消す */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--card) inset;
+  -webkit-text-fill-color: var(--foreground);
+  transition: background-color 0s;
 }

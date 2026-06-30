@@ -303,20 +303,201 @@ export function ProductsContentUI({ statusCounts, statusFilter, onStatusChange }
 同一コンポーネント内の複数 `useState` が 1 つの概念をなす場合はカスタム hook に切り出す。
 
 ```ts
-// ✅ 良い例: 3つの状態 + 操作をまとめて hook に
-// src/features/products/detail/ProductDetailContent/hooks/useProgressAnimation.ts
-"use client";
-export function useProgressAnimation() {
-  const [state, setState] = useState({ pending: false, isSaving: false, progress: 0 });
-  const runWithProgress = useCallback((onComplete: () => void, saving = false) => { ... }, []);
-  return { pending: state.pending, isSaving: state.isSaving, progress: state.progress, runWithProgress };
+// ✅ 良い例: 非同期送信の進捗管理を hook に集約
+// src/features/products/hooks/useSubmitProgress.ts
+export function useSubmitProgress() {
+  const [pending, setPending] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  async function run(fn: (onProgress: (p: number) => void) => Promise<void>) {
+    setPending(true);
+    setProgress(0);
+    try {
+      await fn((p) => setProgress(p));
+      setProgress(100);
+    } finally {
+      setPending(false);
+      setProgress(0);
+    }
+  }
+
+  return { pending, progress, run, setPending };
 }
 
-// ❌ 悪い例: Container に useState を3つ直書き
+// ❌ 悪い例: Container に useState を直書き
 const [pending, setPending] = useState(false);
-const [isSaving, setIsSaving] = useState(false);
 const [progress, setProgress] = useState(0);
 ```
+
+---
+
+## フォームパターン（react-hook-form + Zod）
+
+### 基本方針
+
+- **ビジネスバリデーションは必ず Zod スキーマに書く**。コンポーネント側で `minValue` 等の制約を持たない
+- **cross-field バリデーション（例: `isFree` が false なら `price > 0`）は `superRefine` で書く**
+- **入力文字の正規化・拒否（例: 半角数字以外を弾く）はイベントハンドラ内で `setError`/`clearErrors` を使う**
+
+### Controller の render 内で setError/clearErrors を呼ばない
+
+`Controller` の render prop 内（子コンポーネント含む）で `setError`/`clearErrors` を呼ぶと、React が「Cannot update a component while rendering a different component」警告を出す。イベントハンドラからのみ呼ぶ。
+
+```tsx
+// ✅ 正しい: Controller の render 外（useFormContext は render prop の外）
+export function NumberFieldControl({ name, label, isRequired, isDisabled }) {
+  const { control, setError, clearErrors } = useFormContext<ProductFormValues>();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Input
+          onChange={(e) => {
+            if (invalid) {
+              setError(name, { type: "manual", message: "..." }); // イベントハンドラ内 → OK
+              return;
+            }
+            clearErrors(name);
+            field.onChange(Number(e.target.value));
+          }}
+        />
+      )}
+    />
+  );
+}
+
+// ❌ 悪い例: render prop 内で useFormContext を呼ぶ
+render={({ field, fieldState }) => (
+  <PriceInputField field={field} />  // ← この中で useFormContext().setError() を呼ぶと警告
+)}
+```
+
+### 数値フィールドの実装パターン
+
+表示フォーマット（カンマ区切り）付きの数値入力は以下のパターンで実装する:
+
+```tsx
+export function NumberFieldControl({ name, label, isRequired, isDisabled }) {
+  const { control, setError, clearErrors } = useFormContext<ProductFormValues>();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <div className="flex flex-col gap-1.5">
+          <Input
+            type="text"
+            inputMode="numeric"
+            // field.value（number）から直接派生 → useState / useEffect 不要
+            value={field.value > 0 ? formatWithCommas(field.value) : ""}
+            onChange={(e) => {
+              // 全角→半角変換
+              const halfWidth = e.target.value.replace(/[０-９]/g, (c) =>
+                String.fromCharCode(c.charCodeAt(0) - 0xfee0)
+              );
+              // 半角数字・カンマ以外 → setError で即時フィードバック
+              if (/[^0-9,]/.test(halfWidth)) {
+                setError(name, { type: "manual", message: "半角数字で入力してください" });
+                return;
+              }
+              clearErrors(name);
+              const raw = halfWidth.replace(/,/g, "").replace(/^0+(\d)/, "$1");
+              field.onChange(raw === "" ? 0 : Number(raw));
+            }}
+            onBlur={field.onBlur}
+          />
+          {fieldState.error?.message && (
+            <p className="text-xs text-destructive">{fieldState.error.message}</p>
+          )}
+        </div>
+      )}
+    />
+  );
+}
+```
+
+**ポイント:**
+- `value={field.value > 0 ? formatWithCommas(field.value) : ""}` — `field.value`（数値）から表示文字列を派生させることで `useState` / `useEffect` が不要
+- 「半角数字以外を弾く」は UI の入力正規化 → `setError` で即時エラー表示、Zod のバリデーションとは分離
+- ビジネスルール（`price > 0` など）は Zod の `superRefine` に委ねる
+
+### Zod スキーマ
+
+```ts
+// src/features/products/types/validation.ts
+export const productFormSchema = z.object({
+  name: z.string().min(1, "商品名を入力してください"),
+  price: z.number(),
+  isFree: z.boolean(),
+  // ...
+}).superRefine((data, ctx) => {
+  // cross-field バリデーションはすべてここに書く
+  if (!data.isFree && data.price <= 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["price"],
+      message: "有料商品の価格は1円以上を入力してください",
+    });
+  }
+});
+```
+
+### テキストフィールドの autoComplete
+
+ブラウザのオートコンプリートが不要なフィールド（商品名・説明など）には `autoComplete="off"` を設定し、Chrome のオートフィルによるグレー背景を防ぐ。
+
+```tsx
+<Input id={name} {...field} autoComplete="off" />
+<Textarea id={name} {...field} autoComplete="off" />
+```
+
+---
+
+## 非同期送信パターン（進捗バー付き）
+
+ファイルアップロードなど進捗表示が必要な非同期送信には `useSubmitProgress` を使う。
+
+```tsx
+// Container
+export function ProductDetailContent({ id }) {
+  const { pending, progress, run, setPending } = useSubmitProgress();
+  const methods = useProductDetailForm(detail);
+
+  const onSubmit = methods.handleSubmit(async (values) => {
+    try {
+      await run(async (onProgress) => {
+        await updateProduct(id, { ... }, onProgress);
+        methods.reset(values);
+        await queryClient.invalidateQueries({ queryKey: ["products"] });
+      });
+      toast.success("保存しました");
+    } catch {
+      toast.error("保存に失敗しました");
+    }
+  });
+
+  // delete など progress が不要な操作は setPending を直接使う
+  const handleDelete = async () => {
+    setPending(true);
+    try { ... } catch { setPending(false); }
+  };
+}
+```
+
+```tsx
+// UI
+export function ProductDetailContentUI({ pending, progress, ... }) {
+  return (
+    <form>
+      <SubmitProgressBar pending={pending} progress={progress} />
+      {/* ... */}
+    </form>
+  );
+}
+```
+
+**`SubmitProgressBar`** は `src/features/products/components/SubmitProgressBar.tsx` に置かれた共有コンポーネント。`pending=false` のときは `null` を返す。
 
 ---
 
@@ -386,6 +567,8 @@ features/products/
 ├── types/
 │   ├── index.ts                       # Product / ProductDetail 型
 │   └── validation.ts                  # zod スキーマ + ProductFormValues 型
+├── hooks/                             # feature 共通 hooks
+│   └── useSubmitProgress.ts           # 非同期送信の pending/progress 管理
 ├── mock.ts                            # Phase 0 モックデータ
 ├── display.tsx                        # 表示トークン（SALE_TYPE_BADGE / THUMB_HUE 等）
 ├── format.ts                          # 価格・売上の整形（純粋関数）
@@ -394,7 +577,8 @@ features/products/
 │   ├── SectionCard.tsx                # フォームセクションカード
 │   ├── FormFields.tsx                 # react-hook-form 連携フィールドコントロール群
 │   ├── BasicInfoSection.tsx           # 基本情報セクション（名前・説明・カバー画像）
-│   └── ContentSection.tsx            # コンテンツセクション（ファイルアップロード等）
+│   ├── ContentSection.tsx             # コンテンツセクション（ファイルアップロード等）
+│   └── SubmitProgressBar.tsx          # 送信中の固定進捗バー（pending/progress props）
 ├── list/
 │   ├── ProductsPage.tsx               # 最上位 Container（Suspense + Skeleton）
 │   ├── ProductsPageSkeleton.tsx       # ローディング表示
@@ -414,22 +598,20 @@ features/products/
 │   ├── ProductDetailPage.tsx          # 最上位 Container（Suspense + Skeleton）
 │   ├── ProductDetailPageSkeleton.tsx
 │   └── ProductDetailContent/
-│       ├── ProductDetailContent.tsx   # Container
+│       ├── ProductDetailContent.tsx   # Container（useSubmitProgress 使用）
 │       ├── ProductDetailContentUI.tsx # Presentational
 │       ├── hooks/
-│       │   ├── useProductDetailForm.ts
-│       │   └── useProgressAnimation.ts  # pending / isSaving / progress + runWithProgress
+│       │   └── useProductDetailForm.ts
 │       └── components/
-│           ├── DetailHeader.tsx       # 保存・複製・削除ヘッダー
+│           ├── DetailHeader.tsx       # 保存・複製・削除ヘッダー（pending prop で制御）
 │           └── PricingSection.tsx     # 価格・公開設定（detail 固有）
 └── new/
     ├── NewProductPage.tsx
     └── NewProductContent/
-        ├── NewProductContent.tsx
-        ├── NewProductContentUI.tsx
-        ├── hooks/ （必要時）
+        ├── NewProductContent.tsx      # Container（useSubmitProgress 使用）
+        ├── NewProductContentUI.tsx    # Presentational
         └── components/
-            ├── NewProductHeader.tsx
+            ├── NewProductHeader.tsx   # キャンセル・作成ヘッダー（pending prop で制御）
             └── NewPricingSection.tsx
 ```
 

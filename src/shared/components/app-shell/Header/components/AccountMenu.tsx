@@ -19,7 +19,7 @@ import {
 
 import { STORES, DEFAULT_STORE_ID } from "../../stores";
 
-const AVATAR_SRC = "https://i.pravatar.cc/64?img=47";
+const AVATAR_SRC = "https://i.pravatar.cc/64?img=10";
 
 export function AccountMenu() {
   return (

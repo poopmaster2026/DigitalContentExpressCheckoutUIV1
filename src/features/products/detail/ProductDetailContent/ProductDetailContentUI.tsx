@@ -2,10 +2,9 @@
 
 import type { FormEvent } from "react";
 
-import { Progress } from "@/shared/components/ui/progress";
-
 import { BasicInfoSection } from "../../components/BasicInfoSection";
 import { ContentSection } from "../../components/ContentSection";
+import { SubmitProgressBar } from "@/shared/components/SubmitProgressBar";
 import type { ProductDetail } from "../../types";
 
 import { DetailHeader } from "./components/DetailHeader";
@@ -14,7 +13,6 @@ import { PricingSection } from "./components/PricingSection";
 interface ProductDetailContentUIProps {
   detail: ProductDetail;
   pending: boolean;
-  isSaving: boolean;
   progress: number;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onDuplicate: () => void;
@@ -24,7 +22,6 @@ interface ProductDetailContentUIProps {
 export function ProductDetailContentUI({
   detail,
   pending,
-  isSaving,
   progress,
   onSubmit,
   onDuplicate,
@@ -32,22 +29,16 @@ export function ProductDetailContentUI({
 }: ProductDetailContentUIProps) {
   return (
     <form className="flex flex-1 flex-col" onSubmit={onSubmit} noValidate>
-      {pending && (
-        <Progress
-          value={progress}
-          className="fixed inset-x-0 top-0 z-50 h-0.5 rounded-none bg-transparent [&>div]:bg-cta [&>div]:transition-all [&>div]:duration-200"
-        />
-      )}
+      <SubmitProgressBar pending={pending} progress={progress} />
 
       <DetailHeader
         detail={detail}
         pending={pending}
-        isSaving={isSaving}
         onDuplicate={onDuplicate}
         onDelete={onDelete}
       />
 
-      <div className="mx-auto w-full max-w-3xl px-6 py-8">
+      <div className="mx-auto w-full max-w-4xl px-6 py-8">
         <div className="flex flex-col gap-6">
           <BasicInfoSection detail={detail} isDescriptionRequired />
           <ContentSection saleType={detail.saleType} />

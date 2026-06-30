@@ -24,7 +24,7 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
   const entries = sections.flatMap((s) => s.entries);
 
   return (
-    <nav aria-label="メインナビゲーション" className="flex flex-col gap-0.5 px-1.5 py-1">
+    <nav aria-label="メインナビゲーション" className="flex flex-col gap-0.5 px-2 py-1">
       {entries.map((entry) => {
         const isSelected = entry.key === selectedKey;
         const isDisabled = entry.disabled === true;
@@ -33,39 +33,18 @@ export function SideNav({ sections, selectedKey }: SideNavProps) {
             key={entry.key}
             aria-current={isSelected ? "page" : undefined}
             aria-disabled={isDisabled}
-            title={entry.label}
             onClick={isDisabled ? undefined : () => router.push(NAV_PATHS[entry.key] ?? "/")}
             className={cn(
-              "flex w-full flex-col items-center gap-1 rounded-lg px-0.5 py-2 transition-colors",
-              isDisabled
-                ? "cursor-not-allowed opacity-40"
-                : "hover:bg-surface",
-              isSelected && "bg-surface"
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+              isSelected
+                ? "bg-foreground/10 text-foreground font-semibold"
+                : isDisabled
+                  ? "cursor-not-allowed text-foreground/25"
+                  : "text-foreground/75 hover:bg-foreground/5 hover:text-foreground"
             )}
           >
-            <span
-              className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-                isSelected && "bg-foreground/8"
-              )}
-            >
-              <entry.icon
-                className={cn(
-                  "h-5 w-5",
-                  isSelected ? "text-foreground" : "text-muted-foreground"
-                )}
-              />
-            </span>
-            <span
-              className={cn(
-                "w-full truncate text-center text-[10px] leading-snug",
-                isSelected
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              {entry.label}
-            </span>
+            <entry.icon className="h-5 w-5 shrink-0" />
+            {entry.label}
           </button>
         );
       })}
