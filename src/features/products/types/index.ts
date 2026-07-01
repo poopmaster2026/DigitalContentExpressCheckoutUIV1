@@ -45,6 +45,21 @@ export const VIEW_MODES = ["grid", "table"] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 export const VIEW_DEFAULT: ViewMode = "grid";
 
+/**
+ * 商品一覧の並び替え。URL クエリパラメータ "sort" の取りうる値。
+ * Product に作成日時フィールドが無いため "新着順" は持たず、既存のソート項目
+ * （名前 / 価格 / 販売数 / 売上）に適合させる。
+ */
+export const SORT_VALUES = [
+  "revenue_desc",
+  "sales_desc",
+  "price_desc",
+  "price_asc",
+  "name_asc",
+] as const;
+export type SortValue = (typeof SORT_VALUES)[number];
+export const SORT_DEFAULT: SortValue = "revenue_desc";
+
 export type Product = {
   id: string;
   name: string;

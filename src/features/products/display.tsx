@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-import type { ProductKind, ProductStatus, ProductThumb, SaleType } from "./types";
+import type { ProductKind, ProductStatus, ProductThumb, SaleType, SortValue } from "./types";
 
 export const STATUS_DISPLAY: Record<
   ProductStatus,
@@ -27,6 +27,33 @@ export const STATUS_DISPLAY: Record<
     iconSrc: "/icons/status-draft.svg",
     className: "text-muted-foreground font-bold",
   },
+};
+
+/**
+ * ステータスをピル（Badge）で表示するための定義。テーブルの「状態」列で使う。
+ * 公開中 = 成功色、下書き = ニュートラルで静かに。
+ */
+export const STATUS_BADGE: Record<
+  ProductStatus,
+  { label: string; className: string }
+> = {
+  published: {
+    label: "公開中",
+    className: "border-success/25 bg-success/10 text-success",
+  },
+  draft: {
+    label: "下書き",
+    className: "border-border bg-muted text-muted-foreground",
+  },
+};
+
+/** 並び替えドロップダウンの表示ラベル。 */
+export const SORT_LABELS: Record<SortValue, string> = {
+  revenue_desc: "売上が高い順",
+  sales_desc: "販売数が多い順",
+  price_desc: "価格が高い順",
+  price_asc: "価格が安い順",
+  name_asc: "名前順",
 };
 
 /**

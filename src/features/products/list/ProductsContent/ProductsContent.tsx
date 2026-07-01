@@ -9,12 +9,10 @@ export function ProductsContent() {
     filtered,
     status,
     saleType,
-    view,
+    sort,
     debouncedQuery,
-    statusCounts,
     onStatusChange,
-    onSaleTypeChange,
-    onViewChange,
+    onSortChange,
     isFilterPending,
     isSearchPending,
     query,
@@ -33,15 +31,13 @@ export function ProductsContent() {
       statusFilter={status}
       onStatusChange={onStatusChange}
       saleTypeFilter={saleType}
-      onSaleTypeChange={onSaleTypeChange}
       debouncedQuery={debouncedQuery}
-      statusCounts={statusCounts}
+      sort={sort}
+      onSortChange={onSortChange}
       isFilterPending={isFilterPending}
       isSearchPending={isSearchPending}
       query={query}
       onQueryChange={setQuery}
-      view={view}
-      onViewChange={onViewChange}
       selected={selected}
       onToggleSelected={toggleSelected}
       onToggleAll={toggleAll}

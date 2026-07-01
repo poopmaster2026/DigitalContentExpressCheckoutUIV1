@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -26,62 +26,18 @@ import {
 import { useNavigate } from "@/shared/hooks/useNavigate";
 
 import { deleteProduct } from "../../../api";
-import { KIND_ICON, SALE_TYPE_BADGE, STATUS_DISPLAY, THUMB_HUE } from "../../../display";
+import { KIND_ICON, SALE_TYPE_BADGE, STATUS_BADGE, THUMB_HUE } from "../../../display";
 import { formatPrice, formatRevenue } from "../../../format";
 import { productMenuItems } from "../../../productMenu";
 import type { Product } from "../../../types";
 
 import { ProductsEmptyState } from "./ProductsEmptyState";
 
-type SortKey = "name" | "price" | "sales" | "revenue";
-type SortDir = "asc" | "desc";
-
-function compareProducts(a: Product, b: Product, key: SortKey): number {
-  switch (key) {
-    case "name":
-      return a.name.localeCompare(b.name, "ja");
-    case "price":
-      return (a.price ?? 0) - (b.price ?? 0);
-    case "sales":
-      return a.sales - b.sales;
-    case "revenue":
-      return a.revenue - b.revenue;
-    default:
-      return 0;
-  }
-}
-
-/** ソート可能な列ヘッダー。状態は親から受け取り、render 中のコンポーネント生成を避ける。 */
-function SortButton({
-  label,
-  col,
-  sortKey,
-  sortDir,
-  onSort,
-}: {
-  label: string;
-  col: SortKey;
-  sortKey: SortKey;
-  sortDir: SortDir;
-  onSort: (key: SortKey) => void;
-}) {
-  const active = sortKey === col;
-  const Arrow = !active ? ChevronsUpDown : sortDir === "asc" ? ArrowUp : ArrowDown;
-  return (
-    <button
-      className={cn(
-        "inline-flex items-center justify-center gap-1 rounded-sm px-1 py-0.5 text-xs font-medium tracking-wide transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        active ? "text-foreground" : "text-foreground/60"
-      )}
-      onClick={() => onSort(col)}
-    >
-      {label}
-      <Arrow className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
-    </button>
-  );
-}
+/** Figma のテーブルレイアウトに合わせたヘッダーラベルの共通スタイル。 */
+const HEAD_CLASS = "text-xs font-medium uppercase tracking-wider text-muted-foreground";
 
 interface ProductsTableProps {
+  /** 並び替え済みの表示対象（並び替えは親の ProductsGridSection で適用済み）。 */
   products: Product[];
   isFiltered: boolean;
   selected: Set<string>;
@@ -96,8 +52,6 @@ export function ProductsTable({
   onToggle,
   onToggleAll,
 }: ProductsTableProps) {
-  const [sortKey, setSortKey] = useState<SortKey>("revenue");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -117,20 +71,6 @@ export function ProductsTable({
     }
   };
 
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    } else {
-      setSortKey(key);
-      setSortDir("desc");
-    }
-  };
-
-  const rows = [...products].sort((a, b) => {
-    const cmp = compareProducts(a, b, sortKey);
-    return sortDir === "desc" ? -cmp : cmp;
-  });
-
   if (products.length === 0) {
     return <ProductsEmptyState isFiltered={isFiltered} />;
   }
@@ -138,130 +78,112 @@ export function ProductsTable({
   const allSelected =
     products.length > 0 && products.every((p) => selected.has(p.id));
 
-  const sortProps = { sortKey, sortDir, onSort: handleSort };
-
   return (
-    <div className="overflow-hidden">
-      <Table className="table-fixed">
-        <TableHeader>
-          <TableRow className="border-b bg-surface/60 hover:bg-surface/60">
-            <TableHead className="w-10 pl-4 text-center">
-              <Checkbox
-                checked={allSelected}
-                onCheckedChange={() => onToggleAll(products.map((p) => p.id))}
-                aria-label="すべて選択"
-              />
-            </TableHead>
-            <TableHead className="text-left text-foreground/60">
-              <SortButton label="商品" col="name" {...sortProps} />
-            </TableHead>
-            <TableHead className="w-28 text-center text-xs text-foreground/60">販売形態</TableHead>
-            <TableHead className="w-24 text-center text-foreground/60">
-              <SortButton label="価格" col="price" {...sortProps} />
-            </TableHead>
-            <TableHead className="w-20 text-center text-foreground/60">
-              <SortButton label="販売数" col="sales" {...sortProps} />
-            </TableHead>
-            <TableHead className="w-24 text-center text-foreground/60">
-              <SortButton label="売上" col="revenue" {...sortProps} />
-            </TableHead>
-            <TableHead className="w-28 text-center text-xs text-foreground/60">状態</TableHead>
-            <TableHead className="w-12 pr-4" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((p) => {
-            const badge = SALE_TYPE_BADGE[p.saleType];
-            const status = STATUS_DISPLAY[p.status];
-            const Icon = KIND_ICON[p.kind];
-            const isSelected = selected.has(p.id);
-            return (
-              <TableRow
-                key={p.id}
-                data-state={isSelected ? "selected" : undefined}
-                data-loading={navigatingId === p.id ? "true" : undefined}
-                className="transition-colors hover:bg-surface/50 data-[state=selected]:bg-accent data-[state=selected]:border-l-4 data-[state=selected]:border-l-foreground data-[loading=true]:opacity-60 data-[clickable=true]:cursor-pointer"
-                data-clickable={p.saleType === "digital" ? "true" : undefined}
-                onClick={() => goToDetail(p)}
-              >
-                <TableCell className="pl-4 text-center" onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => onToggle(p.id)}
-                    aria-label={`${p.name}を選択`}
-                  />
-                </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border",
-                        !p.image && THUMB_HUE[p.thumb]
-                      )}
-                    >
-                      {p.image ? (
-                        <img
-                          src={p.image}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Icon className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <span className="font-medium text-foreground">{p.name}</span>
+    <Table>
+      <TableHeader>
+        <TableRow className="border-b hover:bg-transparent">
+          <TableHead className="w-12 pl-6">
+            <Checkbox
+              checked={allSelected}
+              onCheckedChange={() => onToggleAll(products.map((p) => p.id))}
+              aria-label="すべて選択"
+            />
+          </TableHead>
+          <TableHead className={HEAD_CLASS}>商品</TableHead>
+          <TableHead className={cn("w-32", HEAD_CLASS)}>販売形態</TableHead>
+          <TableHead className={cn("w-28", HEAD_CLASS)}>価格</TableHead>
+          <TableHead className={cn("w-24", HEAD_CLASS)}>販売数</TableHead>
+          <TableHead className={cn("w-28", HEAD_CLASS)}>売上</TableHead>
+          <TableHead className={cn("w-28", HEAD_CLASS)}>状態</TableHead>
+          <TableHead className="w-12 pr-4" />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {products.map((p) => {
+          const badge = SALE_TYPE_BADGE[p.saleType];
+          const status = STATUS_BADGE[p.status];
+          const Icon = KIND_ICON[p.kind];
+          const isSelected = selected.has(p.id);
+          return (
+            <TableRow
+              key={p.id}
+              data-state={isSelected ? "selected" : undefined}
+              data-loading={navigatingId === p.id ? "true" : undefined}
+              className="cursor-pointer border-b transition-colors hover:bg-surface/50 data-[state=selected]:bg-accent data-[loading=true]:opacity-60"
+              onClick={() => goToDetail(p)}
+            >
+              <TableCell className="py-4 pl-6" onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                  checked={isSelected}
+                  onCheckedChange={() => onToggle(p.id)}
+                  aria-label={`${p.name}を選択`}
+                />
+              </TableCell>
+              <TableCell className="py-4">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border",
+                      !p.image && THUMB_HUE[p.thumb]
+                    )}
+                  >
+                    {p.image ? (
+                      <img src={p.image} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <Icon className="h-5 w-5 text-muted-foreground" />
+                    )}
                   </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge variant="outline" className={badge.className}>
-                    {badge.label}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center tabular-nums">
-                  {formatPrice(p.price)}
-                </TableCell>
-                <TableCell className="text-center tabular-nums text-muted-foreground">
-                  {p.sales}
-                </TableCell>
-                <TableCell className="text-center font-medium tabular-nums">
-                  {formatRevenue(p)}
-                </TableCell>
-                <TableCell className="text-center">
-                  <span className={cn("inline-flex items-center justify-center gap-0.5 text-sm", status.className)}>
-                    <img src={status.iconSrc} alt="" className="h-4 w-4 translate-y-[0.5px]" />
-                    {status.label}
-                  </span>
-                </TableCell>
-                <TableCell className="pr-4 text-center" onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground"
-                        aria-label="操作"
+                  <span className="font-semibold text-foreground">{p.name}</span>
+                </div>
+              </TableCell>
+              <TableCell className="py-4">
+                <Badge variant="outline" className={badge.className}>
+                  {badge.label}
+                </Badge>
+              </TableCell>
+              <TableCell className="py-4 tabular-nums text-foreground">
+                {formatPrice(p.price)}
+              </TableCell>
+              <TableCell className="py-4 tabular-nums text-muted-foreground">
+                {p.sales}
+              </TableCell>
+              <TableCell className="py-4 font-medium tabular-nums text-foreground">
+                {formatRevenue(p)}
+              </TableCell>
+              <TableCell className="py-4">
+                <Badge variant="outline" className={status.className}>
+                  {status.label}
+                </Badge>
+              </TableCell>
+              <TableCell className="py-4 pr-4 text-right" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground"
+                      aria-label="操作"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {productMenuItems(p).map((a) => (
+                      <DropdownMenuItem
+                        key={a.id}
+                        variant={a.id === "delete" ? "destructive" : "default"}
+                        onClick={() => handleMenuAction(a.id, p)}
                       >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {productMenuItems(p).map((a) => (
-                        <DropdownMenuItem
-                          key={a.id}
-                          variant={a.id === "delete" ? "destructive" : "default"}
-                          onClick={() => handleMenuAction(a.id, p)}
-                        >
-                          {a.label}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+                        {a.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }

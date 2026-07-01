@@ -8,7 +8,7 @@ import { useAppSearch } from "@/shared/components/app-shell/search-context";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
 import { productListQueryOptions } from "../../../api/queries";
-import { FILTER_ALL, VIEW_DEFAULT, type ViewMode } from "../../../types";
+import { FILTER_ALL, SORT_DEFAULT, type SortValue } from "../../../types";
 
 // TODO: 検証のため12件に設定。本番では20件以上に戻すこと。
 export const PAGE_SIZE = 12;
@@ -19,7 +19,6 @@ export type StatusCounts = { all: number; published: number; draft: number };
 const DEFAULT_PARAMS: Record<string, string> = {
   status: FILTER_ALL,
   saleType: FILTER_ALL,
-  view: VIEW_DEFAULT,
 };
 
 /**
@@ -39,7 +38,7 @@ export function useProductsFilter() {
 
   const status = searchParams.get("status") ?? FILTER_ALL;
   const saleType = searchParams.get("saleType") ?? FILTER_ALL;
-  const view = (searchParams.get("view") ?? VIEW_DEFAULT) as ViewMode;
+  const sort = (searchParams.get("sort") ?? SORT_DEFAULT) as SortValue;
   const queryFromUrl = searchParams.get("q") ?? "";
   const pageStr = searchParams.get("page");
   const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
@@ -119,11 +118,13 @@ export function useProductsFilter() {
     [router, pathname]
   );
 
-  // view の変更: データ変化なし → transition 不要（スケルトンを出さない）
-  const onViewChange = useCallback(
-    (v: string) => {
+  // sort の変更: クライアントサイド再ソート（再フェッチなし）→ transition 不要
+  const onSortChange = useCallback(
+    (s: string) => {
       const params = new URLSearchParams(searchParamsRef.current.toString());
-      params.set("view", v);
+      if (s === SORT_DEFAULT) params.delete("sort");
+      else params.set("sort", s);
+      params.delete("page");
       const qs = params.toString();
       router.replace(`${pathname}${qs ? `?${qs}` : ""}`);
     },
@@ -172,12 +173,12 @@ export function useProductsFilter() {
     filtered,
     status,
     saleType,
-    view,
+    sort,
     debouncedQuery,
     statusCounts,
     onStatusChange,
     onSaleTypeChange,
-    onViewChange,
+    onSortChange,
     isFilterPending,
     isSearchPending,
     query,

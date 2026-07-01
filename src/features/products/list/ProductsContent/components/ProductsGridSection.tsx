@@ -3,7 +3,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { productListQueryOptions } from "@/features/products/api/queries";
-import { VIEW_MODES, type ViewMode } from "@/features/products/types";
+import { sortProducts } from "@/features/products/sort";
+import type { SortValue } from "@/features/products/types";
 import {
   Pagination,
   PaginationContent,
@@ -16,7 +17,6 @@ import {
 
 import { PAGE_SIZE } from "../hooks/useProductsFilter";
 
-import { ProductsCardView } from "./ProductsCardView";
 import { ProductsGridSkeleton } from "./ProductsGridSkeleton";
 import { ProductsTable } from "./ProductsTable";
 
@@ -32,7 +32,7 @@ interface ProductsGridSectionProps {
   saleType: string;
   debouncedQuery: string;
   page: number;
-  view: ViewMode;
+  sort: SortValue;
   selected: Set<string>;
   onToggle: (id: string) => void;
   onToggleAll: (ids: string[]) => void;
@@ -46,7 +46,7 @@ export function ProductsGridSection({
   saleType,
   debouncedQuery,
   page,
-  view,
+  sort,
   selected,
   onToggle,
   onToggleAll,
@@ -62,43 +62,24 @@ export function ProductsGridSection({
   // isFilterPending = true になっている間、現在の DOM ではなくスケルトンを描画する）
   if (isFilterPending) return <ProductsGridSkeleton />;
 
-  const pageCount = Math.max(1, Math.ceil(products.length / PAGE_SIZE));
+  // 並び替えはページ分割の前に全件へ適用する（ページをまたいでも順序が保たれる）
+  const sorted = sortProducts(products, sort);
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const clampedPage = Math.min(page, pageCount);
-  const paginatedProducts = products.slice(
+  const paginatedProducts = sorted.slice(
     (clampedPage - 1) * PAGE_SIZE,
     clampedPage * PAGE_SIZE
   );
 
   return (
     <>
-      {/* モバイル: 常にカードグリッド（横パディングは親が提供） */}
-      <div className="py-2 sm:hidden">
-        <ProductsCardView
-          products={paginatedProducts}
-          isFiltered={isFiltered}
-          selected={selected}
-          onToggle={onToggle}
-        />
-      </div>
-      {/* デスクトップ: グリッドは親パディングに委ねる、テーブルはカード端まで伸ばす */}
-      <div className="hidden sm:block">
-        {view === VIEW_MODES[0] ? (
-          <ProductsCardView
-            products={paginatedProducts}
-            isFiltered={isFiltered}
-            selected={selected}
-            onToggle={onToggle}
-          />
-        ) : (
-          <ProductsTable
-            products={paginatedProducts}
-            isFiltered={isFiltered}
-            selected={selected}
-            onToggle={onToggle}
-            onToggleAll={onToggleAll}
-          />
-        )}
-      </div>
+      <ProductsTable
+        products={paginatedProducts}
+        isFiltered={isFiltered}
+        selected={selected}
+        onToggle={onToggle}
+        onToggleAll={onToggleAll}
+      />
 
       {pageCount > 1 && (
         <div className="border-t px-4 py-4 sm:px-6">
